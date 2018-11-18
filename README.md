@@ -1,3 +1,2 @@
-# wepy-tour
-tour
-npm run dev
+# wepy-your
+12

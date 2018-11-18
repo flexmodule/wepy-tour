@@ -1,0 +1,36 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="Addressdetail">
+    
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+import Myorder from '@/components/myorder';
+import QQMapWX from '@/utils/qqmap-wx-jssdk.min.js';
+
+export default class Addressdetail extends wepy.page {
+  components = {
+    myorder: Myorder
+  };
+  data = {
+    
+  };
+  computed = {};
+
+  methods = {
+  	
+  };
+  
+  onShow() {
+    
+  }
+  onLoad(options) {
+    
+  }
+}
+</script>

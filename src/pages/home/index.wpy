@@ -1,0 +1,300 @@
+<style lang="less">
+page {
+  height: 100%;
+  overflow: hidden;
+}
+.map {
+  .tomap {
+    background: #fff;
+    map {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
+  }
+  .map-t {
+    .titlebox {
+      white-space: nowrap;
+    }
+    .maptitle {
+      background: #fff;
+      overflow-x: auto;
+      height: 120rpx;
+      box-sizing: border-box;
+      overflow-y: hidden;
+      &:-webkit-scrollbar {
+        /*滚动条整体样式*/
+        height: 1rpx;
+      }
+      box-shadow: inset 0px -1px 0px 0px #efefef;
+      padding: 36rpx 40rpx 36rpx 0;
+      .total,
+      .food,
+      .scene,
+      .shopping,
+      .hotel {
+        display: inline-block;
+        margin-left: 40rpx;
+        width: 120rpx;
+        height: 48rpx;
+        border: 1rpx solid #999;
+        color: #999;
+        text-align: center;
+        border-radius: 24rpx;
+        font: 26rpx/48rpx '';
+      }
+      .food {
+        box-sizing: border-box;
+      }
+      .active {
+        background-image: linear-gradient(30deg, #c2914b 0%, #ebb870 100%),
+          linear-gradient(#ffffff, #ffffff);
+        background-blend-mode: normal, normal;
+        color: #fff;
+        border: 0;
+      }
+    }
+    .mapdetailbody {
+      height: 282rpx;
+      .mapdetailbox {
+        width: 100%;
+        height: 100%;
+        swiper {
+          width: 100%;
+          height: 100%;
+          swiper-item {
+            width: 100%;
+            height: 100%;
+            .mapdetail {
+              height: 282rpx;
+              box-sizing: border-box;
+              padding: 30rpx 30rpx 72rpx;
+              background: #fff;
+              display: flex;
+              position: relative;
+              .tothis {
+                display: flex;
+                align-items: center;
+                width: 122rpx;
+                height: 48rpx;
+                position: absolute;
+                bottom: 72rpx;
+                right: 30rpx;
+                background-image: linear-gradient(
+                    30deg,
+                    #c2914b 0%,
+                    #ebb870 100%
+                  ),
+                  linear-gradient(#c69a5d, #c69a5d);
+                background-blend-mode: normal, normal;
+                border-radius: 24rpx;
+                color: #fff;
+                .tothistxt {
+                  font: 22rpx/48rpx '';
+                  padding-left: 18rpx;
+                  margin-right: 10rpx;
+                }
+                .enter {
+                  width: 24rpx;
+                  height: 24rpx;
+                  font-size: 0;
+                  position: absolute;
+                  top: 0;
+                  bottom: 0;
+                  right: 15rpx;
+                  margin: auto;
+                  image {
+                    width: 100%;
+                    height: 100%;
+                  }
+                }
+              }
+              .collect {
+                position: absolute;
+                width: 70rpx;
+                text-align: center;
+                right: 60rpx;
+                top: 30rpx;
+                right: 30rpx;
+                font-size: 0;
+                image {
+                  width: 44rpx;
+                  height: 44rpx;
+                  margin-bottom: 10rpx;
+                }
+                .signtxt {
+                  font: 22rpx/22rpx '';
+                  color: #999;
+                }
+              }
+              .mapdetail-l {
+                width: 180rpx;
+                height: 180rpx;
+                margin-right: 21rpx;
+                position: relative;
+                border-radius: 8rpx;
+                .mainImg {
+                  width: 180rpx;
+                  height: 180rpx;
+                  border-radius: 8rpx;
+                  image {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 8rpx;
+                  }
+                }
+                .shadow {
+                  position: absolute;
+                  bottom: 0;
+                  background: rgba(0, 0, 0, 0.5);
+                  height: 48rpx;
+                  width: 100%;
+                  display: flex;
+                  padding: 11rpx 0;
+                  box-sizing: border-box;
+                  border-radius: 0 0 8rpx 8rpx;
+                  .distance {
+                    position: absolute;
+                    display: flex;
+                    height: 26rpx;
+                    right: 34rpx;
+                    top: 11rpx;
+                  }
+                  .imgicon {
+                    width: 26rpx;
+                    height: 26rpx;
+                    margin: 0 10rpx 0 0;
+                  }
+                  .juli {
+                    font: 22rpx/26rpx '';
+                    color: #fff;
+                  }
+                }
+              }
+              .mapdetail-r {
+                flex: 0.6;
+                .score {
+                  height: 25rpx;
+                  margin: 12rpx 0 20rpx;
+                  position: relative;
+                  .scoreicon,
+                  .selectscoreicon {
+                    display: flex;
+                    image {
+                      width: 25rpx;
+                      height: 25rpx;
+                      margin-right: 13rpx;
+                    }
+                  }
+                  .selectscoreicon {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: 6;
+                  }
+                }
+                .name {
+                  font: 30rpx/30rpx '';
+                  position: relative;
+                  max-height: 60rpx;
+                  color: #000;
+                  max-width: 294rpx;
+                  display: -webkit-box;
+                  -webkit-box-orient: vertical;
+                  -webkit-line-clamp: 2;
+                  overflow: hidden;
+                  /*&:after {
+            content: '...';
+            position: absolute;
+            bottom: 8rpx;
+            right: 0;
+            padding-left: 40rpx;
+          }*/
+                }
+                .price {
+                  font: 30rpx/30rpx '';
+                  color: #c2914b;
+                  margin-top: 20rpx;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .mapinfo {
+      background: #eee;
+      height: 64rpx;
+      font: 22rpx/64rpx '';
+      text-align: center;
+      color: #999;
+    }
+  }
+}
+</style>
+<template>
+  <view class="Home">
+    <view class="tomap" style="height:{{mapheight}}">
+      <map id="map" longitude="{{currentlong?currentlong:''}}" latitude="{{currentlat?currentlat:''}}" scale="15" markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location></map>
+    </view>
+  
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+export default class Home extends wepy.page {
+  components = {};
+  data = {
+    indicatorDots: true,
+    duration: 1000,
+    currentindex: 0,
+    oHeight: '',
+    mapheight: '',
+    mapdetailwidth: '',
+    isshowNav: 0,
+    id: '',
+    userid: '',
+    foodDetail: {},
+    scoreData: [1, 1, 1, 1, 1],
+    markers: [],
+    mapdetaildata: [],
+    longitude: '',
+    latitude: '',
+    currenttype: '',
+    currentcondition: '',
+    recmap: true,
+    mapkind: '',
+    mapdetaillist: [1],
+    currentlat: '',
+    currentlong: '',
+    currentrange: '',
+    swiperwidth: ''
+  };
+  computed = {};
+  methods = {
+    
+  };
+  regionchange(e) {}
+  markertap(e) {
+    var that = this;
+    for (var i = 0; i <= that.mapdetaildata.length - 1; i++) {
+      if (that.mapdetaildata[i].id == e.markerId) {
+        that.currentindex = i;
+        that.$apply();
+        return;
+      }
+    }
+  }
+  
+  onShow() {
+    
+  }
+  onLoad(options) {
+    
+
+    wx.showShareMenu();
+    this.$apply();
+  }
+}
+</script>
