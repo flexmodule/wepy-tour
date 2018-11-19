@@ -3,241 +3,164 @@ page {
   height: 100%;
   overflow: hidden;
 }
-.map {
+.Home {
+  .menu {
+    font: 30rpx/88rpx '';
+    flex: 1;
+    display: flex;
+    height: 88rpx;
+    color: #999;
+    justify-content: space-around;
+    box-shadow: 2rpx 20rpx 20rpx rgba(0, 0, 0, 0.15);
+    .food,
+    .scene,
+    .shopping,
+    .hotel {
+      position: relative;
+    }
+    .active {
+      color: #000;
+      &:after {
+        content: '';
+        position: absolute;
+        width: 40rpx;
+        height: 8rpx;
+        background-color: #c69a5d;
+        border-radius: 4rpx;
+        bottom: 10rpx;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+    }
+  }
   .tomap {
-    background: #fff;
+    width: 100%;
+    transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    /* Firefox 4 */
+    -webkit-transition: all 0.5s;
+    /* Safari 和 Chrome */
+    -o-transition: all 0.5s;
     map {
       width: 100%;
       height: 100%;
-      background: #fff;
     }
   }
-  .map-t {
-    .titlebox {
-      white-space: nowrap;
-    }
-    .maptitle {
-      background: #fff;
-      overflow-x: auto;
-      height: 120rpx;
+  .tabkind {
+    height: 320rpx;
+    position: fixed;
+    left: 0;
+    transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    /* Firefox 4 */
+    -webkit-transition: all 0.5s;
+    /* Safari 和 Chrome */
+    -o-transition: all 0.5s;
+    width: 100%;
+    .tabkind-t {
+      text-align: center;
+      height: 64rpx;
       box-sizing: border-box;
-      overflow-y: hidden;
-      &:-webkit-scrollbar {
-        /*滚动条整体样式*/
-        height: 1rpx;
-      }
-      box-shadow: inset 0px -1px 0px 0px #efefef;
-      padding: 36rpx 40rpx 36rpx 0;
-      .total,
-      .food,
-      .scene,
-      .shopping,
-      .hotel {
-        display: inline-block;
-        margin-left: 40rpx;
-        width: 120rpx;
-        height: 48rpx;
-        border: 1rpx solid #999;
-        color: #999;
-        text-align: center;
-        border-radius: 24rpx;
-        font: 26rpx/48rpx '';
-      }
-      .food {
-        box-sizing: border-box;
-      }
-      .active {
-        background-image: linear-gradient(30deg, #c2914b 0%, #ebb870 100%),
-          linear-gradient(#ffffff, #ffffff);
-        background-blend-mode: normal, normal;
-        color: #fff;
-        border: 0;
+      padding: 20rpx 0;
+      font-size: 0;
+      image {
+        width: 24rpx;
+        height: 24rpx;
       }
     }
-    .mapdetailbody {
-      height: 282rpx;
-      .mapdetailbox {
-        width: 100%;
-        height: 100%;
-        swiper {
-          width: 100%;
-          height: 100%;
-          swiper-item {
+    .kinds {
+      white-space: nowrap;
+      height: 256rpx;
+      .kindsbox {
+        display: inline-block;
+        margin-right: 30rpx;
+        &:nth-child(1) {
+          margin-left: 30rpx;
+        }
+        width: 400rpx;
+        .kinds-t {
+          height: 150rpx;
+          border-radius: 8rpx;
+          image {
             width: 100%;
             height: 100%;
-            .mapdetail {
-              height: 282rpx;
-              box-sizing: border-box;
-              padding: 30rpx 30rpx 72rpx;
-              background: #fff;
-              display: flex;
-              position: relative;
-              .tothis {
-                display: flex;
-                align-items: center;
-                width: 122rpx;
-                height: 48rpx;
-                position: absolute;
-                bottom: 72rpx;
-                right: 30rpx;
-                background-image: linear-gradient(
-                    30deg,
-                    #c2914b 0%,
-                    #ebb870 100%
-                  ),
-                  linear-gradient(#c69a5d, #c69a5d);
-                background-blend-mode: normal, normal;
-                border-radius: 24rpx;
-                color: #fff;
-                .tothistxt {
-                  font: 22rpx/48rpx '';
-                  padding-left: 18rpx;
-                  margin-right: 10rpx;
-                }
-                .enter {
-                  width: 24rpx;
-                  height: 24rpx;
-                  font-size: 0;
-                  position: absolute;
-                  top: 0;
-                  bottom: 0;
-                  right: 15rpx;
-                  margin: auto;
-                  image {
-                    width: 100%;
-                    height: 100%;
-                  }
-                }
-              }
-              .collect {
-                position: absolute;
-                width: 70rpx;
-                text-align: center;
-                right: 60rpx;
-                top: 30rpx;
-                right: 30rpx;
-                font-size: 0;
-                image {
-                  width: 44rpx;
-                  height: 44rpx;
-                  margin-bottom: 10rpx;
-                }
-                .signtxt {
-                  font: 22rpx/22rpx '';
-                  color: #999;
-                }
-              }
-              .mapdetail-l {
-                width: 180rpx;
-                height: 180rpx;
-                margin-right: 21rpx;
-                position: relative;
-                border-radius: 8rpx;
-                .mainImg {
-                  width: 180rpx;
-                  height: 180rpx;
-                  border-radius: 8rpx;
-                  image {
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 8rpx;
-                  }
-                }
-                .shadow {
-                  position: absolute;
-                  bottom: 0;
-                  background: rgba(0, 0, 0, 0.5);
-                  height: 48rpx;
-                  width: 100%;
-                  display: flex;
-                  padding: 11rpx 0;
-                  box-sizing: border-box;
-                  border-radius: 0 0 8rpx 8rpx;
-                  .distance {
-                    position: absolute;
-                    display: flex;
-                    height: 26rpx;
-                    right: 34rpx;
-                    top: 11rpx;
-                  }
-                  .imgicon {
-                    width: 26rpx;
-                    height: 26rpx;
-                    margin: 0 10rpx 0 0;
-                  }
-                  .juli {
-                    font: 22rpx/26rpx '';
-                    color: #fff;
-                  }
-                }
-              }
-              .mapdetail-r {
-                flex: 0.6;
-                .score {
-                  height: 25rpx;
-                  margin: 12rpx 0 20rpx;
-                  position: relative;
-                  .scoreicon,
-                  .selectscoreicon {
-                    display: flex;
-                    image {
-                      width: 25rpx;
-                      height: 25rpx;
-                      margin-right: 13rpx;
-                    }
-                  }
-                  .selectscoreicon {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    z-index: 6;
-                  }
-                }
-                .name {
-                  font: 30rpx/30rpx '';
-                  position: relative;
-                  max-height: 60rpx;
-                  color: #000;
-                  max-width: 294rpx;
-                  display: -webkit-box;
-                  -webkit-box-orient: vertical;
-                  -webkit-line-clamp: 2;
-                  overflow: hidden;
-                  /*&:after {
-            content: '...';
+            border-radius: 8rpx;
+          }
+        }
+        .kinds-b {
+          display: flex;
+          max-height: 60rpx;
+          justify-content: space-between;
+          padding-right: 40rpx;
+          margin-top: 20rpx;
+          position: relative;
+          .pointtitle {
+            font: 25rpx/30rpx '';
+            width: 240rpx;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
+          .range {
+            font: 20rpx/40rpx '';
+          }
+          .mark {
             position: absolute;
-            bottom: 8rpx;
             right: 0;
-            padding-left: 40rpx;
-          }*/
-                }
-                .price {
-                  font: 30rpx/30rpx '';
-                  color: #c2914b;
-                  margin-top: 20rpx;
-                }
-              }
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width: 24rpx;
+            height: 24rpx;
+            font-size: 0;
+            image {
+              width: 100%;
+              height: 100%;
             }
           }
         }
       }
-    }
-    .mapinfo {
-      background: #eee;
-      height: 64rpx;
-      font: 22rpx/64rpx '';
-      text-align: center;
-      color: #999;
     }
   }
 }
 </style>
 <template>
   <view class="Home">
-    <view class="tomap" style="height:{{mapheight}}">
+    <view class="menu">
+      <view class="food {{isshowNav==1?'active':''}}" @tap="switchNav(1)">美食</view>
+      <view class="scene {{isshowNav==2?'active':''}}" @tap="switchNav(2)">景点</view>
+      <view class="shopping {{isshowNav==3?'active':''}}" @tap="switchNav(3)">购物</view>
+      <view class="hotel {{isshowNav==4?'active':''}}" @tap="switchNav(4)">游玩攻略</view>
+    </view> 
+    <view class="tomap" style="height:{{mapheight}}px">
       <map id="map" longitude="{{currentlong?currentlong:''}}" latitude="{{currentlat?currentlat:''}}" scale="15" markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location></map>
     </view>
-  
+    <view class="tabkind" style="bottom:{{mapbottom}}px">
+      <view class="tabkind-t" @tap="showtab">
+        <image src="../../img/down.png" wx:if="{{arrowshow}}"/>
+        <image src="../../img/up.png" wx:else/>
+      </view>
+      <view class="kinds">
+        <scroll-view class="scroll-view_H" scroll-x style="width: 100%" bindscroll="scroll">
+          <repeat for="{{kindslistData}}" key="index" index="index" item="item">
+            <view class="kindsbox">
+              <view class="kinds-t" @tap="swithchDetail({{item.id}})">
+                <image src="../../img/a.png"/>
+              </view>
+              <view class="kinds-b">
+                <view class="pointtitle">11166666666666666666666666666611</view>
+                <view class="range">12.5km</view>
+                <view class="mark"><image src="../../img/mark.png"/></view>
+              </view>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
+    </view>
   </view>
 </template>
 <script>
@@ -246,54 +169,116 @@ import apifunc from '@/api/index.js';
 export default class Home extends wepy.page {
   components = {};
   data = {
+    mapbottom: 0,
+    arrowshow: true,
+    isshowNav: 1,
     indicatorDots: true,
     duration: 1000,
-    currentindex: 0,
     oHeight: '',
     mapheight: '',
-    mapdetailwidth: '',
-    isshowNav: 0,
     id: '',
     userid: '',
-    foodDetail: {},
-    scoreData: [1, 1, 1, 1, 1],
-    markers: [],
-    mapdetaildata: [],
-    longitude: '',
-    latitude: '',
-    currenttype: '',
-    currentcondition: '',
-    recmap: true,
-    mapkind: '',
-    mapdetaillist: [1],
-    currentlat: '',
-    currentlong: '',
-    currentrange: '',
-    swiperwidth: ''
+    kindslistData: [1, 1, 1,1,1],
+    markers: [
+      {
+        iconPath: '../../img/biu.png',
+        id: 0,
+        latitude: 30.241975,
+        longitude: 120.210338,
+        width: 50,
+        height: 50
+      },
+      {
+        iconPath: '../../img/address.png',
+        id: 0,
+        latitude: 30.237828,
+        longitude: 120.202615,
+        width: 50,
+        height: 50
+      },
+      {
+        iconPath: '../../img/address.png',
+        id: 0,
+        latitude: 30.246556,
+        longitude: 120.209898,
+        width: 50,
+        height: 50
+      },
+      {
+        iconPath: '../../img/address.png',
+        id: 0,
+        latitude: 30.251227,
+        longitude: 120.218867,
+        width: 50,
+        height: 50
+      },
+      {
+        iconPath: '../../img/address.png',
+        id: 0,
+        latitude: 30.248595,
+        longitude: 120.21316,
+        width: 50,
+        height: 50
+      }
+    ],
+    currentlat: 30.241975,
+    currentlong: 120.210338
   };
   computed = {};
   methods = {
-    
+    showtab() {
+      if (this.arrowshow) {
+        this.mapbottom = -128*(this.rpa);
+        this.mapheight = this.oHeight - 76*(this.rpa);
+        this.arrowshow = false;
+      } else {
+        this.mapbottom = 0;
+        this.mapheight = this.oHeight - 204*(this.rpa);
+        this.arrowshow = true;
+      }
+    },
+    scroll(e) {
+      console.log(e);
+      var that=this
+      for(var i=0;i<=this.markers.length-1;i++) {
+        that.markers[i].iconPath='../../img/address.png';
+      }
+      for(var i=0;i<=this.markers.length-1;i++) {
+        if(e.detail.scrollLeft<(i+1)*215+15&&i*215+15<e.detail.scrollLeft) {
+          if(i!=that.markers.length-1) {
+            that.currentlat=that.markers[i+1].latitude;
+            that.currentlong=that.markers[i+1].longitude;
+            that.markers[i+1].iconPath='../../img/biu.png';
+          }  
+        } else if(e.detail.scrollLeft<=15) {
+          that.markers[0].iconPath='../../img/biu.png';
+        }
+      }
+    },
+    switchNav(data) {
+      if (data == 1) {
+        this.isshowNav = 1;
+      } else if (data == 2) {
+        this.isshowNav = 2;
+      } else if (data == 3) {
+        this.isshowNav = 3;
+      } else if (data == 4) {
+        this.isshowNav = 4;
+      }
+    },
+    swithchDetail() {}
   };
   regionchange(e) {}
   markertap(e) {
     var that = this;
-    for (var i = 0; i <= that.mapdetaildata.length - 1; i++) {
-      if (that.mapdetaildata[i].id == e.markerId) {
-        that.currentindex = i;
-        that.$apply();
-        return;
-      }
-    }
   }
-  
-  onShow() {
-    
-  }
+  onShow() {}
   onLoad(options) {
-    
-
-    wx.showShareMenu();
+    var res = wx.getSystemInfoSync();
+    var that=this;
+    this.rpa=res.windowWidth/375;
+    this.oHeight = res.windowHeight;
+    this.mapheight = res.windowHeight - 204*(that.rpa);
     this.$apply();
   }
 }
