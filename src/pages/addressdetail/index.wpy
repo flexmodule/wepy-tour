@@ -3,7 +3,8 @@
 </style>
 <template>
   <view class="Addressdetail">
-    
+    我是详情
+    <navigator target="miniProgram" app-id="wxeb490c6f9b154ef9" extra-data="{{data}}">会员卡开卡</navigator>
   </view>
 </template>
 <script>
@@ -23,7 +24,10 @@ export default class Addressdetail extends wepy.page {
   computed = {};
 
   methods = {
-  	
+  	handleContact (e) {
+        console.log(e.path)
+        console.log(e.query)
+    }
   };
   
   onShow() {

@@ -36,12 +36,6 @@ page {
   }
   .tomap {
     width: 100%;
-    transition: all 0.5s;
-    -moz-transition: all 0.5s;
-    /* Firefox 4 */
-    -webkit-transition: all 0.5s;
-    /* Safari 和 Chrome */
-    -o-transition: all 0.5s;
     map {
       width: 100%;
       height: 100%;
@@ -51,12 +45,6 @@ page {
     height: 320rpx;
     position: fixed;
     left: 0;
-    transition: all 0.5s;
-    -moz-transition: all 0.5s;
-    /* Firefox 4 */
-    -webkit-transition: all 0.5s;
-    /* Safari 和 Chrome */
-    -o-transition: all 0.5s;
     width: 100%;
     .tabkind-t {
       text-align: center;
@@ -147,19 +135,22 @@ page {
       <view class="kinds">
         <scroll-view class="scroll-view_H" scroll-x style="width: 100%" bindscroll="scroll">
           <repeat for="{{kindslistData}}" key="index" index="index" item="item">
-            <view class="kindsbox">
-              <view class="kinds-t" @tap="swithchDetail({{item.id}})">
+            <view class="kindsbox" @tap="swithchDetail({{item.id}})">
+              <view class="kinds-t">
                 <image src="../../img/a.png"/>
               </view>
               <view class="kinds-b">
                 <view class="pointtitle">11166666666666666666666666666611</view>
                 <view class="range">12.5km</view>
-                <view class="mark"><image src="../../img/mark.png"/></view>
+                <view class="mark" wx:if="{{currentindex==index?true:false}}"><image src="../../img/mark.png"/></view>
               </view>
             </view>
           </repeat>
         </scroll-view>
       </view>
+    </view>
+    <view class="routeline" wx:if="{{routelineshow}}">
+      
     </view>
   </view>
 </template>
@@ -169,6 +160,8 @@ import apifunc from '@/api/index.js';
 export default class Home extends wepy.page {
   components = {};
   data = {
+    routelineshow:false,
+    currentindex: 0,
     mapbottom: 0,
     arrowshow: true,
     isshowNav: 1,
@@ -178,7 +171,7 @@ export default class Home extends wepy.page {
     mapheight: '',
     id: '',
     userid: '',
-    kindslistData: [1, 1, 1,1,1],
+    kindslistData: [1, 1, 1,1,1, 1,1,1],
     markers: [
       {
         iconPath: '../../img/biu.png',
@@ -190,7 +183,7 @@ export default class Home extends wepy.page {
       },
       {
         iconPath: '../../img/address.png',
-        id: 0,
+        id: 1,
         latitude: 30.237828,
         longitude: 120.202615,
         width: 50,
@@ -198,7 +191,7 @@ export default class Home extends wepy.page {
       },
       {
         iconPath: '../../img/address.png',
-        id: 0,
+        id: 2,
         latitude: 30.246556,
         longitude: 120.209898,
         width: 50,
@@ -206,7 +199,7 @@ export default class Home extends wepy.page {
       },
       {
         iconPath: '../../img/address.png',
-        id: 0,
+        id: 3,
         latitude: 30.251227,
         longitude: 120.218867,
         width: 50,
@@ -214,9 +207,33 @@ export default class Home extends wepy.page {
       },
       {
         iconPath: '../../img/address.png',
-        id: 0,
+        id: 4,
         latitude: 30.248595,
         longitude: 120.21316,
+        width: 50,
+        height: 50
+      },
+      {
+        iconPath: '../../img/address.png',
+        id: 5,
+        latitude: 30.247759,
+        longitude: 120.196605,
+        width: 50,
+        height: 50
+      },
+      {
+        iconPath: '../../img/address.png',
+        id: 6,
+        latitude: 30.256656,
+        longitude: 120.209136,
+        width: 50,
+        height: 50
+      },
+      {
+        iconPath: '../../img/address.png',
+        id: 7,
+        latitude: 30.256656,
+        longitude: 120.178752,
         width: 50,
         height: 50
       }
@@ -246,14 +263,17 @@ export default class Home extends wepy.page {
       for(var i=0;i<=this.markers.length-1;i++) {
         if(e.detail.scrollLeft<(i+1)*215+15&&i*215+15<e.detail.scrollLeft) {
           if(i!=that.markers.length-1) {
+            that.currentindex=i+1;
             that.currentlat=that.markers[i+1].latitude;
             that.currentlong=that.markers[i+1].longitude;
             that.markers[i+1].iconPath='../../img/biu.png';
           }  
         } else if(e.detail.scrollLeft<=15) {
           that.markers[0].iconPath='../../img/biu.png';
+          that.currentindex=0;
         }
       }
+      this.$apply();
     },
     switchNav(data) {
       if (data == 1) {
@@ -266,11 +286,24 @@ export default class Home extends wepy.page {
         this.isshowNav = 4;
       }
     },
-    swithchDetail() {}
+    swithchDetail(id) {
+      wx.navigateTo({
+        url: `/pages/addressdetail/index?id=${id}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+        success: function() {}, //成功后的回调；
+        fail: function() {}, //失败后的回调；
+        complete: function() {} //结束后的回调(成功，失败都会执行)
+      });
+    }
   };
   regionchange(e) {}
   markertap(e) {
     var that = this;
+    wx.navigateTo({
+        url: `/pages/addressdetail/index?id=${e.markerId}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+        success: function() {}, //成功后的回调；
+        fail: function() {}, //失败后的回调；
+        complete: function() {} //结束后的回调(成功，失败都会执行)
+      });
   }
   onShow() {}
   onLoad(options) {
