@@ -13,9 +13,10 @@ page {
     justify-content: space-around;
     box-shadow: 2rpx 20rpx 20rpx rgba(0, 0, 0, 0.15);
     .food,
+    .rec,
     .scene,
     .shopping,
-    .hotel {
+    .route {
       position: relative;
     }
     .active {
@@ -114,27 +115,36 @@ page {
       }
     }
   }
+  .routeline {
+    .wenxininfo {
+      font: 22rpx/64rpx '';
+      color: #999;
+      background: #eee;
+      text-align: center;
+    }
+  }
 }
 </style>
 <template>
   <view class="Home">
     <view class="menu">
-      <view class="food {{isshowNav==1?'active':''}}" @tap="switchNav(1)">美食</view>
+      <view class="rec {{isshowNav==1?'active':''}}" @tap="switchNav(1)">推荐</view>
       <view class="scene {{isshowNav==2?'active':''}}" @tap="switchNav(2)">景点</view>
-      <view class="shopping {{isshowNav==3?'active':''}}" @tap="switchNav(3)">购物</view>
-      <view class="hotel {{isshowNav==4?'active':''}}" @tap="switchNav(4)">游玩攻略</view>
+      <view class="food {{isshowNav==3?'active':''}}" @tap="switchNav(3)">美食</view>
+      <view class="shopping {{isshowNav==4?'active':''}}" @tap="switchNav(4)">购物</view>
+      <view class="route {{isshowNav==5?'active':''}}" @tap="switchNav(5)">路线</view>
     </view> 
-    <view class="tomap" style="height:{{mapheight}}px">
+    <view class="tomap" style="height:{{mapheight}}px" wx:if="{{mappointshow}}">
       <map id="map" longitude="{{currentlong?currentlong:''}}" latitude="{{currentlat?currentlat:''}}" scale="15" markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location></map>
     </view>
-    <view class="tabkind" style="bottom:{{mapbottom}}px">
+    <view class="tabkind" style="bottom:{{mapbottom}}px" wx:if="{{mappointshow}}">
       <view class="tabkind-t" @tap="showtab">
         <image src="../../img/down.png" wx:if="{{arrowshow}}"/>
         <image src="../../img/up.png" wx:else/>
       </view>
       <view class="kinds">
         <scroll-view class="scroll-view_H" scroll-x style="width: 100%" bindscroll="scroll">
-          <repeat for="{{kindslistData}}" key="index" index="index" item="item">
+          <repeat for="{{maplistData}}" key="index" index="index" item="item">
             <view class="kindsbox" @tap="swithchDetail({{item.id}})">
               <view class="kinds-t">
                 <image src="../../img/a.png"/>
@@ -150,7 +160,14 @@ page {
       </view>
     </view>
     <view class="routeline" wx:if="{{routelineshow}}">
-      
+      <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
+        <repeat for="{{routeData}}" key="index" index="index" item="item">
+          <view class="routebox" @tap="torouteDetail({{item.id}})">
+           
+          </view>
+        </repeat>
+        <view class="wenxininfo"><text wx:if="{{loadmore}}">加载中...</text><text wx:if="{{nomore}}">客官，俺也是有底线的。</text></view>
+      </scroll-view>
     </view>
   </view>
 </template>
@@ -161,6 +178,7 @@ export default class Home extends wepy.page {
   components = {};
   data = {
     routelineshow:false,
+    mappointshow:true,
     currentindex: 0,
     mapbottom: 0,
     arrowshow: true,
@@ -171,7 +189,15 @@ export default class Home extends wepy.page {
     mapheight: '',
     id: '',
     userid: '',
-    kindslistData: [1, 1, 1,1,1, 1,1,1],
+    params: {
+      pageNo: 1,
+      pageSize: 10,
+      end: false
+    },
+    loadmore: false,
+    nomore: false,  
+    routeData:[],
+    maplistData: [1, 1, 1,1,1, 1,1,1],
     markers: [
       {
         iconPath: '../../img/biu.png',
@@ -243,6 +269,9 @@ export default class Home extends wepy.page {
   };
   computed = {};
   methods = {
+    torouteDetail(id) {
+
+    },
     showtab() {
       if (this.arrowshow) {
         this.mapbottom = -128*(this.rpa);
@@ -278,13 +307,26 @@ export default class Home extends wepy.page {
     switchNav(data) {
       if (data == 1) {
         this.isshowNav = 1;
+        this.routelineshow=false;
+        this.mappointshow=true;
       } else if (data == 2) {
         this.isshowNav = 2;
+        this.routelineshow=false;
+        this.mappointshow=true;
       } else if (data == 3) {
         this.isshowNav = 3;
+        this.routelineshow=false;
+        this.mappointshow=true;
       } else if (data == 4) {
         this.isshowNav = 4;
+        this.routelineshow=false;
+        this.mappointshow=true;
+      } else if (data == 5) {
+        this.isshowNav = 5;
+        this.routelineshow=true;
+        this.mappointshow=false;
       }
+      this.$apply();
     },
     swithchDetail(id) {
       wx.navigateTo({
@@ -305,10 +347,61 @@ export default class Home extends wepy.page {
         complete: function() {} //结束后的回调(成功，失败都会执行)
       });
   }
+  lower(e) {
+    var that = this;
+    if (!this.params.end) {
+      that.loadmore = true;
+      if (that.userid) {
+        that.getmaplist();
+      }
+    }
+  }
+  getmaplist() {
+    var that = this;
+    apifunc
+      .getindexdata(``, 'get', "")
+      .then(function(res) {
+        if (res.meta.success) {
+          var listdata = res.data;
+          listdata.forEach((order, i) => {
+            that.maplistData.push(order);
+          });
+          that.loadmore = false;
+          if (listdata.length < that.params.pageSize) {
+            that.nomore = true;
+            that.loadmore = false;
+            that.params.end = true;
+          } else {
+            that.params.pageNo++;
+          }
+          if (
+            (that.maplistData && that.maplistData.length === 0) ||
+            !that.maplistData
+          ) {
+            that.nomore = false;
+          }
+          that.$apply();
+        } else {
+          wepy.showToast({
+            title: '系统错误',
+            icon: 'none',
+            duration: 500
+          });
+        }
+      });
+  }
   onShow() {}
   onLoad(options) {
     var res = wx.getSystemInfoSync();
     var that=this;
+    //数据初始化
+    this.routelineshow=false;
+    this.mappointshow=true;
+    this.currentindex=0;
+    this.arrowshow=true;
+    this.isshowNav=1;
+    this.mapbottom=0;
+    //进行不同手机地图适配
     this.rpa=res.windowWidth/375;
     this.oHeight = res.windowHeight;
     this.mapheight = res.windowHeight - 204*(that.rpa);

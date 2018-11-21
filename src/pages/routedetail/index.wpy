@@ -1,0 +1,37 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="Routedetail">
+    我是路线详情
+    <navigator target="miniProgram" app-id="wxeb490c6f9b154ef9" extra-data="{{data}}">会员卡开卡</navigator>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+import Myorder from '@/components/myorder';
+import QQMapWX from '@/utils/qqmap-wx-jssdk.min.js';
+
+export default class Routedetail extends wepy.page {
+  components = {
+    myorder: Myorder
+  };
+  data = {
+    
+  };
+  computed = {};
+
+  methods = {
+  	
+  };
+  
+  onShow() {
+    
+  }
+  onLoad(options) {
+    
+  }
+}
+</script>

@@ -1,5 +1,5 @@
 import request from '@/utils/request.js';
-var funcArr=["auth","getindeximg"];
+var funcArr=["auth","getindexdata"];
 var apifunc={}
 funcArr.forEach(function(item,index){
   apifunc[item] =function item(url, oType, data) {
