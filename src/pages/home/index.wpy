@@ -11,7 +11,6 @@ page {
     height: 88rpx;
     color: #999;
     justify-content: space-around;
-    box-shadow: 2rpx 20rpx 20rpx rgba(0, 0, 0, 0.15);
     .food,
     .rec,
     .scene,
@@ -33,6 +32,24 @@ page {
         right: 0;
         margin: auto;
       }
+    }
+  }
+  .search {
+    height: 60rpx;
+    display: flex;
+    border: 1rpx solid #999;
+    border-radius: 20rpx;
+    padding: 0 20rpx;
+    .inputtxt {
+      background: #fff;
+      height: 100%;
+      font: 22rpx/60rpx '';
+      border: none;
+      flex: 1;
+    }
+    .searchtxt {
+      font: 22rpx/60rpx '';
+      width: 50rpx;
     }
   }
   .tomap {
@@ -134,6 +151,10 @@ page {
       <view class="shopping {{isshowNav==4?'active':''}}" @tap="switchNav(4)">购物</view>
       <view class="route {{isshowNav==5?'active':''}}" @tap="switchNav(5)">路线</view>
     </view> 
+    <view class="search" wx:if="{{mappointshow}}">
+       <input class="inputtxt" placeholder="请输入您要搜索的地点" confirm-type="search" @input="inputsearch"/>
+       <view class="searchtxt" @tap="tosearch">搜索</view>
+    </view>
     <view class="tomap" style="height:{{mapheight}}px" wx:if="{{mappointshow}}">
       <map id="map" longitude="{{currentlong?currentlong:''}}" latitude="{{currentlat?currentlat:''}}" scale="15" markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location></map>
     </view>
@@ -145,13 +166,13 @@ page {
       <view class="kinds">
         <scroll-view class="scroll-view_H" scroll-x style="width: 100%" bindscroll="scroll">
           <repeat for="{{maplistData}}" key="index" index="index" item="item">
-            <view class="kindsbox" @tap="swithchDetail({{item.id}})">
+            <view class="kindsbox" @tap="swithchDetail({{item.deptId}})">
               <view class="kinds-t">
-                <image src="../../img/a.png"/>
+                <image src="{{item.mainImg}}"/>
               </view>
               <view class="kinds-b">
-                <view class="pointtitle">11166666666666666666666666666611</view>
-                <view class="range">12.5km</view>
+                <view class="pointtitle">{{item.deptName?item.deptName:""}}</view>
+                <view class="range">{{item.distance?item.distance:""}}</view>
                 <view class="mark" wx:if="{{currentindex==index?true:false}}"><image src="../../img/mark.png"/></view>
               </view>
             </view>
@@ -177,8 +198,9 @@ import apifunc from '@/api/index.js';
 export default class Home extends wepy.page {
   components = {};
   data = {
-    routelineshow:false,
-    mappointshow:true,
+    searchtxt: '',
+    routelineshow: false,
+    mappointshow: true,
     currentindex: 0,
     mapbottom: 0,
     arrowshow: true,
@@ -195,111 +217,69 @@ export default class Home extends wepy.page {
       end: false
     },
     loadmore: false,
-    nomore: false,  
-    routeData:[],
-    maplistData: [1, 1, 1,1,1, 1,1,1],
-    markers: [
-      {
-        iconPath: '../../img/biu.png',
-        id: 0,
-        latitude: 30.241975,
-        longitude: 120.210338,
-        width: 50,
-        height: 50
-      },
-      {
-        iconPath: '../../img/address.png',
-        id: 1,
-        latitude: 30.237828,
-        longitude: 120.202615,
-        width: 50,
-        height: 50
-      },
-      {
-        iconPath: '../../img/address.png',
-        id: 2,
-        latitude: 30.246556,
-        longitude: 120.209898,
-        width: 50,
-        height: 50
-      },
-      {
-        iconPath: '../../img/address.png',
-        id: 3,
-        latitude: 30.251227,
-        longitude: 120.218867,
-        width: 50,
-        height: 50
-      },
-      {
-        iconPath: '../../img/address.png',
-        id: 4,
-        latitude: 30.248595,
-        longitude: 120.21316,
-        width: 50,
-        height: 50
-      },
-      {
-        iconPath: '../../img/address.png',
-        id: 5,
-        latitude: 30.247759,
-        longitude: 120.196605,
-        width: 50,
-        height: 50
-      },
-      {
-        iconPath: '../../img/address.png',
-        id: 6,
-        latitude: 30.256656,
-        longitude: 120.209136,
-        width: 50,
-        height: 50
-      },
-      {
-        iconPath: '../../img/address.png',
-        id: 7,
-        latitude: 30.256656,
-        longitude: 120.178752,
-        width: 50,
-        height: 50
-      }
-    ],
+    nomore: false,
+    routeData: [],
+    maplistData: [],
+    searchdata: [],
+    markers: [],
     currentlat: 30.241975,
-    currentlong: 120.210338
+    currentlong: 120.210338,
+    latitude: '',
+    longitude: ''
   };
   computed = {};
   methods = {
-    torouteDetail(id) {
-
+    tosearch() {
+      var that = this;
+      var textreg = /<script.*?>.*?<\/script>/gi;
+      if (!textreg.test(that.searchtxt)) {
+        that.getsearchdata();
+      } else {
+        this.searchtxt = '';
+        wx.showToast({
+          title: '含有非法字符，请正确填写!',
+          icon: 'none',
+          duration: 1000
+        });
+      }
+      this.$apply();
     },
+    inputsearch(e) {
+      console.log(e);
+      this.searchtxt = e.detail.value;
+    },
+    torouteDetail(id) {},
     showtab() {
       if (this.arrowshow) {
-        this.mapbottom = -128*(this.rpa);
-        this.mapheight = this.oHeight - 76*(this.rpa);
+        this.mapbottom = -128 * this.rpa;
+        this.mapheight = this.oHeight - 108 * this.rpa;
         this.arrowshow = false;
       } else {
         this.mapbottom = 0;
-        this.mapheight = this.oHeight - 204*(this.rpa);
+        this.mapheight = this.oHeight - 236 * this.rpa;
         this.arrowshow = true;
       }
     },
     scroll(e) {
       console.log(e);
-      var that=this
-      for(var i=0;i<=this.markers.length-1;i++) {
-        that.markers[i].iconPath='../../img/address.png';
+      var that = this;
+      for (var i = 0; i <= this.markers.length - 1; i++) {
+        that.markers[i].iconPath = '../../img/address.png';
       }
-      for(var i=0;i<=this.markers.length-1;i++) {
-        if(e.detail.scrollLeft<(i+1)*215+15&&i*215+15<e.detail.scrollLeft) {
-          if(i!=that.markers.length-1) {
-            that.currentindex=i+1;
-            that.currentlat=that.markers[i+1].latitude;
-            that.currentlong=that.markers[i+1].longitude;
-            that.markers[i+1].iconPath='../../img/biu.png';
-          }  
-        } else if(e.detail.scrollLeft<=15) {
-          that.markers[0].iconPath='../../img/biu.png';
-          that.currentindex=0;
+      for (var i = 0; i <= this.markers.length - 1; i++) {
+        if (
+          e.detail.scrollLeft < (i + 1) * 215 + 15 &&
+          i * 215 + 15 < e.detail.scrollLeft
+        ) {
+          if (i != that.markers.length - 1) {
+            that.currentindex = i + 1;
+            that.currentlat = that.markers[i + 1].latitude;
+            that.currentlong = that.markers[i + 1].longitude;
+            that.markers[i + 1].iconPath = '../../img/biu.png';
+          }
+        } else if (e.detail.scrollLeft <= 15) {
+          that.markers[0].iconPath = '../../img/biu.png';
+          that.currentindex = 0;
         }
       }
       this.$apply();
@@ -307,24 +287,44 @@ export default class Home extends wepy.page {
     switchNav(data) {
       if (data == 1) {
         this.isshowNav = 1;
-        this.routelineshow=false;
-        this.mappointshow=true;
+        this.routelineshow = false;
+        this.mappointshow = true;
+        this.routeData = [];
+        this.markers = [];
+        this.maplistData = [];
+        this.getmapdata(1);
       } else if (data == 2) {
         this.isshowNav = 2;
-        this.routelineshow=false;
-        this.mappointshow=true;
+        this.routelineshow = false;
+        this.mappointshow = true;
+        this.routeData = [];
+        this.markers = [];
+        this.maplistData = [];
+        this.getmapdata(2);
       } else if (data == 3) {
         this.isshowNav = 3;
-        this.routelineshow=false;
-        this.mappointshow=true;
+        this.routelineshow = false;
+        this.mappointshow = true;
+        this.routeData = [];
+        this.markers = [];
+        this.maplistData = [];
+        this.getmapdata(3);
       } else if (data == 4) {
         this.isshowNav = 4;
-        this.routelineshow=false;
-        this.mappointshow=true;
+        this.routelineshow = false;
+        this.mappointshow = true;
+        this.routeData = [];
+        this.markers = [];
+        this.maplistData = [];
+        this.getmapdata(4);
       } else if (data == 5) {
         this.isshowNav = 5;
-        this.routelineshow=true;
-        this.mappointshow=false;
+        this.routelineshow = true;
+        this.mappointshow = false;
+        this.routeData = [];
+        this.markers = [];
+        this.maplistData = [];
+        this.getroutelist();
       }
       this.$apply();
     },
@@ -337,29 +337,156 @@ export default class Home extends wepy.page {
       });
     }
   };
+  getsearchdata() {
+    var that = this;
+    for (var j = 0; j <= that.searchdata.length - 1; j++) {
+      for (var i = 0; i <= that.maplistData.length - 1; i++) {
+        if(that.searchdata[j].id==that.maplistData[i].id) {
+          that.maplistData.splice(i,1);
+          break;
+        }
+      }
+    }
+    for (var m = 0; m <= that.searchdata.length - 1; m++) {
+      for (var n = 0; n <= that.markers.length - 1; n++) {
+        if(that.searchdata[m].id==that.markers[n].id) {
+          that.markers.splice(n,1);
+          break;
+        }
+      }
+    }
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        that.longitude = res.longitude;
+        that.latitude = res.latitude;
+        var data = {
+          name: '',
+          currentLatitude: that.latitude,
+          currentLongitude: that.longitude
+        };
+        //搜索数据
+        apifunc
+          .searchInfo('/tour/oversea/search', 'get', data)
+          .then(function(res) {
+            if (res.meta.success) {
+              that.searchdata = res.list;
+              for(var p=0;p<=that.searchdata.length-1;p++) {
+                var value = {
+                  iconPath: '../../img/address.png',
+                  id: 0,
+                  latitude: '',
+                  longitude: '',
+                  width: 32,
+                  height: 42.5
+                };
+                if (
+                  that.searchdata[p].latitude &&
+                  that.searchdata[p].longitude &&
+                  that.searchdata[p].id
+                ) {
+                  value.latitude = that.searchdata[p].latitude;
+                  value.longitude = that.searchdata[p].longitude;
+                  value.id = that.searchdata[p].id;
+                }
+                that.markers.unshift(value);
+              }
+              that.maplistData.unshift(that.searchdata);
+              if (that.maplistData[0]) {
+                that.currentlat = that.maplistData[0].latitude;
+                that.currentlong = that.maplistData[0].longitude;
+                that.markers[0].iconPath = '../../img/biu.png';
+              }
+              that.$apply();
+            }
+          });
+      }
+    });
+  }
   regionchange(e) {}
   markertap(e) {
     var that = this;
     wx.navigateTo({
-        url: `/pages/addressdetail/index?id=${e.markerId}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
-        success: function() {}, //成功后的回调；
-        fail: function() {}, //失败后的回调；
-        complete: function() {} //结束后的回调(成功，失败都会执行)
-      });
+      url: `/pages/addressdetail/index?id=${e.markerId}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+      success: function() {}, //成功后的回调；
+      fail: function() {}, //失败后的回调；
+      complete: function() {} //结束后的回调(成功，失败都会执行)
+    });
+  }
+  getmapdata(type) {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        that.longitude = res.longitude;
+        that.latitude = res.latitude;
+        var value = {
+          type: type,
+          name: '',
+          classId: '',
+          isRecommend: '',
+          area: '',
+          pageNo: 1,
+          pageSize: -1,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getindexdata('/tour/oversea/getPlaceList', 'get', value)
+          .then(function(res) {
+            if (res.meta.success) {
+              that.maplistData = res.list;
+              for (var i = 0; i <= that.maplistData.length - 1; i++) {
+                if (that.maplistData[i].distance >= 1000) {
+                  that.maplistData[i].distance =
+                    (that.maplistData[i].distance / 1000).toFixed(1) + 'km';
+                } else {
+                  that.maplistData[i].distance =
+                    that.maplistData[i].distance + 'm';
+                }
+                var value = {
+                  iconPath: '../../img/address.png',
+                  id: 0,
+                  latitude: '',
+                  longitude: '',
+                  width: 32,
+                  height: 42.5
+                };
+                if (
+                  that.maplistData[i].latitude &&
+                  that.maplistData[i].longitude &&
+                  that.maplistData[i].id
+                ) {
+                  value.latitude = that.maplistData[i].latitude;
+                  value.longitude = that.maplistData[i].longitude;
+                  value.id = that.maplistData[i].id;
+                }
+                that.markers.push(value);
+              }
+              if (that.maplistData[0]) {
+                that.currentlat = that.maplistData[0].latitude;
+                that.currentlong = that.maplistData[0].longitude;
+                that.markers[0].iconPath = '../../img/biu.png';
+              }
+              that.$apply();
+            }
+          });
+      }
+    });
   }
   lower(e) {
     var that = this;
     if (!this.params.end) {
       that.loadmore = true;
       if (that.userid) {
-        that.getmaplist();
+        that.getroutelist();
       }
     }
   }
-  getmaplist() {
+  getroutelist() {
     var that = this;
     apifunc
-      .getindexdata(``, 'get', "")
+      .getroutedata('/tour/oversea/getPlaceList', 'get', value)
       .then(function(res) {
         if (res.meta.success) {
           var listdata = res.data;
@@ -393,18 +520,26 @@ export default class Home extends wepy.page {
   onShow() {}
   onLoad(options) {
     var res = wx.getSystemInfoSync();
-    var that=this;
+    var that = this;
     //数据初始化
-    this.routelineshow=false;
-    this.mappointshow=true;
-    this.currentindex=0;
-    this.arrowshow=true;
-    this.isshowNav=1;
-    this.mapbottom=0;
+    this.routelineshow = false;
+    this.mappointshow = true;
+    this.currentindex = 0;
+    this.arrowshow = true;
+    this.isshowNav = 1;
+    this.mapbottom = 0;
+    this.loadmore = false;
+    this.nomore = false;
+    this.params.pageNo = 1;
+    this.params.end = false;
+    this.routeData = [];
+    this.maplistData = [];
     //进行不同手机地图适配
-    this.rpa=res.windowWidth/375;
+    this.rpa = res.windowWidth / 375;
     this.oHeight = res.windowHeight;
-    this.mapheight = res.windowHeight - 204*(that.rpa);
+    this.mapheight = res.windowHeight - 236 * that.rpa;
+    //数据请求
+    this.getmapdata(1);
     this.$apply();
   }
 }
