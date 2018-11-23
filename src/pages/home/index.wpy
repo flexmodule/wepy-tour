@@ -220,7 +220,7 @@ export default class Home extends wepy.page {
     nomore: false,
     routeData: [],
     maplistData: [],
-    searchdata: [],
+    searchdata: {},
     markers: [],
     currentlat: 30.241975,
     currentlong: 120.210338,
@@ -337,24 +337,10 @@ export default class Home extends wepy.page {
       });
     }
   };
+  //搜索，搜索先初始化当前分类数据
   getsearchdata() {
     var that = this;
-    for (var j = 0; j <= that.searchdata.length - 1; j++) {
-      for (var i = 0; i <= that.maplistData.length - 1; i++) {
-        if(that.searchdata[j].id==that.maplistData[i].id) {
-          that.maplistData.splice(i,1);
-          break;
-        }
-      }
-    }
-    for (var m = 0; m <= that.searchdata.length - 1; m++) {
-      for (var n = 0; n <= that.markers.length - 1; n++) {
-        if(that.searchdata[m].id==that.markers[n].id) {
-          that.markers.splice(n,1);
-          break;
-        }
-      }
-    }
+    this.getmapdata(that.isshowNav);
     wx.getLocation({
       type: 'wgs84',
       success: function(res) {
@@ -371,27 +357,38 @@ export default class Home extends wepy.page {
           .then(function(res) {
             if (res.meta.success) {
               that.searchdata = res.list;
-              for(var p=0;p<=that.searchdata.length-1;p++) {
-                var value = {
-                  iconPath: '../../img/address.png',
-                  id: 0,
-                  latitude: '',
-                  longitude: '',
-                  width: 32,
-                  height: 42.5
-                };
-                if (
-                  that.searchdata[p].latitude &&
-                  that.searchdata[p].longitude &&
-                  that.searchdata[p].id
-                ) {
-                  value.latitude = that.searchdata[p].latitude;
-                  value.longitude = that.searchdata[p].longitude;
-                  value.id = that.searchdata[p].id;
+              var initdata = that.maplistData[0];
+              for (var p = 0; p <= that.maplistData.length - 1; p++) {
+                if (that.maplistData[p].id == that.searchdata.id) {
+                  var currentdata = that.maplistData[p];
+                  that.maplistData.splice(p, 1, initdata);
+                  that.maplistData.splice(0, 1, currentdata);
+                  break;
+                } else {
+                  if (p == that.maplistData.length - 1) {
+                    var value = {
+                      iconPath: '../../img/address.png',
+                      id: 0,
+                      latitude: '',
+                      longitude: '',
+                      width: 32,
+                      height: 42.5
+                    };
+                    if (
+                      that.searchdata.latitude &&
+                      that.searchdata.longitude &&
+                      that.searchdata.id
+                    ) {
+                      value.latitude = that.searchdata.latitude;
+                      value.longitude = that.searchdata.longitude;
+                      value.id = that.searchdata.id;
+                    }
+                    that.markers.unshift(value);
+                    that.maplistData.unshift(that.searchdata);
+                    break;
+                  }
                 }
-                that.markers.unshift(value);
               }
-              that.maplistData.unshift(that.searchdata);
               if (that.maplistData[0]) {
                 that.currentlat = that.maplistData[0].latitude;
                 that.currentlong = that.maplistData[0].longitude;
