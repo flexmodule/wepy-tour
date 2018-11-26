@@ -350,7 +350,7 @@ export default class Home extends wepy.page {
           name: '',
           currentLatitude: that.latitude,
           currentLongitude: that.longitude
-        };
+        }; 
         //搜索数据
         apifunc
           .searchInfo('/tour/oversea/search', 'get', data)
@@ -447,7 +447,14 @@ export default class Home extends wepy.page {
                   latitude: '',
                   longitude: '',
                   width: 32,
-                  height: 42.5
+                  height: 42.5,
+                  label:{
+                    content:"",
+                    fontSize:12,
+                    borderRadius:6,
+                    bgColor:"#fff",
+                    padding:8
+                  }
                 };
                 if (
                   that.maplistData[i].latitude &&
@@ -457,6 +464,7 @@ export default class Home extends wepy.page {
                   value.latitude = that.maplistData[i].latitude;
                   value.longitude = that.maplistData[i].longitude;
                   value.id = that.maplistData[i].id;
+                  value.label.content = that.maplistData[i].name;
                 }
                 that.markers.push(value);
               }
