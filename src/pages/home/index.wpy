@@ -140,6 +140,29 @@ page {
       text-align: center;
     }
   }
+  .home {
+  swiper {
+    overflow: visible!important;
+    swiper-item {
+      width: 70%!important;
+      margin-left: 15%;
+      text-align: center;
+      overflow: visible!important;
+      &:after {
+        content: "";
+        display: inline-block;
+        width: 0;
+        height: 100%;
+        vertical-align: middle;
+      }
+      image {
+        width: 60%;
+        height: 60%;
+        vertical-align: middle;
+      }
+    }
+  }
+}
 }
 </style>
 <template>
@@ -159,12 +182,18 @@ page {
       <map id="map" longitude="{{currentlong?currentlong:''}}" latitude="{{currentlat?currentlat:''}}" scale="15" markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location></map>
     </view>
     <view class="tabkind" style="bottom:{{mapbottom}}px" wx:if="{{mappointshow}}">
-      <view class="tabkind-t" @tap="showtab">
-        <image src="../../img/down.png" wx:if="{{arrowshow}}"/>
-        <image src="../../img/up.png" wx:else/>
-      </view>
+      <view class="home" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
+    <swiper indicator-dots="{{indicatorDots}}" circular="true"
+  autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" display-multiple-items="1" current="1" bindchange="abc">
+  <block wx:for="{{imgUrls}}" wx:key="item">
+    <swiper-item style="width:375px;height:120%;">
+      <image src="{{item}}" @tap="todetail({{index}})" class="slide-image" style="width:{{currentIndex==index?'100%':'70%'}};height:{{currentIndex==index?'100%':'60%'}};"/>
+    </swiper-item>
+  </block>
+</swiper>
+  </view>
       <view class="kinds">
-        <scroll-view class="scroll-view_H" scroll-x style="width: 100%" bindscroll="scroll">
+        <scroll-view class="scroll-view_H" scroll-x style="width: 100%" bindscroll="scroll" @touchmove="touchmove">
           <repeat for="{{maplistData}}" key="index" index="index" item="item">
             <view class="kindsbox" @tap="swithchDetail({{item.deptId}})">
               <view class="kinds-t">
@@ -229,6 +258,9 @@ export default class Home extends wepy.page {
   };
   computed = {};
   methods = {
+    touchmove(e) {
+      console.log(e)
+    },
     tosearch() {
       var that = this;
       var textreg = /<script.*?>.*?<\/script>/gi;
@@ -539,6 +571,7 @@ export default class Home extends wepy.page {
     this.params.end = false;
     this.routeData = [];
     this.maplistData = [];
+    this.markers = [];
     //进行不同手机地图适配
     this.rpa = res.windowWidth / 375;
     this.oHeight = res.windowHeight;
