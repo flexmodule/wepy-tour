@@ -9,7 +9,6 @@ page {
     flex: 1;
     display: flex;
     height: 88rpx;
-    color: #999;
     justify-content: space-around;
     .food,
     .rec,
@@ -19,13 +18,13 @@ page {
       position: relative;
     }
     .active {
-      color: #000;
+      color: #1e96d5;
       &:after {
         content: '';
         position: absolute;
         width: 40rpx;
         height: 8rpx;
-        background-color: #c69a5d;
+        background-color: #1e96d5;
         border-radius: 4rpx;
         bottom: 10rpx;
         left: 0;
@@ -35,21 +34,53 @@ page {
     }
   }
   .search {
-    height: 60rpx;
+    height: 54rpx;
     display: flex;
-    border: 1rpx solid #999;
     border-radius: 20rpx;
-    padding: 0 20rpx;
-    .inputtxt {
-      background: #fff;
+    padding: 0 40rpx;
+    justify-content: space-between;
+    .search-l {
+      width: 580rpx;
+      box-sizing: border-box;
+      background: #eee;
       height: 100%;
-      font: 22rpx/60rpx '';
-      border: none;
-      flex: 1;
+      padding: 0 30rpx;
+      border-radius: 30rpx;
+      font-size: 0;
+      image {
+        width: 39rpx;
+        height: 39rpx;
+        vertical-align: middle;
+        margin-right: 20rpx;
+      }
+      .input {
+        display: inline-block;
+        vertical-align: middle;
+        padding: 0 20rpx;
+        width: 444rpx;
+        position: relative;
+        box-sizing: border-box;
+        &:before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+          width: 2rpx;
+          height: 40rpx;
+          background: #aaa;
+        }
+        height: 100%;
+        input {
+          width: 100%;
+          height: 100%;
+          font: 22rpx/54rpx "";
+        }
+      }
     }
-    .searchtxt {
-      font: 22rpx/60rpx '';
-      width: 50rpx;
+    .search-r {
+      font: 26rpx/54rpx "";
     }
   }
   .tomap {
@@ -60,72 +91,107 @@ page {
     }
   }
   .tabkind {
-    height: 320rpx;
+    height: 420rpx;
     position: fixed;
     left: 0;
     width: 100%;
-    .tabkind-t {
-      text-align: center;
-      height: 64rpx;
-      box-sizing: border-box;
-      padding: 20rpx 0;
-      font-size: 0;
-      image {
-        width: 24rpx;
-        height: 24rpx;
-      }
-    }
     .kinds {
-      white-space: nowrap;
-      height: 256rpx;
-      .kindsbox {
-        display: inline-block;
-        margin-right: 30rpx;
-        &:nth-child(1) {
-          margin-left: 30rpx;
-        }
-        width: 400rpx;
-        .kinds-t {
-          height: 150rpx;
-          border-radius: 8rpx;
-          image {
-            width: 100%;
-            height: 100%;
-            border-radius: 8rpx;
-          }
-        }
-        .kinds-b {
-          display: flex;
-          max-height: 60rpx;
-          justify-content: space-between;
-          padding-right: 40rpx;
-          margin-top: 20rpx;
+      height: 100%;
+      swiper {
+        height: 100%;
+        overflow: visible !important;
+        swiper-item {
+          height: 100%;
+          width: 70% !important;
+          margin-left: 15%;
           position: relative;
-          .pointtitle {
-            font: 25rpx/30rpx '';
-            width: 240rpx;
-            word-break: break-all;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-          }
-          .range {
-            font: 20rpx/40rpx '';
-          }
-          .mark {
+          .kindselect {
             position: absolute;
-            right: 0;
             top: 0;
             bottom: 0;
+            left: 0;
+            right: 0;
             margin: auto;
-            width: 24rpx;
-            height: 24rpx;
-            font-size: 0;
-            image {
+            overflow: hidden;
+            border-radius: 20rpx;
+            box-shadow: #666 0rpx 0rpx 30rpx;
+            .kindselect-t {
               width: 100%;
-              height: 100%;
+              height: 240rpx;
+              overflow: hidden;
+              border-radius: 20rpx 20rpx 0 0;
+              position: relative;
+              &:after {
+                content: "";
+                width: 0;
+                height: 100%;
+                display: inline-block;
+                vertical-align: middle;
+              }
+              image {
+                border-radius: 20rpx 20rpx 0 0;
+                width: 100%;
+                vertical-align: middle;
+              }
+              .shadow {
+                overflow: hidden;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 50rpx;
+                background: rgba(0,0,0,.5);
+                box-sizing: border-box;
+                padding: 5rpx 16rpx;
+                display: flex;
+                justify-content: space-between;
+                .price {
+                  font: 24rpx/40rpx "";
+                  color: #fff;
+                }
+                .position {
+                  display: flex;
+                  .positiontxt {
+                    font: 24rpx/40rpx "";
+                    color: #fff;
+                  }
+                  image {
+                    width: 40rpx;
+                    height: 40rpx;
+                    margin-left: 13rpx;
+                  }
+                }
+              }
+            }
+            .kindselect-b {
+              overflow: hidden;
+              text-align: center;
+              padding: 22rpx 0 15rpx;
+              .name {
+                font: 28rpx/28rpx "";
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
+              .des {
+                font: 22rpx/22rpx "";
+                color: #888;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin: 20rpx auto;
+              }
+              .naviga {
+                width: 200rpx;
+                height: 54rpx;
+                font: 22rpx/54rpx "";
+                text-align: center;
+                color: #fff;
+                border-radius: 30rpx;
+                background: #2299dd;
+                margin: 0 auto;
+              }
             }
           }
         }
@@ -140,33 +206,19 @@ page {
       text-align: center;
     }
   }
-  .home {
-  swiper {
-    overflow: visible!important;
-    swiper-item {
-      width: 70%!important;
-      margin-left: 15%;
-      text-align: center;
-      overflow: visible!important;
-      &:after {
-        content: "";
-        display: inline-block;
-        width: 0;
-        height: 100%;
-        vertical-align: middle;
-      }
-      image {
-        width: 60%;
-        height: 60%;
-        vertical-align: middle;
-      }
-    }
-  }
-}
 }
 </style>
 <template>
   <view class="Home">
+    <view class="search" wx:if="{{mappointshow}}">
+      <view class="search-l">
+        <image src="../../img/search.png"/>
+        <view class="input">
+          <input placeholder="美食推荐：定胜糕" @input="inputsearch"/>
+        </view>
+      </view>
+      <view class="search-r" @tap="tosearch">搜索</view>
+    </view>
     <view class="menu">
       <view class="rec {{isshowNav==1?'active':''}}" @tap="switchNav(1)">推荐</view>
       <view class="scene {{isshowNav==2?'active':''}}" @tap="switchNav(2)">景点</view>
@@ -174,39 +226,35 @@ page {
       <view class="shopping {{isshowNav==4?'active':''}}" @tap="switchNav(4)">购物</view>
       <view class="route {{isshowNav==5?'active':''}}" @tap="switchNav(5)">路线</view>
     </view> 
-    <view class="search" wx:if="{{mappointshow}}">
-       <input class="inputtxt" placeholder="请输入您要搜索的地点" confirm-type="search" @input="inputsearch"/>
-       <view class="searchtxt" @tap="tosearch">搜索</view>
-    </view>
     <view class="tomap" style="height:{{mapheight}}px" wx:if="{{mappointshow}}">
       <map id="map" longitude="{{currentlong?currentlong:''}}" latitude="{{currentlat?currentlat:''}}" scale="15" markers="{{markers}}" bindmarkertap="markertap" bindregionchange="regionchange" show-location></map>
     </view>
     <view class="tabkind" style="bottom:{{mapbottom}}px" wx:if="{{mappointshow}}">
-      <view class="home" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
-    <swiper indicator-dots="{{indicatorDots}}" circular="true"
-  autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" display-multiple-items="1" current="1" bindchange="abc">
-  <block wx:for="{{imgUrls}}" wx:key="item">
-    <swiper-item style="width:375px;height:120%;">
-      <image src="{{item}}" @tap="todetail({{index}})" class="slide-image" style="width:{{currentIndex==index?'100%':'70%'}};height:{{currentIndex==index?'100%':'60%'}};"/>
-    </swiper-item>
-  </block>
-</swiper>
-  </view>
-      <view class="kinds">
-        <scroll-view class="scroll-view_H" scroll-x style="width: 100%" bindscroll="scroll" @touchmove="touchmove">
-          <repeat for="{{maplistData}}" key="index" index="index" item="item">
-            <view class="kindsbox" @tap="swithchDetail({{item.deptId}})">
-              <view class="kinds-t">
-                <image src="{{item.mainImg}}"/>
+      <view class="kinds" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
+        <swiper circular="true"
+          autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" display-multiple-items="1" current="1" bindchange="swiperimg">
+          <block wx:for="{{maplistData}}" wx:key="item">
+            <swiper-item>
+              <view class="kindselect" style="width:{{currentindex==index?'100%':'80%'}};height:{{currentindex==index?'100%':'90%'}};">
+                <view class="kindselect-t">
+                  <image src="{{item.mainImg}}" mode="widthFix"/>
+                  <view class="shadow">
+                    <view class="price">人均消费：{{item.averagePrice?item.averagePrice:""}}元</view>
+                    <view class="position">
+                      <view class="positiontxt">{{item.distance?item.distance:""}}</view>
+                      <image src="../../img/position.png" mode="widthFix"/>
+                    </view>
+                  </view>
+                </view>
+                <view class="kindselect-b">
+                  <view class="name">{{item.name?item.name:""}}</view>
+                  <view class="des">{{item.descriptions?item.descriptions:""}}</view>
+                  <view class="naviga">导航</view>
+                </view>
               </view>
-              <view class="kinds-b">
-                <view class="pointtitle">{{item.deptName?item.deptName:""}}</view>
-                <view class="range">{{item.distance?item.distance:""}}</view>
-                <view class="mark" wx:if="{{currentindex==index?true:false}}"><image src="../../img/mark.png"/></view>
-              </view>
-            </view>
-          </repeat>
-        </scroll-view>
+            </swiper-item>
+          </block>
+        </swiper>
       </view>
     </view>
     <view class="routeline" wx:if="{{routelineshow}}">
@@ -230,11 +278,10 @@ export default class Home extends wepy.page {
     searchtxt: '',
     routelineshow: false,
     mappointshow: true,
-    currentindex: 0,
+    currentindex: 1,
     mapbottom: 0,
     arrowshow: true,
     isshowNav: 1,
-    indicatorDots: true,
     duration: 1000,
     oHeight: '',
     mapheight: '',
@@ -254,12 +301,37 @@ export default class Home extends wepy.page {
     currentlat: 30.241975,
     currentlong: 120.210338,
     latitude: '',
-    longitude: ''
+    longitude: '',
+    start:0,
+    end:"",
+    move:0,
+    rpa:""
   };
   computed = {};
   methods = {
+    swiperimg(e) {
+      console.log(e)
+      this.currentindex=e.detail.current
+    },
+    touchend() {
+      var that=this
+      console.log("结束",50*(this.rpa))
+      if(((this.start-this.move)>50*(this.rpa))&&this.move!=0) {
+         wx.navigateTo({
+     url:`/pages/addressdetail/index?index=${that.currentindex}`,  //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+     success:function(){}  ,      //成功后的回调；
+     fail:function(){}    ,      //失败后的回调；
+     complete: function(){}      //结束后的回调(成功，失败都会执行)
+ })
+      }
+    },
     touchmove(e) {
       console.log(e)
+      this.move=e.touches[0].pageY;
+    },
+    touchstart(e) {
+      console.log(e)
+      this.start=e.touches[0].pageY;
     },
     tosearch() {
       var that = this;
@@ -291,30 +363,6 @@ export default class Home extends wepy.page {
         this.mapheight = this.oHeight - 236 * this.rpa;
         this.arrowshow = true;
       }
-    },
-    scroll(e) {
-      console.log(e);
-      var that = this;
-      for (var i = 0; i <= this.markers.length - 1; i++) {
-        that.markers[i].iconPath = '../../img/address.png';
-      }
-      for (var i = 0; i <= this.markers.length - 1; i++) {
-        if (
-          e.detail.scrollLeft < (i + 1) * 215 + 15 &&
-          i * 215 + 15 < e.detail.scrollLeft
-        ) {
-          if (i != that.markers.length - 1) {
-            that.currentindex = i + 1;
-            that.currentlat = that.markers[i + 1].latitude;
-            that.currentlong = that.markers[i + 1].longitude;
-            that.markers[i + 1].iconPath = '../../img/biu.png';
-          }
-        } else if (e.detail.scrollLeft <= 15) {
-          that.markers[0].iconPath = '../../img/biu.png';
-          that.currentindex = 0;
-        }
-      }
-      this.$apply();
     },
     switchNav(data) {
       if (data == 1) {
@@ -356,17 +404,9 @@ export default class Home extends wepy.page {
         this.routeData = [];
         this.markers = [];
         this.maplistData = [];
-        this.getroutelist();
+        // this.getroutelist();
       }
       this.$apply();
-    },
-    swithchDetail(id) {
-      wx.navigateTo({
-        url: `/pages/addressdetail/index?id=${id}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
-        success: function() {}, //成功后的回调；
-        fail: function() {}, //失败后的回调；
-        complete: function() {} //结束后的回调(成功，失败都会执行)
-      });
     }
   };
   //搜索，搜索先初始化当前分类数据
@@ -382,7 +422,7 @@ export default class Home extends wepy.page {
           name: '',
           currentLatitude: that.latitude,
           currentLongitude: that.longitude
-        }; 
+        };
         //搜索数据
         apifunc
           .searchInfo('/tour/oversea/search', 'get', data)
@@ -480,12 +520,12 @@ export default class Home extends wepy.page {
                   longitude: '',
                   width: 32,
                   height: 42.5,
-                  label:{
-                    content:"",
-                    fontSize:12,
-                    borderRadius:6,
-                    bgColor:"#fff",
-                    padding:8
+                  label: {
+                    content: '',
+                    fontSize: 12,
+                    borderRadius: 6,
+                    bgColor: '#fff',
+                    padding: 8
                   }
                 };
                 if (
@@ -554,14 +594,18 @@ export default class Home extends wepy.page {
         }
       });
   }
-  onShow() {}
+  onShow() {
+    this.start=0;
+    this.end="";
+    this.move=0;
+  }
   onLoad(options) {
     var res = wx.getSystemInfoSync();
     var that = this;
     //数据初始化
     this.routelineshow = false;
     this.mappointshow = true;
-    this.currentindex = 0;
+    this.currentindex = 1;
     this.arrowshow = true;
     this.isshowNav = 1;
     this.mapbottom = 0;
