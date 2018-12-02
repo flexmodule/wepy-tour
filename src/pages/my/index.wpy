@@ -1,0 +1,34 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="my">
+    个人中心
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class my extends wepy.page {
+  components = {
+   
+  };
+  data = {
+    
+  };
+  computed = {};
+
+  methods = {
+  	
+  };
+  
+  onShow() {
+    
+  }
+  onLoad(options) {
+    
+  }
+}
+</script>
