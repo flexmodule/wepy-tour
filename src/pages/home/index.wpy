@@ -465,6 +465,8 @@ export default class Home extends wepy.page {
         that.mapbottom = -210 * this.rpa;
         that.mapheight = this.oHeight - 71 * this.rpa;
       }
+      this.move=0;
+      this.$apply();
     },
     touchmove(e) {
       this.move = e.touches[0].pageY;
@@ -691,8 +693,23 @@ export default class Home extends wepy.page {
   }
   getroutelist() {
     var that = this;
-    apifunc
-      .getroutedata('/tour/oversea/getPlaceList', 'get', value)
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        that.longitude = res.longitude;
+        that.latitude = res.latitude;
+        var value = {
+          userId: '',
+          orderBy: '',
+          isRecommend: '',
+          limitCount: '',
+          pageNum: that.params.pageNo,
+          pageSize: that.params.pageSize,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+      .getroutedata('/ztTravel/open/line/page', 'post', value)
       .then(function(res) {
         if (res.meta.success) {
           var listdata = res.data;
@@ -722,6 +739,12 @@ export default class Home extends wepy.page {
           });
         }
       });
+
+      }
+    })
+    
+    
+    
   }
   onGotUserInfo(e) {
     var that = this;
