@@ -1,40 +1,259 @@
 <style lang="less">
-
+page {
+  height: 100%;
+}
+.Addressdetail {
+  padding-bottom: 48rpx;  
+  .imgs {
+    height: 522rpx;
+    position: relative;
+    swiper {
+      width: 100%;
+      height: 100%;
+      swiper-item {
+        width: 100%;
+        height: 100%;
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .share {
+      position: absolute;
+      right: 38rpx;
+      top: 20rpx;
+      width: 64rpx;
+      height: 64rpx;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .like {
+      position: absolute;
+      right: 50rpx;
+      border-radius: 50%;
+      background: #fff;
+      bottom: 0;
+      width: 80rpx;
+      height: 80rpx;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .body {
+    padding: 0 58rpx;
+    text-align: center;
+  .name {
+    font: 42rpx/42rpx "";
+    margin: 72rpx auto 24rpx;
+   }
+   .des {
+     font: 22rpx/22rpx "";
+     color: #ababab;
+   }
+   .rod {
+     width: 40rpx;
+     height: 8rpx;
+     border-radius: 10rpx;
+     background: #2caadc;
+     margin: 34rpx auto 80rpx;
+   }
+  }
+  .desinfo {
+    padding: 0 58rpx;
+    .data {
+      margin-bottom: 50rpx;
+      .data-r {
+        margin-left: 18rpx;
+        font: 30rpx/48rpx "";
+        display: inline-block;
+        vertical-align: middle;
+      }
+      image {
+        width: 48rpx;
+        height: 48rpx;
+        vertical-align: middle;
+      }
+    }
+  }
+  .buy {
+    width: 400rpx;
+    height: 90rpx;
+    background: #ff9804;
+    font: 42rpx/90rpx "";
+    color: #fff;
+    text-align: center;
+    border-radius: 8rpx;
+    margin: 20rpx auto 86rpx;
+  }
+  .bodydetail {
+    padding: 0 44rpx 66rpx;
+    .detailtitle {
+      font: 30rpx/30rpx "";
+      margin-bottom: 34rpx;
+    }
+    .detail {
+      font: 30rpx/48rpx "";
+      color: #9f9f9f;
+    }
+  }
+  .tothis {
+    width: 600rpx;
+    padding: 26rpx 40rpx;
+    box-sizing: border-box;
+    border-radius: 8rpx;
+    background: #1e96d6;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    .tothis-l {
+      font: 36rpx/36rpx "";
+      color: #fff;
+    }
+    .tothis-r {
+      font: 22rpx/36rpx "";
+      color: #fff;
+    }
+  }
+}
 </style>
 <template>
   <view class="Addressdetail">
-    我是详情
-    <navigator target="miniProgram" app-id="wxeb490c6f9b154ef9" extra-data="{{data}}">会员卡开卡</navigator>
+    <view class="imgs">
+      <swiper indicator-color="rgba(0,0,0,.5)" circular="true" indicator-dots="true"
+        autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" bindchange="switchpage">
+        <block wx:for="{{imgUrls}}" wx:key="{{item}}">
+          <swiper-item>
+            <image src="{{item?item:''}}" class="slide-image"/>
+          </swiper-item>
+        </block>
+      </swiper>
+      <view class="share"><image src="../../img/share.png"/></view>
+      <view class="like"><image src="../../img/like.png"/></view>
+    </view>
+    <view class="body">
+      <view class="name">{{foodDetail.name?foodDetail.name:""}}</view>
+      <view class="des">{{foodDetail.descriptions?foodDetail.descriptions:""}}</view>
+      <view class="rod"></view>
+    </view>
+    <view class="desinfo">
+      <view class="data">
+        <image src="../../img/discount.png"/>
+        <view class="data-r">会员{{foodDetail.score?foodDetail.score:""}}优惠</view>
+      </view>
+      <view class="data">
+        <image src="../../img/open.png"/>
+        <view class="data-r">{{foodDetail.visitTime?foodDetail.visitTime:""}}</view>
+      </view>
+      <view class="data">
+        <image src="../../img/money.png"/>
+        <view class="data-r">人均消费：{{foodDetail.averagePrice?foodDetail.averagePrice:""}}元</view>
+      </view>
+      <view class="data">
+        <image src="../../img/phone.png"/>
+        <view class="data-r">{{foodDetail.phones?foodDetail.phones:""}}</view>
+      </view>
+    </view>
+    <view class="buy">优惠买单</view>
+    <view class="bodydetail">
+      <view class="detailtitle">简介</view>
+      <view class="detail"><rich-text nodes="{{foodDetail.details?foodDetail.details:''}}"></rich-text></view>
+    </view>
+    <view class="tothis">
+      <view class="tothis-l">到这里去</view>
+      <view class="tothis-r">距离你的位置还有{{foodDetail.distance?foodDetail.distance:''}}</view>
+    </view>
   </view>
 </template>
 <script>
 import wepy from 'wepy';
 import apifunc from '@/api/index.js';
 import { imgBaseUrl } from '@/utils/env.js';
-import Myorder from '@/components/myorder';
+import { tohtml } from '@/utils/tool.js';
 import QQMapWX from '@/utils/qqmap-wx-jssdk.min.js';
 
 export default class Addressdetail extends wepy.page {
   components = {
-    myorder: Myorder
+    
   };
   data = {
-    
+    imgUrls: [],
+    autoplay: false,
+    interval: 2000,
+    duration: 1000,
+    id:"",
+    userid:"",
+    foodDetail:{}
   };
   computed = {};
 
   methods = {
-  	handleContact (e) {
-        console.log(e.path)
-        console.log(e.query)
+  	switchpage() {
+
     }
   };
-  
+  getDetail() {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        var data = {
+          placeId: that.id,
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getFoodDetail(`/tour/oversea/getPlaceInfo`, 'get', data)
+          .then(function(res) {
+            console.log(res);
+            if (res.meta.success) {
+              that.foodDetail = res.data;
+              that.foodDetail.details=tohtml(that.foodDetail.details);
+              if (that.foodDetail.distance >= 1000) {
+                that.foodDetail.distance =
+                  (that.foodDetail.distance / 1000).toFixed(1) + 'km';
+              } else {
+                that.foodDetail.distance = that.foodDetail.distance + 'm';
+              }
+              if (res.data.openHours) {
+                that.foodDetail.openHours = that.foodDetail.openHours.split(
+                  '\n'
+                );
+              }
+              if (res.data.specialImgs) {
+                that.imgUrls = [];
+                var specialImgsarr = res.data.specialImgs.split(',');
+                for (var j = 0; j <= specialImgsarr.length - 1; j++) {
+                  if (specialImgsarr[j] !== '') {
+                    that.imgUrls.push(specialImgsarr[j]);
+                  }
+                }
+              }
+              that.$apply();
+            }
+          });
+      }
+    });
+  }
   onShow() {
     
   }
   onLoad(options) {
-    
-  }
+    console.log(options)
+    if(options.id) {
+      this.id=options.id;
+    } else {
+      this.id="";
+    }
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+    this.getDetail();
+   }
 }
 </script>

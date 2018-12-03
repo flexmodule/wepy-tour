@@ -40,7 +40,7 @@ export default class extends wepy.app {
     qqmapsdk: new QQMapWX({
       key: 'RIEBZ-V6MWI-SLQGO-54AX4-OEUFE-FQFUU'
     }),
-    appid: 'wxa42e2a2ef158855a'
+    appid: 'wx6b08dfc2cad34c79'
   };
 
   constructor() {

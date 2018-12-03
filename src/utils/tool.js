@@ -16,3 +16,28 @@ export const randomString = function (passWord) {
   }
   return rs.join("");
 }
+export const tohtml = function (obj) {
+  return obj.replace(/&amp;/g, '&')
+  .replace(/&lt;/g, '<')
+  .replace(/&gt;/g, '>')
+  .replace(/&quot;/g, "'")
+  .replace(/&yen;/g, '￥')
+  .replace(/&nbsp;/g, '')
+  .replace(/&iexcl;/g, '?')
+  .replace(/&laquo;/g, '?')
+  .replace(/&not;/g, '?')
+  .replace(/&middot;/g, '·')
+  .replace(/&cent;/g, '￠')
+  .replace(/&brvbar;/g, '|')
+  .replace(/&sect;/g, '§')
+  .replace(/&reg;/g, '')
+  .replace(/&macr;/g, '-')
+  .replace(/&deg;/g, '°')
+  .replace(/&copy;/g, '')
+  .replace(/&uml;/g, '¨')
+  .replace(/&plusmn;/g, '±')
+  .replace(/&ndash;/g, '-')
+  .replace(/&mdash;/g, '-')
+  .replace(/src="\//g,'src="http://www.hx-trip.cn/timages/')
+  .replace(/&#39;/g, "'");
+}
