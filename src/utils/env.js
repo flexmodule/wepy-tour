@@ -11,12 +11,12 @@ let baseUrl;
 let routerMode;
 let authUrl;
 let baseUrl2;
-const imgBaseUrl = 'http://192.168.2.99:8081';
+const imgBaseUrl = 'http://47.110.78.182/ztTravel/';
 let regOpen;
 // baseUrl = 'http://192.168.2.99:8081';
 // baseUrl = "https://uat.sssyin.cn";  
-baseUrl = "https://www.sssyin.cn"; 
-// baseUrl = "http://47.110.78.182";
+// baseUrl = "https://www.sssyin.cn"; 
+baseUrl = "http://47.110.78.182";
 // baseUrl = "https://dsn.apizza.net/mock/dc40447c3e43b777d38d9801fff7e670"
 routerMode = 'hash'
 authUrl = 'http://uat.sssyin.cn/tour/static/tour.html';

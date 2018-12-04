@@ -26,6 +26,8 @@ export default class extends wepy.app {
       'pages/addressdetail/index',
       'pages/routedetail/index',
       'pages/my/index',
+      'pages/list/index',
+      'pages/poster/index',
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -40,7 +42,8 @@ export default class extends wepy.app {
     qqmapsdk: new QQMapWX({
       key: 'RIEBZ-V6MWI-SLQGO-54AX4-OEUFE-FQFUU'
     }),
-    appid: 'wx6b08dfc2cad34c79'
+    appid: 'wxa42e2a2ef158855a',
+    avatarUrl:""
   };
 
   constructor() {

@@ -10,7 +10,7 @@ funcArr.forEach(function(item,index){
         data,
         '请求中',
         function(res) {
-          if (res.meta.success) {
+          if (res.code==0) {
             resolve(res)
           } else {
             wx.showToast({

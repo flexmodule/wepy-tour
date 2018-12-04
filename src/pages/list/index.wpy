@@ -1,0 +1,194 @@
+<style lang="less">
+.List {
+  .listbox {
+    padding: 48rpx 30rpx;
+    background: #f2f2f2;
+    .pointbox {
+      width: 320rpx;
+      height: 330rpx;
+      border-radius: 20rpx;
+      margin-right: 46rpx;
+      margin-bottom: 60rpx;
+      background: #fff;
+      display: inline-block;
+      box-shadow: 0rpx 0rpx 10rpx #efefef;
+      &:nth-child(even) {
+        margin-right: 0;
+      }
+      .pointbox-t {
+        border-radius: 20rpx 20rpx 0 0;
+        height: 230rpx;
+        overflow: hidden;
+        position: relative;
+        &:after {
+          content: '';
+          width: 0;
+          height: 100%;
+          display: inline-block;
+          vertical-align: middle;
+        }
+        image {
+          width: 100%;
+          vertical-align: middle;
+        }
+        .shadow {
+          overflow: hidden;
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 50rpx;
+          background: rgba(0, 0, 0, 0.5);
+          box-sizing: border-box;
+          padding: 5rpx 16rpx;
+          display: flex;
+          justify-content: space-between;
+          .price {
+            font: 24rpx/40rpx '';
+            color: #fff;
+          }
+          .position {
+            display: flex;
+            .positiontxt {
+              font: 24rpx/40rpx '';
+              color: #fff;
+            }
+            image {
+              width: 40rpx;
+              height: 40rpx;
+              margin-left: 13rpx;
+            }
+          }
+        }
+      }
+      .pointbox-b {
+        overflow: hidden;
+        text-align: center;
+        padding: 16rpx 0 20rpx;
+        box-sizing: border-box;
+        .name {
+          font: 28rpx/28rpx '';
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .des {
+          font: 22rpx/22rpx '';
+          color: #888;
+          width: 100%;
+          overflow: hidden;
+          margin-top: 15rpx;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="List">
+    <view class="listbox">
+      <repeat for="{{pointData}}" key="index" index="index" item="item">
+        <view class="pointbox" @tap="toDetail({{item.deptId}})">
+          <view class="pointbox-t">
+            <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}" mode="widthFix"/>
+            <view class="shadow">
+              <view class="price">人均消费：{{item.averagePrice?item.averagePrice:""}}元</view>
+              <view class="position">
+                <view class="positiontxt">{{item.distance?item.distance:""}}</view>
+                <image src="../../img/position.png" mode="widthFix"/>
+              </view>
+            </view>
+          </view>
+          <view class="pointbox-b">
+            <view class="name">{{item.deptName?item.deptName:""}}</view>
+            <view class="des">{{item.description?item.description:""}}</view>
+          </view>
+        </view>
+      </repeat>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class List extends wepy.page {
+  components = {};
+  data = {
+    isshowNav: '',
+    imgBaseUrl: '',
+    pointData: []
+  };
+  computed = {};
+
+  methods = {
+    toDetail(id) {
+      wx.navigateTo({
+        url: `/pages/addressdetail/index?id=${id}`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
+    }
+  };
+  getmapdata(type) {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        that.longitude = res.longitude;
+        that.latitude = res.latitude;
+        var value = {
+          type: type,
+          classId: '',
+          isRecommend: 1,
+          pageNum: 1,
+          pageSize: 0,
+          limitCount: '',
+          orderBy: '',
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getindexdata('/ztTravel/open/dept/page', 'post', value)
+          .then(function(res) {
+            console.log(res);
+            if (res.code == 0) {
+              that.pointData = res.msg;
+              for (var i = 0; i <= that.pointData.length - 1; i++) {
+                if (that.pointData[i].distance >= 1000) {
+                  that.pointData[i].distance =
+                    (that.pointData[i].distance / 1000).toFixed(1) + 'km';
+                } else {
+                  that.pointData[i].distance = that.pointData[i].distance + 'm';
+                }
+              }
+              that.$apply();
+            }
+          });
+      },
+      fail: function(res) {
+        that.authlocation();
+      }
+    });
+  }
+  onShow() {}
+  onLoad(options) {
+    var that = this;
+    this.imgBaseUrl = imgBaseUrl;
+    if (options.isshowNav) {
+      this.isshowNav = options.isshowNav;
+    } else {
+      this.isshowNav = '';
+    }
+    this.getmapdata(that.isshowNav);
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+  }
+}
+</script>

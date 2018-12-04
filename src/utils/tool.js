@@ -38,6 +38,7 @@ export const tohtml = function (obj) {
   .replace(/&plusmn;/g, '±')
   .replace(/&ndash;/g, '-')
   .replace(/&mdash;/g, '-')
-  .replace(/src="\//g,'src="http://www.hx-trip.cn/timages/')
+  .replace(/<>/g, '')
+  .replace(/src="\//g,'src="http://47.110.78.182/')
   .replace(/&#39;/g, "'");
 }

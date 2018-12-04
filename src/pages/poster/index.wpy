@@ -1,0 +1,527 @@
+<style lang="less">
+page {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.poster {
+  padding: 30rpx;
+  background: #f2f2ff;
+  min-height: 100%;
+}
+.canvas-box {
+  width: 690rpx;
+  height: 970rpx;
+  margin: 0 auto;
+  background: #fff;
+  canvas {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+  }
+}
+.sharebtn {
+  width: 360rpx;
+  height: 64rpx;
+  background-image: linear-gradient(-90deg, #c2914b 0%, #ebbe7d 100%),
+    linear-gradient(#c2914b, #c2914b);
+  background-blend-mode: normal, normal;
+  border-radius: 32rpx;
+  text-align: center;
+  font: 30rpx/64rpx '';
+  color: #fff;
+  margin: 41rpx auto 0;
+}
+.shadow {
+  background: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  height: 100%;
+}
+.alertbox {
+  width: 500rpx;
+  height: 270rpx;
+  border-radius: 20rpx;
+  background: #fff;
+  border: 1rpx solid #eee;
+  padding: 20rpx;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  .apply {
+    font: 40rpx/80rpx '';
+  }
+  .applyList {
+    font: 30rpx/80rpx '';
+    color: #999;
+  }
+  .authBtn {
+    width: 400rpx;
+    background: green;
+    border-radius: 50rpx;
+    color: #fff;
+    text-align: center;
+    margin: 20rpx auto;
+    font: 30rpx/60rpx '';
+  }
+}
+</style>
+<template>
+  <view class="poster">
+    <view class="canvas-box">
+      <canvas canvas-id="shareCanvas"></canvas>
+    </view>
+    <view class="sharebtn" @tap="saveimg">保存图片分享到朋友圈</view>
+    <view class="shadow" wx:if="{{getAuth}}">  
+      <view class="alertbox">
+        <view class="apply">申请获取以下权限</view>
+        <view class="applyList">保存到您本地相册权限</view>
+        <button wx:if="{{canIUse}}" class="authBtn" open-type="openSetting" bindopensetting="getOpenSet">获取授权</button>
+        <view wx:else>请升级微信版本</view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+export default class Poster extends wepy.page {
+  components = {};
+  data = {
+    oWidth: '',
+    oHeight: '',
+    canIUse: wx.canIUse('button.open-type.openSetting'),
+    getAuth: false,
+    rpa: '',
+    nickName: '',
+    avatarUrl: '',
+    openid: '',
+    id: '',
+    userid: '',
+    foodDetail: {},
+    headImg: '',
+    bstop: 0,
+    qrcodeurl: '',
+    mainImg: ''
+  };
+  computed = {};
+  methods = {
+    saveimg() {
+      var that = this;
+      if (this.bstop == 1) {
+        wx.showLoading({
+          title: '正在保存',
+          mask: true
+        });
+        setTimeout(function() {
+          wx.canvasToTempFilePath({
+            canvasId: 'shareCanvas',
+            fileType: 'png',
+            quality: 1,
+            success: function(res) {
+              wx.hideLoading();
+              console.log(res);
+              wx.saveImageToPhotosAlbum({
+                filePath: res.tempFilePath,
+                success(res) {
+                  wx.showModal({
+                    content: '图片已保存到相册，赶紧晒一下吧~',
+                    showCancel: false,
+                    confirmText: '好的',
+                    confirmColor: '#333',
+                    success: function(res) {
+                      if (res.confirm) {
+                      }
+                    },
+                    fail: function(res) {}
+                  });
+                },
+                fail(err) {
+                  console.log(err);
+                }
+              });
+            }
+          });
+        }, 500);
+      } else {
+        wx.showToast({
+          title: '还没绘制完成，请等待绘制完成'
+        });
+      }
+    }
+  };
+  getOpenSet(e) {
+    console.log(e);
+    var that = this;
+    if (e.detail.authSetting['scope.writePhotosAlbum']) {
+      that.getAuth = false;
+      that.$apply();
+      console.log('获取权限成功，给出再次点击图片保存到相册的提示。');
+    } else {
+      wx.showModal({
+        title: '警告',
+        content: '您点击了拒绝授权，将无法调起保存到本地相册功能！',
+        showCancel: false,
+        confirmText: '返回授权',
+        success: function(res) {
+          if (res.confirm) {
+            that.getAuth = true;
+            that.$apply();
+            console.log('用户点击了“返回授权”');
+          }
+        }
+      });
+    }
+  }
+  getImageInfo(url) {
+    var that = this;
+    wx.showLoading({
+      title: '正在快马加鞭帮您绘制，请稍等...'
+    });
+    console.log(that.$parent.globalData.headImg)
+    if (that.$parent.globalData.headImg != '') {
+      that.handlePoster();
+    } else {
+      wx.getImageInfo({
+        //  小程序获取图片信息API
+        src: url,
+        success: function(res) {
+          that.$parent.globalData.headImg = res.path;
+          that.handlePoster();
+        },
+        fail(err) {
+          console.log(err);
+        }
+      });
+    }
+  }
+  handlePoster() {
+    var that = this;
+    var data = {
+      appid: that.$parent.globalData.appid,
+      path: `pages/addressdetail/index`,
+      placeId: that.id,
+      isHyaline: true,
+      width: 75
+    };
+    apifunc.qrcode(`/tour/api/genWxacode`, 'get', data).then(function(res) {
+      if (res.meta.success) {
+        if (typeof res.data === 'string') {
+          var qrurl = res.data.replace(
+            /http:\/\/www.hx-trip.cn/g,
+            'https://www.sssyin.cn'
+          );
+          console.log(qrurl);
+          wx.getImageInfo({
+            //  小程序获取图片信息API
+            src: qrurl,
+            success: function(res) {
+              that.qrcodeurl = res.path;
+              that.getDetail();
+            },
+            fail(err) {
+              console.log(err);
+            }
+          });
+        }
+      }
+    });
+  }
+  getDetail() {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        var data = {
+          placeId: that.id,
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getFoodDetail(`/tour/oversea/getPlaceInfo`, 'get', data)
+          .then(function(res) {
+            console.log(res);
+            if (res.meta.success) {
+              that.foodDetail = res.data;
+              var imgurl = that.foodDetail.mainImg.replace(
+                /http:\/\/www.hx-trip.cn/g,
+                'https://www.sssyin.cn'
+              );
+              console.log(imgurl);
+              if (typeof that.foodDetail.mainImg === 'string') {
+                wx.getImageInfo({
+                  //  小程序获取图片信息API
+                  src: imgurl,
+                  success: function(res) {
+                    that.mainImg = res.path;
+                    var rpx = that.rpa / 2;
+                    const ctx = wx.createCanvasContext('shareCanvas');
+                    ctx.setFillStyle('#ffffff');
+                    ctx.fillRect(0, 0, 690 * rpx, 970 * rpx);
+                    ctx.save();
+                    //绘制用户头像
+                    let r = 48;
+                    let cx = 32;
+                    let cy = 32;
+                    ctx.arc(
+                      (cx + r) * rpx,
+                      (cy + r) * rpx,
+                      r * rpx,
+                      0,
+                      2 * Math.PI
+                    );
+                    ctx.clip();
+                    ctx.drawImage(
+                      that.$parent.globalData.headImg,
+                      32 * rpx,
+                      32 * rpx,
+                      96 * rpx,
+                      96 * rpx
+                    );
+                    ctx.restore();
+                    //绘制昵称
+                    ctx.setTextAlign('left');
+                    ctx.setFontSize(30 * rpx);
+                    ctx.setFillStyle('#000');
+                    //超过省略号
+                    var nickName = that.nickName;
+                    var splicetxt = function(text) {
+                      var chr = text.split(''); //这个方法是将一个字符串分割成字符串数组
+                      var temp = '';
+                      var row = [];
+                      for (var a = 0; a < chr.length; a++) {
+                        if (ctx.measureText(temp).width < 200 * rpx) {
+                          temp += chr[a];
+                        } else {
+                          a--; //这里添加了a-- 是为了防止字符丢失，效果图中有对比
+                          row.push(temp);
+                          temp = '';
+                        }
+                      }
+                      row.push(temp);
+                      //如果数组长度大于1 则截取前1
+                      if (row.length > 1) {
+                        var rowCut = row.slice(0, 1);
+                        var rowPart = rowCut[0];
+                        var test = '';
+                        var empty = [];
+                        for (var a = 0; a < rowPart.length; a++) {
+                          if (ctx.measureText(test).width < 200 * rpx) {
+                            test += rowPart[a];
+                          } else {
+                            break;
+                          }
+                        }
+                        empty.push(test);
+                        var group = empty[0] + '...'; //这里超出的用...表示
+                        rowCut.splice(1, 1, group);
+                        row = rowCut;
+                      }
+                      return row;
+                    };
+                    var lastrow = splicetxt(nickName);
+                    for (var b = 0; b < lastrow.length; b++) {
+                      ctx.fillText(lastrow[b], 154 * rpx, 90 * rpx);
+                    }
+                    ctx.setFontSize(36 * rpx);
+                    ctx.setFillStyle('#282828');
+                    ctx.fillText('为您推荐', 500 * rpx, 94 * rpx);
+                    //绘制主图
+                    ctx.save();
+                    ctx.drawImage(
+                      that.mainImg,
+                      0 * rpx,
+                      160 * rpx,
+                      690 * rpx,
+                      360 * rpx
+                    );
+                    ctx.restore();
+                    //绘制信息图
+                    ctx.shadowColor = 'rgba(0,0,0,.1)';
+                    ctx.shadowOffsetX = 4 * rpx;
+                    ctx.shadowOffsetY = 16 * rpx;
+                    ctx.shadowBlur = 8 * rpx;
+                    ctx.setFillStyle('#ffffff');
+                    ctx.fillRect(40 * rpx, 470 * rpx, 610 * rpx, 240 * rpx);
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    ctx.shadowBlur = 0;
+                    //绘制评价
+                    ctx.save();
+                    for (var j = 0; j <= 4; j++) {
+                      ctx.drawImage(
+                        '../../img/starLine.png',
+                        35 + j * 35 * rpx,
+                        500 * rpx,
+                        25 * rpx,
+                        25 * rpx
+                      );
+                    }
+                    if (
+                      that.foodDetail.score > 0 &&
+                      that.foodDetail.score <= 2
+                    ) {
+                      that.foodDetail.selectscoreData = [1];
+                    } else if (
+                      that.foodDetail.score > 2 &&
+                      that.foodDetail.score <= 4
+                    ) {
+                      that.foodDetail.selectscoreData = [1, 1];
+                    } else if (
+                      that.foodDetail.score > 4 &&
+                      that.foodDetail.score <= 6
+                    ) {
+                      that.foodDetail.selectscoreData = [1, 1, 1];
+                    } else if (
+                      that.foodDetail.score > 6 &&
+                      that.foodDetail.score <= 8
+                    ) {
+                      that.foodDetail.selectscoreData = [1, 1, 1, 1];
+                    } else if (
+                      that.foodDetail.score > 8 &&
+                      that.foodDetail.score <= 10
+                    ) {
+                      that.foodDetail.selectscoreData = [1, 1, 1, 1, 1];
+                    }
+                    for (var j = 0; j <= 4; j++) {
+                      ctx.drawImage(
+                        '../../img/starLight.png',
+                        35 + j * 35 * rpx,
+                        500 * rpx,
+                        25 * rpx,
+                        25 * rpx
+                      );
+                    }
+                    ctx.restore();
+                    //绘制餐厅名字
+                    var name = that.foodDetail.name;
+                    var nametext = splicetxt(name);
+                    ctx.setFillStyle('#000');
+                    ctx.setFontSize(30 * rpx);
+                    for (var b = 0; b < nametext.length; b++) {
+                      ctx.fillText(nametext[b], 70 * rpx, 570 * rpx);
+                    }
+                    //绘制简介
+                    var descriptions = that.foodDetail.descriptions;
+                    var descriptionstext = splicetxt(descriptions);
+                    ctx.setFillStyle('#999');
+                    ctx.setFontSize(22 * rpx);
+                    for (var b = 0; b < descriptionstext.length; b++) {
+                      ctx.fillText(descriptionstext[b], 70 * rpx, 618 * rpx);
+                    }
+                    //绘制价格
+                    ctx.setFillStyle('#c2914b');
+                    ctx.setFontSize(30 * rpx);
+                    ctx.fillText(
+                      `人均:¥${that.foodDetail.averagePrice}`,
+                      70 * rpx,
+                      681 * rpx
+                    );
+                    //绘制info
+                    var info = '您的好友向您塞了一张来自沙巴的';
+                    var infotext = splicetxt(info);
+                    ctx.setFillStyle('#000');
+                    ctx.setFontSize(26 * rpx);
+                    ctx.fillText(info, 235 * rpx, 850 * rpx);
+                    var info1 = '餐厅卡片，长按看看吧';
+                    ctx.fillText(info1, 235 * rpx, 890 * rpx);
+                    //绘制二维码
+                    ctx.save();
+                    ctx.drawImage(
+                      that.qrcodeurl,
+                      41 * rpx,
+                      772 * rpx,
+                      160 * rpx,
+                      160 * rpx
+                    );
+                    ctx.setFillStyle('#ffffff');
+                    ctx.restore();
+                    ctx.draw();
+                    wx.hideLoading();
+                    wepy.showToast({
+                      title: '绘制完成',
+                      icon: 'none',
+                      duration: 500
+                    });
+                    that.bstop = 1;
+                    that.$apply();
+                  },
+                  fail(err) {
+                    console.log(err);
+                  }
+                });
+              }
+            }
+          });
+      }
+    });
+  }
+  onShow() {
+    var that = this;
+    this.bstop = 0;
+    if (this.id && this.userid && this.nickName && this.openid) {
+      this.getImageInfo(that.$parent.globalData.avatarUrl);
+    }
+  }
+  onLoad(options) {
+    var that = this;
+    if (options.id) {
+      this.id = options.id;
+    } else {
+      this.id = '';
+    }
+    if (
+      wx.getStorageSync('nickName') &&
+      wx.getStorageSync('openid') &&
+      wx.getStorageSync('userid')
+    ) {
+      this.nickName = wx.getStorageSync('nickName');
+      this.openid = wx.getStorageSync('openid');
+      this.userid = wx.getStorageSync('userid');
+    }
+    wx.getSetting({
+      success(res) {
+        if (!res.authSetting['scope.writePhotosAlbum']) {
+          wx.authorize({
+            scope: 'scope.writePhotosAlbum',
+            success() {
+              console.log('授权成功');
+            },
+            fail() {
+              wx.showModal({
+                title: '警告',
+                content: '您点击了拒绝授权，将无法调起保存到本地相册功能！',
+                showCancel: false,
+                confirmText: '返回授权',
+                success: function(res) {
+                  if (res.confirm) {
+                    that.getAuth = true;
+                    that.$apply();
+                  }
+                }
+              });
+            }
+          });
+        }
+      }
+    });
+    try {
+      var res = wx.getSystemInfoSync();
+      this.oHeight = res.windowHeight;
+      this.oWidth = res.windowWidth;
+      this.rpa = res.windowWidth / 375;
+    } catch (e) {
+      // Do something when catch error
+    }
+    this.$apply();
+  }
+}
+</script>

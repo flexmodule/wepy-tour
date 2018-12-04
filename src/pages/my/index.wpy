@@ -1,9 +1,99 @@
 <style lang="less">
-
+.My {
+  padding: 130rpx 56rpx;
+  .title {
+    font: 36rpx/36rpx "";
+    text-align: center;
+    margin-bottom: 34rpx;
+  }
+  .body {
+    .data {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1rpx solid #eee;
+      padding: 22rpx 0;
+      .data-l {
+        display: flex;
+        image {
+          width: 60rpx;
+          height: 60rpx;
+        }
+        .datatxt {
+          font: 30rpx/60rpx "";
+          margin-left: 15rpx;
+        }
+      }
+      .data-r {
+        width: 42rpx;
+        height: 60rpx;
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
 </style>
 <template>
-  <view class="my">
-    个人中心
+  <view class="My">
+    <view class="title">会员</view>
+    <view class="card">
+      <view class="card-t">
+        <image src=""/>
+        <view class="cardname">CAT</view>
+        <image src=""/>
+      </view>
+      <view class="card-b">111684986256</view>
+    </view>
+    <view class="total">
+      <view class="totalmoney">
+        <view class="title">累计优惠金额</view>
+        <view class="num">{{totalmoney}}元</view>
+      </view>
+      <view class="totalshop">
+        <view class="title">已覆盖商户</view>
+        <view class="num">{{totalshop}}家</view>
+      </view>
+    </view>
+    <view class="body">
+      <view class="data">
+        <view class="data-l">
+          <image src="../../img/mylike.png"/>
+          <view class="datatxt">我的关注</view>
+        </view>
+        <view class="data-r">
+          <image src="../../img/arrow.png"/>
+        </view>
+      </view>
+      <view class="data">
+        <view class="data-l">
+          <image src="../../img/account.png"/>
+          <view class="datatxt">我的账单</view>
+        </view>
+        <view class="data-r">
+          <image src="../../img/arrow.png"/>
+        </view>
+      </view>
+      <view class="data">
+        <view class="data-l">
+          <image src="../../img/shop.png"/>
+          <view class="datatxt">已覆盖商户</view>
+        </view>
+        <view class="data-r">
+          <image src="../../img/arrow.png"/>
+        </view>
+      </view>
+      <view class="data">
+        <view class="data-l">
+          <image src="../../img/useinfo.png"/>
+          <view class="datatxt">使用条款</view>
+        </view>
+        <view class="data-r">
+          <image src="../../img/arrow.png"/>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 <script>
@@ -11,12 +101,13 @@ import wepy from 'wepy';
 import apifunc from '@/api/index.js';
 import { imgBaseUrl } from '@/utils/env.js';
 
-export default class my extends wepy.page {
+export default class My extends wepy.page {
   components = {
    
   };
   data = {
-    
+    totalmoney:"236",
+    totalshop:1027
   };
   computed = {};
 

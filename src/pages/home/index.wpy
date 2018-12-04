@@ -107,6 +107,19 @@ page {
     position: fixed;
     left: 0;
     width: 100%;
+    .tolist {
+      position: absolute;
+      bottom: 42rpx;
+      right: 0;
+      width: 40rpx;
+      height: 148rpx;
+      padding: 28rpx 12rpx;
+      box-sizing: border-box;
+      border-radius: 8rpx 0 0 8rpx;
+      background: #249bd8;
+      font: 22rpx/22rpx "";
+      color: #fff;
+    }
     .kinds {
       height: 100%;
       swiper {
@@ -213,6 +226,52 @@ page {
     }
   }
   .routeline {
+    background: #e8e4dc;
+    padding: 38rpx 0 0;
+    .routebox {
+      width: 630rpx;
+      height: 290rpx;
+      border: 1rpx solid #000;
+      border-radius: 20rpx;
+      position:relative;
+      overflow: hidden;
+      margin: 0 auto 60rpx;
+      &:after {
+        content: '';
+        width: 0;
+        height: 100%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      image {
+        border-radius: 20rpx;
+        width: 200%;
+        vertical-align: middle;
+      }
+      .routebox-b {
+        position: absolute;
+        border-radius: 0 0 20rpx 20rpx;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 12rpx 38rpx;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-around;
+        .name {
+          font: 30rpx/30rpx "";
+          color: #fff;
+        }
+        .distance {
+          font: 22rpx/22rpx "";
+          color: #fff;
+        }
+        .look {
+          font: 22rpx/22rpx "";
+          color: #fff;
+        }
+      }
+    }
     .wenxininfo {
       font: 22rpx/64rpx '';
       color: #999;
@@ -340,7 +399,7 @@ page {
                 style="width:{{currentindex==index?'100%':'80%'}};height:{{currentindex==index?'100%':'90%'}};"
               >
                 <view class="kindselect-t">
-                  <image src="{{item.mainImg}}" mode="widthFix"/>
+                  <image src="{{imgBaseUrl+item.mainImg}}" mode="widthFix"/>
                   <view class="shadow">
                     <view class="price">人均消费：{{item.averagePrice?item.averagePrice:""}}元</view>
                     <view class="position">
@@ -350,8 +409,8 @@ page {
                   </view>
                 </view>
                 <view class="kindselect-b">
-                  <view class="name">{{item.name?item.name:""}}</view>
-                  <view class="des">{{item.descriptions?item.descriptions:""}}</view>
+                  <view class="name">{{item.deptName?item.deptName:""}}</view>
+                  <view class="des">{{item.description?item.description:""}}</view>
                   <view class="naviga">导航</view>
                 </view>
               </view>
@@ -359,11 +418,24 @@ page {
           </block>
         </swiper>
       </view>
+      <view class="tolist" @tap="tolist">
+        <view class="data">进</view>
+        <view class="data">入</view>
+        <view class="data">列</view>
+        <view class="data">表</view>
+      </view>
     </view>
     <view class="routeline" wx:if="{{routelineshow}}">
       <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
         <repeat for="{{routeData}}" key="index" index="index" item="item">
-          <view class="routebox" @tap="torouteDetail({{item.id}})"></view>
+          <view class="routebox" @tap="torouteDetail({{item.id}})">
+            <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}"/>
+            <view class="routebox-b">
+              <view class="name">{{item.name?item.name:''}}</view>
+              <view class="distance">{{item.distance?item.distance:0}}</view>
+              <view class="look">2000人浏览</view>
+            </view>
+          </view>
         </repeat>
         <view class="wenxininfo">
           <text wx:if="{{loadmore}}">加载中...</text>
@@ -402,10 +474,11 @@ page {
 <script>
 import wepy from 'wepy';
 import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
 export default class Home extends wepy.page {
   components = {};
   data = {
-    deptId:"",
+    deptId: '',
     locationAuth: false,
     locationcanIUse: wx.canIUse('button.open-type.openSetting'),
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
@@ -442,16 +515,27 @@ export default class Home extends wepy.page {
     rpa: '',
     mapstart: 0,
     mapmove: 0,
-    mapend: ''
+    mapend: '',
+    imgBaseUrl: '',
+    kindindex:""
   };
   computed = {};
   methods = {
+    tolist() {
+      var that=this;
+      wx.navigateTo({
+        url: `/pages/list/index?isshowNav=${that.kindindex}`, 
+        success: function() {}, 
+        fail: function() {}, 
+        complete: function() {} 
+      });
+    },
     tomy() {
       wx.navigateTo({
-        url: `/pages/my/index`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
-        success: function() {}, //成功后的回调；
-        fail: function() {}, //失败后的回调；
-        complete: function() {} //结束后的回调(成功，失败都会执行)
+        url: `/pages/my/index`, 
+        success: function() {}, 
+        fail: function() {}, 
+        complete: function() {} 
       });
     },
     swiperimg(e) {
@@ -473,19 +557,19 @@ export default class Home extends wepy.page {
     },
     touchend() {
       var that = this;
-      var id=this.maplistData[that.currentindex].id;
+      var id = this.maplistData[that.currentindex].deptId;
       if (this.start - this.move > 50 * this.rpa && this.move != 0) {
         wx.navigateTo({
-          url: `/pages/addressdetail/index?id=${id}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
-          success: function() {}, //成功后的回调；
-          fail: function() {}, //失败后的回调；
-          complete: function() {} //结束后的回调(成功，失败都会执行)
+          url: `/pages/addressdetail/index?id=${id}`,
+          success: function() {}, 
+          fail: function() {}, 
+          complete: function() {} 
         });
       } else if (this.move - this.start > 50 * this.rpa && this.move != 0) {
         that.mapbottom = -210 * this.rpa;
         that.mapheight = this.oHeight - 71 * this.rpa;
       }
-      this.move=0;
+      this.move = 0;
       this.$apply();
     },
     touchmove(e) {
@@ -513,19 +597,28 @@ export default class Home extends wepy.page {
       console.log(e);
       this.searchtxt = e.detail.value;
     },
-    torouteDetail(id) {},
+    torouteDetail(id) {
+      wx.navigateTo({  
+          url: `/pages/routedetail/index?id=${id}`,
+          success: function() {}, 
+          fail: function() {}, 
+          complete: function() {} 
+        });
+    },
     showtab() {},
     switchNav(data) {
       if (data == 1) {
         this.isshowNav = 1;
+        this.kindindex="";
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
         this.markers = [];
         this.maplistData = [];
-        this.getmapdata(1);
+        this.getmapdata();
       } else if (data == 2) {
         this.isshowNav = 2;
+        this.kindindex=2;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
@@ -534,6 +627,7 @@ export default class Home extends wepy.page {
         this.getmapdata(2);
       } else if (data == 3) {
         this.isshowNav = 3;
+        this.kindindex=3;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
@@ -542,6 +636,7 @@ export default class Home extends wepy.page {
         this.getmapdata(3);
       } else if (data == 4) {
         this.isshowNav = 4;
+        this.kindindex=4;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
@@ -555,7 +650,7 @@ export default class Home extends wepy.page {
         this.routeData = [];
         this.markers = [];
         this.maplistData = [];
-        // this.getroutelist();
+        this.getroutelist();
       }
       this.$apply();
     }
@@ -641,31 +736,32 @@ export default class Home extends wepy.page {
         that.longitude = res.longitude;
         that.latitude = res.latitude;
         var value = {
-          type: type,
-          name: '',
-          classId: '',
-          isRecommend: '',
-          area: '',
-          pageNo: 1,
-          pageSize: -1,
-          currentLatitude: res.latitude,
-          currentLongitude: res.longitude
           // type: type,
+          // name: '',
           // classId: '',
-          // isRecommend: 1,
-          // pageNum: 1,
-          // pageSize: 0,
-          // limitCount:"",
-          // orderBy:"",
-          // userId:that.userId,
+          // isRecommend: '',
+          // area: '',
+          // pageNo: 1,
+          // pageSize: -1,
           // currentLatitude: res.latitude,
           // currentLongitude: res.longitude
+          type: type,
+          classId: '',
+          isRecommend: 1,
+          pageNum: 1,
+          pageSize: 0,
+          limitCount: '',
+          orderBy: '',
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
         };
         apifunc
-          .getindexdata('/tour/oversea/getPlaceList', 'get', value)
+          .getindexdata('/ztTravel/open/dept/page', 'post', value)
           .then(function(res) {
-            if (res.meta.success) {
-              that.maplistData = res.list;
+            console.log(res);
+            if (res.code == 0) {
+              that.maplistData = res.msg;
               for (var i = 0; i <= that.maplistData.length - 1; i++) {
                 if (that.maplistData[i].distance >= 1000) {
                   that.maplistData[i].distance =
@@ -709,6 +805,9 @@ export default class Home extends wepy.page {
               that.$apply();
             }
           });
+      },
+      fail: function(res) {
+        that.authlocation();
       }
     });
   }
@@ -729,7 +828,7 @@ export default class Home extends wepy.page {
         that.longitude = res.longitude;
         that.latitude = res.latitude;
         var value = {
-          userId: '',
+          userId: that.userid,
           orderBy: '',
           isRecommend: '',
           limitCount: '',
@@ -739,43 +838,43 @@ export default class Home extends wepy.page {
           currentLongitude: res.longitude
         };
         apifunc
-      .getroutedata('/ztTravel/open/line/page', 'post', value)
-      .then(function(res) {
-        if (res.meta.success) {
-          var listdata = res.data;
-          listdata.forEach((order, i) => {
-            that.maplistData.push(order);
+          .getroutedata('/ztTravel/open/line/page', 'post', value)
+          .then(function(res) {
+            if (res.code == 0) {
+              var listdata = res.msg;
+              listdata.forEach((order, i) => {
+                that.routeData.push(order);
+              });
+              that.loadmore = false;
+              if (listdata.length < that.params.pageSize) {
+                that.nomore = true;
+                that.loadmore = false;
+                that.params.end = true;
+              } else {
+                that.params.pageNo++;
+              }
+              if (
+                (that.routeData && that.routeData.length === 0) ||
+                !that.routeData
+              ) {
+                that.nomore = false;
+              }
+              that.$apply();
+            } else {
+              wepy.showToast({
+                title: '系统错误',
+                icon: 'none',
+                duration: 500
+              });
+            }
           });
-          that.loadmore = false;
-          if (listdata.length < that.params.pageSize) {
-            that.nomore = true;
-            that.loadmore = false;
-            that.params.end = true;
-          } else {
-            that.params.pageNo++;
-          }
-          if (
-            (that.maplistData && that.maplistData.length === 0) ||
-            !that.maplistData
-          ) {
-            that.nomore = false;
-          }
-          that.$apply();
-        } else {
-          wepy.showToast({
-            title: '系统错误',
-            icon: 'none',
-            duration: 500
-          });
-        }
-      });
       },
       fail: function(res) {
         that.authlocation();
       }
-    })   
+    });
   }
-   authlocation() {
+  authlocation() {
     var that = this;
     wx.getSetting({
       success(res) {
@@ -808,6 +907,7 @@ export default class Home extends wepy.page {
     var that = this;
     if (e.detail.authSetting['scope.userLocation']) {
       that.locationAuth = false;
+      that.getmapdata('');
       that.$apply();
       console.log('获取权限成功。');
     } else {
@@ -834,59 +934,56 @@ export default class Home extends wepy.page {
           console.log(res.code);
           if (res.code) {
             var value = {
-        appid:that.$parent.globalData.appid,
-        code:res.code,
-        avatarUrl: e.detail.userInfo.avatarUrl,
-        city: e.detail.userInfo.city,
-        country: e.detail.userInfo.country,
-        gender: e.detail.userInfo.gender,
-        language: e.detail.userInfo.language,
-        nickName: e.detail.userInfo.nickName,
-        province: e.detail.userInfo.province,
-      };
+              appid: that.$parent.globalData.appid,
+              code: res.code,
+              avatarUrl: e.detail.userInfo.avatarUrl,
+              city: e.detail.userInfo.city,
+              country: e.detail.userInfo.country,
+              gender: e.detail.userInfo.gender,
+              language: e.detail.userInfo.language,
+              nickName: e.detail.userInfo.nickName,
+              province: e.detail.userInfo.province,
+              deptId: that.deptId
+            };
             //发起网络请求
             apifunc
-              .auth(
-                `/tour/api/miniAuth`,
-                'get',
-                value
-              )
+              .auth(`/ztTravel/api/miniAuth`, 'get', value)
               .then(function(res) {
-                if(res.meta.success) {
-                  wx.setStorageSync('openid', res.data.openid);
-                wx.setStorageSync('userid', res.data.userid);
-                wx.setStorageSync('nickName', e.detail.userInfo.nickName);
-                wx.setStorageSync('mobile', res.data.mobile);
-                that.getAuth = false;
-                wx.getSetting({
-                  success(res) {
-                    if (!res.authSetting['scope.userLocation']) {
-                      wx.authorize({
-                        scope: 'scope.userLocation',
-                        success() {
-                          console.log('授权成功');
-                        },
-                        fail() {
-                          wx.showModal({
-                            title: '警告',
-                            content: '您点击了拒绝授权，将无法调起定位功能！',
-                            showCancel: false,
-                            confirmText: '返回授权',
-                            success: function(res) {
-                              if (res.confirm) {
-                                that.locationAuth = true;
-                                that.$apply();
+                console.log(res);
+                if (res.code == 0) {
+                  wx.setStorageSync('openid', res.msg.openid);
+                  wx.setStorageSync('userid', res.msg.userid);
+                  wx.setStorageSync('nickName', e.detail.userInfo.nickName);
+                  wx.setStorageSync('mobile', res.msg.mobile);
+                  that.getAuth = false;
+                  wx.getSetting({
+                    success(res) {
+                      if (!res.authSetting['scope.userLocation']) {
+                        wx.authorize({
+                          scope: 'scope.userLocation',
+                          success() {
+                            console.log('授权成功');
+                          },
+                          fail() {
+                            wx.showModal({
+                              title: '警告',
+                              content: '您点击了拒绝授权，将无法调起定位功能！',
+                              showCancel: false,
+                              confirmText: '返回授权',
+                              success: function(res) {
+                                if (res.confirm) {
+                                  that.locationAuth = true;
+                                  that.$apply();
+                                }
                               }
-                            }
-                          });
-                        }
-                      });
+                            });
+                          }
+                        });
+                      }
                     }
-                  }
-                });
-                that.$apply();
+                  });
+                  that.$apply();
                 }
-                
               });
           } else {
             console.log('登录失败！' + res.errMsg);
@@ -919,10 +1016,14 @@ export default class Home extends wepy.page {
   onLoad(options) {
     var res = wx.getSystemInfoSync();
     var that = this;
-    if(options.deptId) {
-      this.deptId=options.deptId
+    this.imgBaseUrl = imgBaseUrl;
+    if (options.deptId) {
+      this.deptId = options.deptId;
     } else {
-      this.deptId=""
+      this.deptId = '';
+    }
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
     }
     //数据初始化
     this.routelineshow = false;
@@ -953,7 +1054,7 @@ export default class Home extends wepy.page {
       }
     });
     //数据请求
-    this.getmapdata("");
+    this.getmapdata('');
     this.$apply();
   }
 }

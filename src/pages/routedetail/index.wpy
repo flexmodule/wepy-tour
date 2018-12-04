@@ -1,37 +1,298 @@
 <style lang="less">
-
+.Routedetail {
+  .routename {
+    font: 30rpx/30rpx '';
+    text-align: center;
+    padding: 45rpx 0 28rpx;
+  }
+  .tomap {
+    &.active {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      left: 0;
+      z-index: 99;
+    }
+    width: 100%;
+    position: relative;
+    map {
+      width: 100%;
+      height: 100%;
+    }
+    .tolarge {
+      position: absolute;
+      width: 50rpx;
+      height: 50rpx;
+      left: 10rpx;
+      bottom: 38rpx;
+      .img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .routeline {
+    padding: 68rpx 15rpx;
+    background: #f5f5f5;
+    .routelinebox {
+      background: #fcfcfc;
+      padding: 42rpx 26rpx 42rpx 42rpx;
+      position: relative;
+      .like {
+        position: absolute;
+        top: -48rpx;
+        right: 49rpx;
+        text-align: center;
+        width: 96rpx;
+        height: 96rpx;
+        background: #fff;
+        border-radius: 50%;
+        &:after {
+          content: '';
+          width: 0;
+          height: 100%;
+          display: inline-block;
+          vertical-align: middle;
+        }
+        image {
+          width: 64rpx;
+          height: 64rpx;
+          vertical-align: middle;
+        }
+      }
+      .title {
+        font: 36rpx/36rpx '';
+        padding-left: 30rpx;
+        margin-bottom: 70rpx;
+      }
+      .routebody {
+        border-left: 4rpx dashed #000;
+        padding-left: 20rpx;
+        .distance {
+          position: relative;
+          .img {
+            width: 60rpx;
+            height: 60rpx;
+            position: absolute;
+            left: -50rpx;
+            vertical-align: middle;
+            display: inline-block;
+            text-align: center;
+            background: #fcfcfc;
+            &:after {
+              content: '';
+              width: 0;
+              height: 100%;
+              display: inline-block;
+              vertical-align: middle;
+            }
+            image {
+              width: 100%;
+              height: 100%;
+              vertical-align: middle;
+            }
+          }
+          .distxt {
+            color: #2097d2;
+            margin-left: 15rpx;
+            font: 22rpx/44rpx '';
+            display: inline-block;
+            vertical-align: middle;
+          }
+        }
+        .palcedata {
+          margin: 30rpx auto;
+          .placetitle {
+            font: 30rpx/30rpx '';
+            margin-bottom: 20rpx;
+            position: relative;
+            .point {
+              position: absolute;
+              width: 30rpx;
+              height: 30rpx;
+              left: -36rpx;
+              background: #fcfcfc;
+              &:after {
+                content: "";
+                position: absolute;
+                width: 20rpx;
+                height: 20rpx;
+                background: #000;
+                border-radius: 50%;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+              }
+            }
+          }
+          .main {
+            background: #fff;
+            box-shadow: 0rpx 0rpx 10rpx #eee;
+            image {
+              width: 100%;
+              height: 372rpx;
+            }
+            .maintxt {
+              padding: 26rpx 22rpx;
+              font: 22rpx/34rpx "";
+            }
+          }
+        }
+      }
+    }
+  }
+}
 </style>
 <template>
   <view class="Routedetail">
-    我是路线详情
-    <navigator target="miniProgram" app-id="wxeb490c6f9b154ef9" extra-data="{{data}}">会员卡开卡</navigator>
+    <view class="routename">{{routedetail.name?routedetail.name:""}}</view>
+    <view
+      class="tomap {{islarge?'active':''}}"
+      style="height:{{mapheight}}"
+     @tap="tosmall">
+      <map
+        id="map"
+        longitude="{{currentlong?currentlong:''}}"
+        latitude="{{currentlat?currentlat:''}}"
+        scale="15"
+        markers="{{markers}}"
+        bindmarkertap="markertap"
+        bindregionchange="regionchange"
+        show-location
+      ></map>
+      <cover-view class="tolarge" catchtap="tolarge">
+        <cover-image class="img" src="../../img/route.png"/>
+      </cover-view>
+    </view>
+    <view class="routeline">
+      <view class="routelinebox">
+        <view class="like"><image src="../../img/like.png"/></view>
+        <view class="title">行程详情</view>
+        <view class="routebody">
+          <view class="palcedata">
+            <view class="placetitle"><view class="point"></view>出发：上海</view>
+          </view>
+          <view class="palcedata">
+            <view class="placetitle"><view class="point"></view>到达：京都</view>
+          </view>
+          <view class="distance">
+            <view class="img"><image src="../../img/people.png"/></view>
+            <view class="distxt">距离1395km</view>
+          </view>
+          <view class="palcedata">
+            <view class="placetitle"><view class="point"></view>京都站kyoto</view>
+            <view class="main">
+              <image src="{{routedetail.mainImg?imgBaseUrl+routedetail.mainImg:''}}"/>
+              <view class="maintxt">京都火车站是日本建筑师原广司的代表作，是一个综合建筑体，包括酒店、百货、购物中心、电影院、博物馆、展览厅、地区政府办事处、停车场等。它像一个代表国际城市的主题公园，兼收了外国的设计因素：美国购物中心式的中庭、西方城市的传统公共空间以及日本的交通中心。京都火车站已经不是一个纯粹的火车站，它已是城市的大型开敞式露天舞台、大型活动的聚会中心、古城全景的观赏点、购物中心和空中城市。当然这里也是火车站和交通枢纽。</view>
+            </view>
+          </view>
+          <view class="distance">
+            <view class="img"><image src="../../img/people.png"/></view>
+            <view class="distxt">距离1395km</view>
+          </view>
+          <view class="palcedata">
+            <view class="placetitle"><view class="point"></view>京都站kyoto</view>
+            <view class="main">
+              <image src="{{routedetail.mainImg?imgBaseUrl+routedetail.mainImg:''}}"/>
+              <view class="maintxt">京都火车站是日本建筑师原广司的代表作，是一个综合建筑体，包括酒店、百货、购物中心、电影院、博物馆、展览厅、地区政府办事处、停车场等。它像一个代表国际城市的主题公园，兼收了外国的设计因素：美国购物中心式的中庭、西方城市的传统公共空间以及日本的交通中心。京都火车站已经不是一个纯粹的火车站，它已是城市的大型开敞式露天舞台、大型活动的聚会中心、古城全景的观赏点、购物中心和空中城市。当然这里也是火车站和交通枢纽。</view>
+            </view>
+          </view>
+          <view class="palcedata">
+            <view class="placetitle"><view class="point"></view>未完待续</view>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 <script>
 import wepy from 'wepy';
 import apifunc from '@/api/index.js';
 import { imgBaseUrl } from '@/utils/env.js';
-import Myorder from '@/components/myorder';
+import { tohtml } from '@/utils/tool.js';
 import QQMapWX from '@/utils/qqmap-wx-jssdk.min.js';
 
 export default class Routedetail extends wepy.page {
-  components = {
-    myorder: Myorder
-  };
+  components = {};
   data = {
-    
+    islarge: false,
+    mapheight: '577rpx',
+    currentlat: 23.099994,
+    currentlong: 113.32452,
+    markers: [],
+    id: '',
+    userid: '',
+    routedetail: {},
+    oHeight: '',
+    imgBaseUrl:""
   };
   computed = {};
 
   methods = {
-  	
+    tosmall() {
+      this.islarge = false;
+      this.mapheight = '577rpx';
+    },
+    tolarge() {
+      this.islarge = true;
+      this.mapheight = this.oHeight + 'px';
+    }
   };
-  
-  onShow() {
-    
+  getDetail() {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        var data = {
+          id: that.id,
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getFoodDetail(`/ztTravel/open/line/get`, 'get', data)
+          .then(function(res) {
+            console.log(res);
+            if (res.code == 0) {
+              that.routedetail = res.msg;
+              // if (that.foodDetail.distance >= 1000) {
+              //   that.foodDetail.distance =
+              //     (that.foodDetail.distance / 1000).toFixed(1) + 'km';
+              // } else {
+              //   that.foodDetail.distance = that.foodDetail.distance + 'm';
+              // }
+              // if (res.msg.specialImgs) {
+              //   that.imgUrls = [];
+              //   var specialImgsarr = res.msg.specialImgs.split(',');
+              //   for (var j = 0; j <= specialImgsarr.length - 1; j++) {
+              //     if (specialImgsarr[j] !== '') {
+              //       that.imgUrls.push(specialImgsarr[j]);
+              //     }
+              //   }
+              // }
+              that.$apply();
+            }
+          });
+      }
+    });
   }
+  onShow() {}
   onLoad(options) {
-    
+    var res = wx.getSystemInfoSync();
+    var that = this;
+    this.imgBaseUrl = imgBaseUrl;
+    this.oHeight = res.windowHeight;
+    if (options.id) {
+      this.id = options.id;
+    } else {
+      this.id = '';
+    }
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+    this.getDetail();
   }
 }
 </script>

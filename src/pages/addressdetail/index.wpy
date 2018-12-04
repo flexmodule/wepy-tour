@@ -65,18 +65,21 @@ page {
   }
   .desinfo {
     padding: 0 58rpx;
+    .data-t,.data-b {
+        display: flex;
+      }
     .data {
+      display: flex;
+      flex: 1;
       margin-bottom: 50rpx;
       .data-r {
+        flex: 1;
         margin-left: 18rpx;
         font: 30rpx/48rpx "";
-        display: inline-block;
-        vertical-align: middle;
       }
       image {
         width: 48rpx;
         height: 48rpx;
-        vertical-align: middle;
       }
     }
   }
@@ -119,6 +122,72 @@ page {
       color: #fff;
     }
   }
+  .shareshadow {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 0;
+    z-index: 39;
+    transition: all ease-in-out 1s;
+    -moz-transition: all ease-in-out 1s;
+    /* Firefox 4 */
+    -webkit-transition: all ease-in-out 1s;
+    /* Safari 和 Chrome */
+    -o-transition: all ease-in-out 1s;
+  }
+  .sharebox {
+    width: 92%;
+    position: absolute;
+    bottom: 30rpx;
+    left: 30rpx;
+    height: 280rpx;
+    background-color: #ffffff;
+    box-shadow: 0rpx 16rpx 16rpx 0rpx rgba(0, 0, 0, 0.1);
+    border-radius: 8rpx;
+    transition: all 1s;
+    -moz-transition: all 1s;
+    /* Firefox 4 */
+    -webkit-transition: all 1s;
+    /* Safari 和 Chrome */
+    -o-transition: all 1s;
+    .shareboxtitle {
+      font: 36rpx/100rpx '';
+      text-align: center;
+    }
+    .sharekind {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 160rpx 56rpx;
+      .friend,
+      .friendcir {
+        font-size: 0;
+        text-align: center;
+        width: 112rpx;
+        image {
+          width: 88rpx;
+          height: 88rpx;
+        }
+        .sharecircle {
+          font: 22rpx/22rpx '';
+          margin-top: 17rpx;
+        }
+        .wechatfirend {
+          margin-top: 17rpx;
+        }
+        button {
+          width: 100%;
+          padding: 0;
+          font: 22rpx/22rpx '';
+          border: 0;
+          background: none;
+          outline: none;
+          &:after {
+            border: none;
+          }
+        }
+      }
+    }
+  }
 }
 </style>
 <template>
@@ -128,34 +197,38 @@ page {
         autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" bindchange="switchpage">
         <block wx:for="{{imgUrls}}" wx:key="{{item}}">
           <swiper-item>
-            <image src="{{item?item:''}}" class="slide-image"/>
+            <image src="{{imgBaseUrl+item?imgBaseUrl+item:''}}" class="slide-image"/>
           </swiper-item>
         </block>
       </swiper>
-      <view class="share"><image src="../../img/share.png"/></view>
+      <view class="share" @tap="share"><image src="../../img/share.png"/></view>
       <view class="like"><image src="../../img/like.png"/></view>
     </view>
     <view class="body">
-      <view class="name">{{foodDetail.name?foodDetail.name:""}}</view>
-      <view class="des">{{foodDetail.descriptions?foodDetail.descriptions:""}}</view>
+      <view class="name">{{foodDetail.deptName?foodDetail.deptName:""}}</view>
+      <view class="des">{{foodDetail.description?foodDetail.description:""}}</view>
       <view class="rod"></view>
     </view>
     <view class="desinfo">
-      <view class="data">
-        <image src="../../img/discount.png"/>
-        <view class="data-r">会员{{foodDetail.score?foodDetail.score:""}}优惠</view>
+      <view class="data-t">
+        <view class="data">
+          <image src="../../img/discount.png"/>
+          <view class="data-r">会员{{foodDetail.dicount?foodDetail.dicount:""}}折优惠</view>
+        </view>
+        <view class="data">
+          <image src="../../img/open.png"/>
+          <view class="data-r">{{foodDetail.openHours?foodDetail.openHours:""}}</view>
+        </view>
       </view>
-      <view class="data">
-        <image src="../../img/open.png"/>
-        <view class="data-r">{{foodDetail.visitTime?foodDetail.visitTime:""}}</view>
-      </view>
-      <view class="data">
-        <image src="../../img/money.png"/>
-        <view class="data-r">人均消费：{{foodDetail.averagePrice?foodDetail.averagePrice:""}}元</view>
-      </view>
-      <view class="data">
-        <image src="../../img/phone.png"/>
-        <view class="data-r">{{foodDetail.phones?foodDetail.phones:""}}</view>
+      <view class="data-b">
+        <view class="data">
+          <image src="../../img/money.png"/>
+          <view class="data-r">人均消费：{{foodDetail.averagePrice?foodDetail.averagePrice:""}}元</view>
+        </view>
+        <view class="data">
+          <image src="../../img/phone.png"/>
+          <view class="data-r">{{foodDetail.phone?foodDetail.phone:""}}</view>
+        </view>
       </view>
     </view>
     <view class="buy">优惠买单</view>
@@ -167,12 +240,33 @@ page {
       <view class="tothis-l">到这里去</view>
       <view class="tothis-r">距离你的位置还有{{foodDetail.distance?foodDetail.distance:''}}</view>
     </view>
+    <view class="shareshadow" style="height:{{oHeight}}px;background: rgba(0,0,0,.8);" wx:if="{{shareboxshow}}" @tap="closeshare">
+      <view class="sharebox" catchtap="returnclose">
+        <view class="shareboxtitle">分享到</view>
+        <view class="sharekind">
+          <view class="friend">
+            <button wx:if="{{canIUse}}" class='sharefriend' id="shareBtn" plain="true" open-type="share" hover-class="other-button-hover">
+              <image src="../../img/sharFriend.png"/>
+              <view class="wechatfirend">微信好友</view>
+            </button>
+            <view class="bth" wx:else>请升级微信版本</view>
+          </view>
+          <view class="friendcir">
+            <button wx:if="{{logincanIUse}}" open-type="getUserInfo" bindgetuserinfo="getavatarUrl">
+              <image src="../../img/friendS.png"/>
+              <view class="sharecircle">微信朋友圈</view>
+            </button>
+            <view wx:else>请升级微信版本</view>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 <script>
 import wepy from 'wepy';
 import apifunc from '@/api/index.js';
-import { imgBaseUrl } from '@/utils/env.js';
+import {imgBaseUrl} from '@/utils/env.js';
 import { tohtml } from '@/utils/tool.js';
 import QQMapWX from '@/utils/qqmap-wx-jssdk.min.js';
 
@@ -181,38 +275,87 @@ export default class Addressdetail extends wepy.page {
     
   };
   data = {
+    locationAuth: false,
+    locationcanIUse: wx.canIUse('button.open-type.openSetting'),
+    logincanIUse: wx.canIUse('button.open-type.getUserInfo'),
+    canIUse: wx.canIUse('button.open-type.share'),
+    oHeight:"",
+    shareboxshow:false,
     imgUrls: [],
     autoplay: false,
     interval: 2000,
     duration: 1000,
-    id:"",
     userid:"",
-    foodDetail:{}
+    foodDetail:{},
+    deptId:"",
+    imgBaseUrl:""
   };
   computed = {};
 
   methods = {
+    returnclose() {
+
+    },
+    closeshare() {
+      this.shareboxshow = false;
+    },
+    share() {
+      console.log(999)
+      this.shareboxshow = true;
+    },
   	switchpage() {
 
     }
   };
+  getavatarUrl(e) {
+    console.log(e);
+    var that = this;
+    if (e.detail.userInfo) {
+      that.$parent.globalData.avatarUrl = e.detail.userInfo.avatarUrl;
+      wx.navigateTo({
+        url: `/pages/poster/index?id=${that.deptId}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+        success: function() {
+          that.shareboxshow = false;
+          that.$apply();
+        }, //成功后的回调；
+        fail: function() {}, //失败后的回调；
+        complete: function() {} //结束后的回调(成功，失败都会执行)
+      });
+    } else {
+      wx.showModal({
+        title: '警告',
+        content: '您点击了拒绝授权，将无法进入小程序，请授权之后再进入!!!',
+        showCancel: false,
+        confirmText: '返回授权',
+        success: function(res) {
+          if (res.confirm) {
+            console.log('用户点击了“返回授权”');
+          }
+        }
+      });
+    }
+  }
+  onShareAppMessage() {
+    this.shareboxshow = false;
+    this.$apply();
+  }
   getDetail() {
     var that = this;
     wx.getLocation({
       type: 'wgs84',
       success: function(res) {
         var data = {
-          placeId: that.id,
+          deptId: that.deptId,
           userId: that.userid,
           currentLatitude: res.latitude,
           currentLongitude: res.longitude
         };
         apifunc
-          .getFoodDetail(`/tour/oversea/getPlaceInfo`, 'get', data)
+          .getFoodDetail(`/ztTravel/open/dept/getDept?deptId=${that.deptId}`, 'get', data)
           .then(function(res) {
             console.log(res);
-            if (res.meta.success) {
-              that.foodDetail = res.data;
+            if (res.code==0) {
+              that.foodDetail = res.msg;
               that.foodDetail.details=tohtml(that.foodDetail.details);
               if (that.foodDetail.distance >= 1000) {
                 that.foodDetail.distance =
@@ -220,14 +363,9 @@ export default class Addressdetail extends wepy.page {
               } else {
                 that.foodDetail.distance = that.foodDetail.distance + 'm';
               }
-              if (res.data.openHours) {
-                that.foodDetail.openHours = that.foodDetail.openHours.split(
-                  '\n'
-                );
-              }
-              if (res.data.specialImgs) {
+              if (res.msg.specialImgs) {
                 that.imgUrls = [];
-                var specialImgsarr = res.data.specialImgs.split(',');
+                var specialImgsarr = res.msg.specialImgs.split(',');
                 for (var j = 0; j <= specialImgsarr.length - 1; j++) {
                   if (specialImgsarr[j] !== '') {
                     that.imgUrls.push(specialImgsarr[j]);
@@ -245,10 +383,14 @@ export default class Addressdetail extends wepy.page {
   }
   onLoad(options) {
     console.log(options)
+    var res = wx.getSystemInfoSync();
+    var that = this;
+    this.oHeight = res.windowHeight;
+    this.imgBaseUrl=imgBaseUrl;
     if(options.id) {
-      this.id=options.id;
+      this.deptId=options.id;
     } else {
-      this.id="";
+      this.deptId="";
     }
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
@@ -257,3 +399,6 @@ export default class Addressdetail extends wepy.page {
    }
 }
 </script>
+
+
+
