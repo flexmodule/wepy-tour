@@ -1,0 +1,74 @@
+<style lang="less">
+page {
+  height: 100%;
+}
+.Orderdetail {
+  padding: 66rpx 20rpx 0;
+  .name {
+    font: 30rpx/30rpx "";
+    color: #ababab;
+    text-align: center;
+  }
+  .money {
+    font: 44rpx/44rpx "";
+    margin: 40rpx auto 154rpx;
+    text-align: center;
+  }
+  .paytime,.orderno {
+    display: flex;
+    justify-content: space-between;
+    font: 30rpx/30rpx "";
+    margin-bottom: 36rpx;
+    .paytime-l,.orderno-l {
+      color: #ababab;
+    }
+  }
+}
+</style>
+<template>
+  <view class="Orderdetail">
+    <view class="name">森林生活馆</view>
+    <view class="money">-9</view>
+    <view class="paytime">
+      <view class="paytime-l">交易时间</view>
+      <view class="paytime-r">2018-12-1 11：20</view>
+    </view>
+    <view class="orderno">
+      <view class="orderno-l">交易单号</view>
+      <view class="orderno-r">20182555</view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class Orderdetail extends wepy.page {
+  components = {
+   
+  };
+  data = {
+    id:""
+  };
+  computed = {};
+
+  methods = {
+
+  };
+ 
+  onShow() {
+    
+  }
+  onLoad(options) {
+    var that=this
+    var res = wx.getSystemInfoSync();
+    this.oHeight = res.windowHeight;
+    if(options.id) {
+      this.id=options.id;
+    } else {
+      this.id=""
+    }
+  }
+}
+</script>

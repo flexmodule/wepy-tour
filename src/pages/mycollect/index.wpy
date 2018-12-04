@@ -1,0 +1,239 @@
+<style lang="less">
+.Mycollect {
+  padding: 68rpx 36rpx 0;
+  background: #f4f4f4;
+  .main {
+    .likebox {
+      box-shadow: 0 0 10rpx #eee;
+      padding: 20rpx;
+      background: #fff;
+      border-radius: 20rpx;
+      margin-bottom: 50rpx;
+      display: flex;
+      .likebox-l {
+        width: 300rpx;
+        height: 240rpx;
+        position: relative;
+        .img {
+          width: 100%;
+          height: 100%;
+          image {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .shadow {
+          overflow: hidden;
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 50rpx;
+          background: rgba(0, 0, 0, 0.5);
+          box-sizing: border-box;
+          padding: 5rpx 16rpx;
+          display: flex;
+          justify-content: space-between;
+          .price {
+            font: 24rpx/40rpx '';
+            color: #fff;
+          }
+          .position {
+            display: flex;
+            .positiontxt {
+              font: 24rpx/40rpx '';
+              color: #fff;
+            }
+            image {
+              width: 40rpx;
+              height: 40rpx;
+            }
+          }
+        }
+      }
+      .likebox-b {
+        padding: 20rpx 0;
+        overflow: hidden;
+        flex: 1;
+        margin-left: 40rpx;
+        .name {
+          font: 30rpx/30rpx '';
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .des {
+          font: 22rpx/22rpx '';
+          color: #878787;
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          margin: 22rpx auto 42rpx;
+        }
+        .naviga {
+          width: 200rpx;
+          height: 54rpx;
+          font: 22rpx/54rpx '';
+          text-align: center;
+          color: #fff;
+          border-radius: 30rpx;
+          background: #2299dd;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="Mycollect">
+    <view class="main">
+      <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
+        <repeat for="{{likelist}}" key="index" index="index" item="item">
+          <view class="likebox" @tap="toDetail({{item.deptId}})">
+            <view class="likebox-l">
+              <view class="img">
+                <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}"/>
+              </view>
+              <view class="shadow">
+                <view class="price">人均消费：{{item.averagePrice?item.averagePrice:""}}元</view>
+                <view class="position">
+                  <view class="positiontxt">{{item.distance?item.distance:""}}</view>
+                  <image src="../../img/position.png" mode="widthFix"/>
+                </view>
+              </view>
+            </view>
+            <view class="likebox-b">
+              <view class="name">{{item.deptName?item.deptName:""}}</view>
+              <view class="des">{{item.description?item.description:""}}</view>
+              <view class="naviga" catchtap="getmap({{item.latitude}},{{item.longitude}})">导航</view>
+            </view>
+          </view>
+        </repeat>
+        <view class="wenxininfo">
+          <text wx:if="{{loadmore}}">加载中...</text>
+          <text wx:if="{{nomore}}">客官，俺也是有底线的。</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class Mycollect extends wepy.page {
+  components = {};
+  data = {
+    oHeight: '',
+    imgBaseUrl: '',
+    userid: '',
+    likelist: [],
+    params: {
+      pageNo: 1,
+      pageSize: 10,
+      end: false
+    },
+    loadmore: false,
+    nomore: false
+  };
+  computed = {};
+
+  methods = {
+    getmap(lat, long) {
+      wx.openLocation({
+        latitude: lat,
+        longitude: long,
+        scale: 28,
+        success: function() {},
+        fail: function() {
+          wx.showToast({
+            title: '调起地图失败',
+            icon: 'none',
+            duration: 1000
+          });
+        }
+      });
+    },
+    toDetail(id) {
+      wx.navigateTo({
+        url: `/pages/addressdetail/index?id=${id}`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
+    }
+  };
+  lower(e) {
+    var that = this;
+    if (!this.params.end) {
+      that.loadmore = true;
+      if (that.userid) {
+        that.getshoplist();
+      }
+    }
+  }
+  getmapdata(type) {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        that.longitude = res.longitude;
+        that.latitude = res.latitude;
+        var value = {
+          // type: type,
+          // name: '',
+          // classId: '',
+          // isRecommend: '',
+          // area: '',
+          // pageNo: 1,
+          // pageSize: -1,
+          // currentLatitude: res.latitude,
+          // currentLongitude: res.longitude
+          type: type,
+          classId: '',
+          isRecommend: 1,
+          pageNum: 1,
+          pageSize: 0,
+          limitCount: '',
+          orderBy: '',
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getindexdata('/ztTravel/open/dept/page', 'post', value)
+          .then(function(res) {
+            console.log(res);
+            if (res.code == 0) {
+              that.likelist = res.msg;
+              for (var i = 0; i <= that.likelist.length - 1; i++) {
+                if (that.likelist[i].distance >= 1000) {
+                  that.likelist[i].distance =
+                    (that.likelist[i].distance / 1000).toFixed(1) + 'km';
+                } else {
+                  that.likelist[i].distance = that.likelist[i].distance + 'm';
+                }
+              }
+              that.$apply();
+            }
+          });
+      },
+      fail: function(res) {}
+    });
+  }
+  onShow() {}
+  onLoad(options) {
+    var that = this;
+    this.imgBaseUrl = imgBaseUrl;
+    var res = wx.getSystemInfoSync();
+    this.oHeight = res.windowHeight;
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+    this.getmapdata('');
+  }
+}
+</script>

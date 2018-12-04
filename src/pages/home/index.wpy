@@ -399,7 +399,7 @@ page {
                 style="width:{{currentindex==index?'100%':'80%'}};height:{{currentindex==index?'100%':'90%'}};"
               >
                 <view class="kindselect-t">
-                  <image src="{{imgBaseUrl+item.mainImg}}" mode="widthFix"/>
+                  <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}" mode="widthFix"/>
                   <view class="shadow">
                     <view class="price">人均消费：{{item.averagePrice?item.averagePrice:""}}元</view>
                     <view class="position">
@@ -411,7 +411,7 @@ page {
                 <view class="kindselect-b">
                   <view class="name">{{item.deptName?item.deptName:""}}</view>
                   <view class="des">{{item.description?item.description:""}}</view>
-                  <view class="naviga">导航</view>
+                  <view class="naviga" catchtap="getmap({{item.latitude}},{{item.longitude}})">导航</view>
                 </view>
               </view>
             </swiper-item>
@@ -521,6 +521,21 @@ export default class Home extends wepy.page {
   };
   computed = {};
   methods = {
+    getmap(lat, long) {
+      wx.openLocation({
+        latitude: lat,
+        longitude: long,
+        scale: 28,
+        success: function() {},
+        fail: function() {
+          wx.showToast({
+            title: '调起地图失败',
+            icon: 'none',
+            duration: 1000
+          });
+        }
+      });
+    },
     tolist() {
       var that=this;
       wx.navigateTo({

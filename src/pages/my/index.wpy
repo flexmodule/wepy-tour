@@ -1,10 +1,80 @@
 <style lang="less">
+page {
+  height: 100%;
+}
 .My {
   padding: 130rpx 56rpx;
+  height: 100%;
   .title {
     font: 36rpx/36rpx "";
     text-align: center;
     margin-bottom: 34rpx;
+  }
+  .card {
+    width: 640rpx;
+    height: 350rpx;
+    border-radius: 36rpx;
+    background: #000;
+    margin: 0 auto 50rpx;
+    padding: 42rpx;
+    box-sizing: border-box;
+  .card-t {
+    display: flex;
+    justify-content: space-between;
+    .cardtl {
+      display: flex;
+      .cardname {
+        font: 30rpx/70rpx "";
+        color: #fff;
+      }
+      image {
+        width: 70rpx;
+        height: 70rpx;
+        margin-right: 26rpx;
+      }
+    }
+    .cardtr {
+      width: 70rpx;
+      height: 70rpx;
+      text-align: center;
+      &:after {
+          content: '';
+          width: 0;
+          height: 100%;
+          display: inline-block;
+          vertical-align: middle;
+        }
+      image {
+        width: 35rpx;
+        height: 35rpx;
+        vertical-align: middle;
+      }
+    }
+  }
+  .card-b {
+    font: 30rpx/30rpx "";
+    margin-top: 145rpx;
+    color: #fff;
+  }
+  }
+  .total {
+    display: flex;
+    margin-bottom: 100rpx;
+    .totalmoney {
+      border-right: 1rpx solid #eee;
+    }
+    .totalmoney,.totalshop {
+      text-align: center;
+      flex:1;
+      .title {
+        font: 22rpx/22rpx "";
+        margin-bottom: 22rpx;
+      }
+      .num {
+        font: 36rpx/36rpx "";
+        color: #1e96d5;
+      }
+    }
   }
   .body {
     .data {
@@ -33,31 +103,79 @@
       }
     }
   }
+  .largecode {
+    width: 100%;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.8);
+    top: 0;
+    left: 0;
+    z-index: 9;
+    .largecodebox {
+      box-shadow: 0rpx 16rpx 16rpx 0rpx rgba(0, 0, 0, 0.1);
+      border-radius: 8rpx;
+      background: #fff;
+      width: 600rpx;
+      height: 620rpx;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      .largecodebox-t {
+        border-radius: 8rpx 8rpx 0 0;
+        font: 30rpx/88rpx '';
+        color: #fff;
+        text-align: center;
+        height: 88rpx;
+        background-image: linear-gradient(30deg, #c2914b 0%, #ebb870 100%),
+          linear-gradient(#ffffff, #ffffff);
+        background-blend-mode: normal, normal;
+      }
+      .codeqrbox {
+        overflow: hidden;
+        .codeqr {
+          width: 500rpx;
+          height: 500rpx;
+          margin: 0 auto;
+          padding-top: 10rpx;
+          canvas {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
 }
 </style>
 <template>
-  <view class="My">
+  <view class="My" style="overflow:{{overflowtxt}}">
     <view class="title">会员</view>
     <view class="card">
       <view class="card-t">
-        <image src=""/>
-        <view class="cardname">CAT</view>
-        <image src=""/>
+        <view class="cardtl">
+          <image src=""/>
+          <view class="cardname">CAT</view>
+        </view>
+        <view class="cardtr" @tap="tocode">
+          <image src="../../img/qrcode.png"/>
+        </view>
       </view>
-      <view class="card-b">111684986256</view>
+      <view class="card-b">{{mycode}}</view>
     </view>
     <view class="total">
       <view class="totalmoney">
         <view class="title">累计优惠金额</view>
         <view class="num">{{totalmoney}}元</view>
       </view>
-      <view class="totalshop">
+      <view class="totalshop" @tap="toshoplist">
         <view class="title">已覆盖商户</view>
         <view class="num">{{totalshop}}家</view>
       </view>
     </view>
     <view class="body">
-      <view class="data">
+      <view class="data" @tap="tomylike">
         <view class="data-l">
           <image src="../../img/mylike.png"/>
           <view class="datatxt">我的关注</view>
@@ -66,7 +184,7 @@
           <image src="../../img/arrow.png"/>
         </view>
       </view>
-      <view class="data">
+      <view class="data" @tap="tomyorder">
         <view class="data-l">
           <image src="../../img/account.png"/>
           <view class="datatxt">我的账单</view>
@@ -75,7 +193,7 @@
           <image src="../../img/arrow.png"/>
         </view>
       </view>
-      <view class="data">
+      <view class="data" @tap="toshoplist">
         <view class="data-l">
           <image src="../../img/shop.png"/>
           <view class="datatxt">已覆盖商户</view>
@@ -94,11 +212,20 @@
         </view>
       </view>
     </view>
+    <view class="largecode" style="height:{{oHeight}}px" wx:if="{{largecodeshow}}" @tap="closecode">
+        <view class="largecodebox" catchtap="stopcode">
+          <view class="largecodebox-t">券码：{{mycode?mycode:''}}</view>
+          <view class="codeqrbox">
+            <view class="codeqr"><canvas disable-scroll="true" canvas-id="mycanvas"></canvas></view>
+          </view>
+        </view>
+      </view>
   </view>
 </template>
 <script>
 import wepy from 'wepy';
 import apifunc from '@/api/index.js';
+import QR from '@/utils/qrcode.js';
 import { imgBaseUrl } from '@/utils/env.js';
 
 export default class My extends wepy.page {
@@ -106,20 +233,91 @@ export default class My extends wepy.page {
    
   };
   data = {
+    overflowtxt: "auto",
+    largecodeshow:false,
     totalmoney:"236",
-    totalshop:1027
+    totalshop:1027,
+    oHeight:"",
+    mycode:"111684986256"
   };
   computed = {};
 
   methods = {
-  	
+    tomylike() {
+      wx.navigateTo({
+        url: `/pages/mycollect/index`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
+    },
+    tomyorder() {
+      wx.navigateTo({
+        url: `/pages/myorder/index`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
+    },
+    toshoplist() {
+      wx.navigateTo({
+        url: `/pages/shoplist/index`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
+    },
+    closecode() {
+      this.largecodeshow=false;
+      this.overflowtxt="auto";
+    },
+  	tocode() {
+      var that=this;
+      this.largecodeshow=true;
+      this.overflowtxt="hidden";
+      var size = that.setCanvasSize();
+      setTimeout(() => {
+      that.createQrCode(
+          that.mycode,
+          `mycanvas`,
+          size.w,
+          size.h
+        );
+    }, 500);
+    this.$apply();
+    }
   };
-  
+  createQrCode(url, canvasId, cavW, cavH) {
+    //调用插件中的draw方法，绘制二维码图片
+    var that = this;
+    QR.api.draw(url, canvasId, cavW, cavH);
+    // setTimeout(() => {
+    //   that.canvasToTempImage(code);
+    // }, 500);
+  }
+  //适配不同屏幕大小的canvas
+  setCanvasSize() {
+    var size = {};
+    try {
+      var res = wx.getSystemInfoSync();
+      var scale1 = 375 / 250; //不同屏幕下canvas的适配比例；设计稿是750宽 686是因为样式wxss文件中设置的大小
+      var width = res.windowWidth / scale1;
+      var height = width; //canvas画布为正方形
+      size.w = width;
+      size.h = height;
+    } catch (e) {
+      // Do something when catch error
+      console.log('获取设备信息失败' + e);
+    }
+    return size;
+  }
   onShow() {
-    
+    this.largecodeshow=false;
   }
   onLoad(options) {
-    
+    var that=this
+    var res = wx.getSystemInfoSync();
+    this.oHeight = res.windowHeight;
   }
 }
 </script>

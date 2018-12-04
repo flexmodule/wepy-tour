@@ -238,7 +238,7 @@ page {
     </view>
     <view class="tothis">
       <view class="tothis-l">到这里去</view>
-      <view class="tothis-r">距离你的位置还有{{foodDetail.distance?foodDetail.distance:''}}</view>
+      <view class="tothis-r" catchtap="getmap({{foodDetail.latitude}},{{foodDetail.longitude}})">距离你的位置还有{{foodDetail.distance?foodDetail.distance:''}}</view>
     </view>
     <view class="shareshadow" style="height:{{oHeight}}px;background: rgba(0,0,0,.8);" wx:if="{{shareboxshow}}" @tap="closeshare">
       <view class="sharebox" catchtap="returnclose">
@@ -293,6 +293,21 @@ export default class Addressdetail extends wepy.page {
   computed = {};
 
   methods = {
+    getmap(lat, long) {
+      wx.openLocation({
+        latitude: lat,
+        longitude: long,
+        scale: 28,
+        success: function() {},
+        fail: function() {
+          wx.showToast({
+            title: '调起地图失败',
+            icon: 'none',
+            duration: 1000
+          });
+        }
+      });
+    },
     returnclose() {
 
     },

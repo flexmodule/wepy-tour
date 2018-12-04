@@ -125,6 +125,21 @@ export default class List extends wepy.page {
   computed = {};
 
   methods = {
+    getmap(lat, long) {
+      wx.openLocation({
+        latitude: lat,
+        longitude: long,
+        scale: 28,
+        success: function() {},
+        fail: function() {
+          wx.showToast({
+            title: '调起地图失败',
+            icon: 'none',
+            duration: 1000
+          });
+        }
+      });
+    },
     toDetail(id) {
       wx.navigateTo({
         url: `/pages/addressdetail/index?id=${id}`,

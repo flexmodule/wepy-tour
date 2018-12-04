@@ -1,0 +1,166 @@
+<style lang="less">
+.Myorder {
+ .totaltop {
+   padding: 24rpx 30rpx;
+   background: #f7f7f7;
+   .accountimg {
+     position: absolute;
+     right: 40rpx;
+     top: 20rpx;
+     width: 60rpx;
+     height: 60rpx;
+     image {
+       width: 100%;
+       height: 100%;
+     }
+   }
+   .totaltop-t {
+     font: 30rpx/30rpx "";
+     margin-bottom: 22rpx;
+   }
+   .totaltop-b {
+     display: flex;
+     font: 22rpx/22rpx "";
+     color: rgb(171,171,171);
+     .payout {
+       margin-right: 35rpx;
+     }
+    }
+ }
+ .main {
+   padding: 0 30rpx;
+   .orderbox {
+     border-bottom: 1rpx solid #eee;
+     padding: 22rpx 0;
+     .orderbox-t {
+       display: flex;
+       justify-content: space-between;
+       font: 30rpx/30rpx "";
+       margin-bottom: 30rpx;
+     }
+     .orderbox-b {
+       font: 22rpx/22rpx "";
+       color: rgb(171,171,171);
+     }
+   }
+  }
+}
+</style>
+<template>
+  <view class="Myorder">
+    <view class="totaltop">
+      <view class="totaltop-t">本月</view>
+      <view class="totaltop-b">
+        <view class="payout">支出</view>
+        <view class="getmoney">收入</view>
+      </view>
+      <view class="accountimg"><image src="../../img/account.png"/></view>
+    </view>
+    <view class="main">
+      <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
+        <repeat for="{{orderlist}}" key="index" index="index" item="item">
+          <view class="orderbox" @tap="toDetail({{item.id}})">
+            <view class="orderbox-t">
+              <view class="name">森相生活馆</view>
+              <view class="num">-8</view>
+            </view>
+            <view class="orderbox-b">
+              <view class="time">2018-12-1</view>
+            </view>
+          </view>
+        </repeat>
+        <view class="wenxininfo">
+          <text wx:if="{{loadmore}}">加载中...</text>
+          <text wx:if="{{nomore}}">客官，俺也是有底线的。</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class Myorder extends wepy.page {
+  components = {};
+  data = {
+      oHeight:"",
+    imgBaseUrl:"",
+    userid:"",
+    orderlist:[1,1],
+    params: {
+      pageNo: 1,
+      pageSize: 10,
+      end: false
+    },
+    loadmore: false,
+    nomore: false,
+  };
+  computed = {};
+
+  methods = {
+    toDetail(id) {
+       wx.navigateTo({
+        url: `/pages/orderdetail/index?id=${id}`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
+    }
+  };
+  lower(e) {
+    var that = this;
+    if (!this.params.end) {
+      that.loadmore = true;
+      if (that.userid) {
+        that.getshoplist();
+      }
+    }
+  }
+  getshoplist() {
+    var that = this;
+        apifunc
+          .getshoplist('/ztTravel/open/line/page', 'post', "")
+          .then(function(res) {
+            if (res.code == 0) {
+              var listdata = res.msg;
+              listdata.forEach((order, i) => {
+                that.routeData.push(order);
+              });
+              that.loadmore = false;
+              if (listdata.length < that.params.pageSize) {
+                that.nomore = true;
+                that.loadmore = false;
+                that.params.end = true;
+              } else {
+                that.params.pageNo++;
+              }
+              if (
+                (that.routeData && that.routeData.length === 0) ||
+                !that.routeData
+              ) {
+                that.nomore = false;
+              }
+              that.$apply();
+            } else {
+              wepy.showToast({
+                title: '系统错误',
+                icon: 'none',
+                duration: 500
+              });
+            }
+          });
+    }
+  onShow() {}
+  onLoad(options) {
+    var that = this;
+    this.imgBaseUrl = imgBaseUrl;
+    var res = wx.getSystemInfoSync();
+    this.oHeight = res.windowHeight;
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+  }
+}
+</script>

@@ -1,0 +1,166 @@
+<style lang="less">
+.Shoplist {
+  padding: 25rpx 0;
+ .title {
+   padding: 20rpx 72rpx;
+   display: flex;
+   border-bottom: 1rpx solid #eee;
+   
+   .num,.comp,.dis {
+     flex: 1;
+     font: 30rpx/56rpx "";
+     color: #ababab;
+   }
+   .comp,.dis {
+     font-size: 0;
+     display: flex;
+     .comptxt,.distxt {
+       font: 30rpx/56rpx "";
+     }
+     image {
+       width: 56rpx;
+       height: 56rpx;
+       margin-left: 12rpx;
+     }
+   }
+ }
+ .totalnum {
+   font: 22rpx/22rpx "";
+   color: #ababab;
+   text-align: center;
+   margin: 24rpx auto 40rpx;
+ }
+ .main {
+   padding: 0 72rpx;
+   .wenxininfo {
+      font: 22rpx/64rpx '';
+      color: #999;
+      background: #eee;
+      text-align: center;
+    }
+   .shopbox {
+     display: flex;
+     justify-content: space-between;
+     .data {
+       font: 30rpx/30rpx "";
+       margin-bottom: 68rpx;
+       &:nth-last-child(1) {
+         color: #1d97d3;
+       }
+     }
+   }
+ }
+}
+</style>
+<template>
+  <view class="Shoplist">
+    <view class="title">
+      <view class="num">序号</view>
+      <view class="comp">
+        <view class="comptxt">商户名</view>
+        <image src="../../img/updown.png"/>
+      </view>
+      <view class="dis">
+        <view class="distxt">优惠折扣</view>
+        <image src="../../img/updown.png"/>
+      </view>
+    </view>
+    <view class="totalnum">商户总数：{{totalnum}}</view>
+    <view class="main">
+      <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
+        <repeat for="{{shopdatalist}}" key="index" index="index" item="item">
+          <view class="shopbox" @tap="toDetail({{item.id}})">
+            <view class="data">001</view>
+            <view class="data">保和堂</view>
+            <view class="data">9.5折</view>
+          </view>
+        </repeat>
+        <view class="wenxininfo">
+          <text wx:if="{{loadmore}}">加载中...</text>
+          <text wx:if="{{nomore}}">客官，俺也是有底线的。</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class Shoplist extends wepy.page {
+  components = {};
+  data = {
+    imgBaseUrl:"",
+    userid:"",
+    totalnum:203,
+    shopdatalist:[1,1],
+    params: {
+      pageNo: 1,
+      pageSize: 10,
+      end: false
+    },
+    loadmore: false,
+    nomore: false,
+    oHeight:""
+  };
+  computed = {};
+
+  methods = {
+    
+  };
+  lower(e) {
+    var that = this;
+    if (!this.params.end) {
+      that.loadmore = true;
+      if (that.userid) {
+        that.getshoplist();
+      }
+    }
+  }
+  getshoplist() {
+    var that = this;
+        apifunc
+          .getshoplist('/ztTravel/open/line/page', 'post', "")
+          .then(function(res) {
+            if (res.code == 0) {
+              var listdata = res.msg;
+              listdata.forEach((order, i) => {
+                that.routeData.push(order);
+              });
+              that.loadmore = false;
+              if (listdata.length < that.params.pageSize) {
+                that.nomore = true;
+                that.loadmore = false;
+                that.params.end = true;
+              } else {
+                that.params.pageNo++;
+              }
+              if (
+                (that.routeData && that.routeData.length === 0) ||
+                !that.routeData
+              ) {
+                that.nomore = false;
+              }
+              that.$apply();
+            } else {
+              wepy.showToast({
+                title: '系统错误',
+                icon: 'none',
+                duration: 500
+              });
+            }
+          });
+    }
+  onShow() {}
+  onLoad(options) {
+    var that = this;
+    this.imgBaseUrl = imgBaseUrl;
+    var res = wx.getSystemInfoSync();
+    this.oHeight = res.windowHeight;
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+  }
+}
+</script>

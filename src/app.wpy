@@ -28,6 +28,10 @@ export default class extends wepy.app {
       'pages/my/index',
       'pages/list/index',
       'pages/poster/index',
+      "pages/shoplist/index",
+      "pages/myorder/index",
+      "pages/mycollect/index",
+      "pages/orderdetail/index"
     ],
     window: {
       backgroundTextStyle: 'light',
