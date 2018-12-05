@@ -4,6 +4,8 @@ page {
   overflow: hidden;
 }
 .Home {
+  height: 100%;
+  overflow: hidden;
   .menu {
     font: 30rpx/88rpx '';
     flex: 1;
@@ -117,7 +119,7 @@ page {
       box-sizing: border-box;
       border-radius: 8rpx 0 0 8rpx;
       background: #249bd8;
-      font: 22rpx/22rpx "";
+      font: 22rpx/22rpx '';
       color: #fff;
     }
     .kinds {
@@ -217,6 +219,7 @@ page {
                 color: #fff;
                 border-radius: 30rpx;
                 background: #2299dd;
+                box-shadow: #c3e3f4 6rpx 16rpx 30rpx; 
                 margin: 0 auto;
               }
             }
@@ -233,7 +236,7 @@ page {
       height: 290rpx;
       border: 1rpx solid #000;
       border-radius: 20rpx;
-      position:relative;
+      position: relative;
       overflow: hidden;
       margin: 0 auto 60rpx;
       &:after {
@@ -259,15 +262,15 @@ page {
         display: flex;
         justify-content: space-around;
         .name {
-          font: 30rpx/30rpx "";
+          font: 30rpx/30rpx '';
           color: #fff;
         }
         .distance {
-          font: 22rpx/22rpx "";
+          font: 22rpx/22rpx '';
           color: #fff;
         }
         .look {
-          font: 22rpx/22rpx "";
+          font: 22rpx/22rpx '';
           color: #fff;
         }
       }
@@ -363,9 +366,7 @@ page {
       class="tomap"
       style="height:{{mapheight}}px"
       wx:if="{{mappointshow}}"
-      @touchstart="touchmap"
-      @touchmove="touchmapmove"
-      @touchend="touchmapend"
+      @tap="showswiper"
     >
       <map
         id="map"
@@ -389,7 +390,7 @@ page {
           interval="{{interval}}"
           duration="{{duration}}"
           display-multiple-items="1"
-          current="1"
+          current="{{currentindex}}"
           bindchange="swiperimg"
         >
           <block wx:for="{{maplistData}}" wx:key="item">
@@ -443,7 +444,7 @@ page {
         </view>
       </scroll-view>
     </view>
-    <view class="authshadow" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
+    <!-- <view class="authshadow" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
       <view class="alertbox">
         <view class="wechat">微信授权</view>
         <view class="apply">
@@ -468,7 +469,7 @@ page {
           <view wx:else>请升级微信版本</view>
         </view>
       </view>
-    </view>
+    </view> -->
   </view>
 </template>
 <script>
@@ -513,14 +514,19 @@ export default class Home extends wepy.page {
     end: '',
     move: 0,
     rpa: '',
-    mapstart: 0,
-    mapmove: 0,
-    mapend: '',
     imgBaseUrl: '',
-    kindindex:""
+    kindindex: ''
+  };
+  config = {
+    disableScroll: true
   };
   computed = {};
   methods = {
+    showswiper() {
+      var that=this
+      this.mapbottom = 0;
+      this.mapheight = this.oHeight - 281 * that.rpa;
+    },
     getmap(lat, long) {
       wx.openLocation({
         latitude: lat,
@@ -537,37 +543,49 @@ export default class Home extends wepy.page {
       });
     },
     tolist() {
-      var that=this;
+      var that = this;
       wx.navigateTo({
-        url: `/pages/list/index?isshowNav=${that.kindindex}`, 
-        success: function() {}, 
-        fail: function() {}, 
-        complete: function() {} 
+        url: `/pages/list/index?isshowNav=${that.kindindex}`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
       });
     },
     tomy() {
       wx.navigateTo({
-        url: `/pages/my/index`, 
-        success: function() {}, 
-        fail: function() {}, 
-        complete: function() {} 
+        url: `/pages/my/index`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
       });
     },
     swiperimg(e) {
-      console.log(e);
+      console.log(e, this.markers);
       this.currentindex = e.detail.current;
-    },
-    touchmap(e) {
-      this.mapstart = e.touches[0].pageY;
-    },
-    touchmapmove(e) {
-      this.mapmove = e.touches[0].pageY;
-    },
-    touchmapend() {
       var that = this;
-      if (this.mapstart - this.mapmove > 50 * this.rpa && this.mapmove != 0) {
-        this.mapbottom = 0;
-        this.mapheight = this.oHeight - 281 * that.rpa;
+      if (e.detail) {
+        var index = e.detail.current;
+        that.currentlat = that.markers[index].latitude;
+        that.currentlong = that.markers[index].longitude;
+        for (var j = 0; j <= that.maplistData.length - 1; j++) {
+          if (that.maplistData[j].type == 1) {
+            that.markers[j].iconPath = '../../img/address.png';
+          } else if (that.maplistData[j].type == 2) {
+            that.markers[j].iconPath = '../../img/address.png';
+          } else if (that.maplistData[j].type == 3) {
+            that.markers[j].iconPath = '../../img/address.png';
+          }
+          if (j == index) {
+            if (that.maplistData[j].type == 1) {
+              that.markers[j].iconPath = '../../img/biu.png';
+            } else if (that.maplistData[j].type == 2) {
+              that.markers[j].iconPath = '../../img/biu.png';
+            } else if (that.maplistData[j].type == 3) {
+              that.markers[j].iconPath = '../../img/biu.png';
+            }
+          }
+        }
+        that.$apply();
       }
     },
     touchend() {
@@ -576,9 +594,9 @@ export default class Home extends wepy.page {
       if (this.start - this.move > 50 * this.rpa && this.move != 0) {
         wx.navigateTo({
           url: `/pages/addressdetail/index?id=${id}`,
-          success: function() {}, 
-          fail: function() {}, 
-          complete: function() {} 
+          success: function() {},
+          fail: function() {},
+          complete: function() {}
         });
       } else if (this.move - this.start > 50 * this.rpa && this.move != 0) {
         that.mapbottom = -210 * this.rpa;
@@ -613,49 +631,49 @@ export default class Home extends wepy.page {
       this.searchtxt = e.detail.value;
     },
     torouteDetail(id) {
-      wx.navigateTo({  
-          url: `/pages/routedetail/index?id=${id}`,
-          success: function() {}, 
-          fail: function() {}, 
-          complete: function() {} 
-        });
+      wx.navigateTo({
+        url: `/pages/routedetail/index?id=${id}`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
     },
     showtab() {},
     switchNav(data) {
       if (data == 1) {
+        this.currentindex = 1;
         this.isshowNav = 1;
-        this.kindindex="";
+        this.kindindex = '';
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
-        this.markers = [];
         this.maplistData = [];
         this.getmapdata();
       } else if (data == 2) {
+        this.currentindex = 1;
         this.isshowNav = 2;
-        this.kindindex=2;
+        this.kindindex = 2;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
-        this.markers = [];
         this.maplistData = [];
         this.getmapdata(2);
       } else if (data == 3) {
+        this.currentindex = 1;
         this.isshowNav = 3;
-        this.kindindex=3;
+        this.kindindex = 3;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
-        this.markers = [];
         this.maplistData = [];
         this.getmapdata(3);
       } else if (data == 4) {
+        this.currentindex = 1;
         this.isshowNav = 4;
-        this.kindindex=4;
+        this.kindindex = 4;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
-        this.markers = [];
         this.maplistData = [];
         this.getmapdata(4);
       } else if (data == 5) {
@@ -663,7 +681,6 @@ export default class Home extends wepy.page {
         this.routelineshow = true;
         this.mappointshow = false;
         this.routeData = [];
-        this.markers = [];
         this.maplistData = [];
         this.getroutelist();
       }
@@ -736,12 +753,15 @@ export default class Home extends wepy.page {
   regionchange(e) {}
   markertap(e) {
     var that = this;
-    wx.navigateTo({
-      url: `/pages/addressdetail/index?id=${e.markerId}`, //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
-      success: function() {}, //成功后的回调；
-      fail: function() {}, //失败后的回调；
-      complete: function() {} //结束后的回调(成功，失败都会执行)
-    });
+    this.mapbottom = 0;
+    this.mapheight = this.oHeight - 281 * that.rpa;
+    for (var i = 0; i <= that.maplistData.length - 1; i++) {
+      if (that.maplistData[i].deptId == e.markerId) {
+        that.currentindex = i;
+        that.$apply();
+        return;
+      }
+    }
   }
   getmapdata(type) {
     var that = this;
@@ -749,17 +769,8 @@ export default class Home extends wepy.page {
       type: 'wgs84',
       success: function(res) {
         that.longitude = res.longitude;
-        that.latitude = res.latitude;
+        that.latitude = res.latitude ;
         var value = {
-          // type: type,
-          // name: '',
-          // classId: '',
-          // isRecommend: '',
-          // area: '',
-          // pageNo: 1,
-          // pageSize: -1,
-          // currentLatitude: res.latitude,
-          // currentLongitude: res.longitude
           type: type,
           classId: '',
           isRecommend: 1,
@@ -771,6 +782,7 @@ export default class Home extends wepy.page {
           currentLatitude: res.latitude,
           currentLongitude: res.longitude
         };
+        that.markers = [];
         apifunc
           .getindexdata('/ztTravel/open/dept/page', 'post', value)
           .then(function(res) {
@@ -803,20 +815,21 @@ export default class Home extends wepy.page {
                 if (
                   that.maplistData[i].latitude &&
                   that.maplistData[i].longitude &&
-                  that.maplistData[i].id
+                  that.maplistData[i].deptId
                 ) {
                   value.latitude = that.maplistData[i].latitude;
                   value.longitude = that.maplistData[i].longitude;
-                  value.id = that.maplistData[i].id;
+                  value.id = that.maplistData[i].deptId;
                   value.label.content = that.maplistData[i].name;
                 }
                 that.markers.push(value);
               }
-              if (that.maplistData[0]) {
-                that.currentlat = that.maplistData[0].latitude;
-                that.currentlong = that.maplistData[0].longitude;
-                that.markers[0].iconPath = '../../img/biu.png';
+              if (that.maplistData[1]) {
+                that.currentlat = that.maplistData[1].latitude;
+                that.currentlong = that.maplistData[1].longitude;
+                that.markers[1].iconPath = '../../img/biu.png';
               }
+              console.log(that.currentlat,that.currentlong,that.markers)
               that.$apply();
             }
           });
@@ -885,7 +898,7 @@ export default class Home extends wepy.page {
           });
       },
       fail: function(res) {
-        that.authlocation();
+        // that.authlocation();
       }
     });
   }
@@ -1024,9 +1037,6 @@ export default class Home extends wepy.page {
     this.start = 0;
     this.end = '';
     this.move = 0;
-    this.mapstart = 0;
-    this.mapmove = 0;
-    this.mapend = '';
   }
   onLoad(options) {
     var res = wx.getSystemInfoSync();
@@ -1058,16 +1068,16 @@ export default class Home extends wepy.page {
     this.oHeight = res.windowHeight;
     this.mapheight = res.windowHeight - 281 * that.rpa;
     //授权
-    wx.getSetting({
-      success(res) {
-        if (!res.authSetting['scope.userInfo']) {
-          that.getAuth = true;
-        } else {
-          that.getAuth = false;
-        }
-        that.$apply();
-      }
-    });
+    // wx.getSetting({
+    //   success(res) {
+    //     if (!res.authSetting['scope.userInfo']) {
+    //       that.getAuth = true;
+    //     } else {
+    //       that.getAuth = false;
+    //     }
+    //     that.$apply();
+    //   }
+    // });
     //数据请求
     this.getmapdata('');
     this.$apply();
