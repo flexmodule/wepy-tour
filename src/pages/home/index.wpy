@@ -443,7 +443,7 @@ page {
         </view>
       </scroll-view>
     </view>
-    <view class="authshadow" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
+    <!-- <view class="authshadow" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
       <view class="alertbox">
         <view class="wechat">微信授权</view>
         <view class="apply">
@@ -467,7 +467,7 @@ page {
           <button wx:if="{{locationcanIUse}}" open-type="openSetting" bindopensetting="getOpenSet">允许</button>
           <view wx:else>请升级微信版本</view>
         </view>
-      </view>
+      </view> -->
     </view>
   </view>
 </template>
@@ -885,7 +885,7 @@ export default class Home extends wepy.page {
           });
       },
       fail: function(res) {
-        that.authlocation();
+        //  
       }
     });
   }
@@ -1058,16 +1058,16 @@ export default class Home extends wepy.page {
     this.oHeight = res.windowHeight;
     this.mapheight = res.windowHeight - 281 * that.rpa;
     //授权
-    wx.getSetting({
-      success(res) {
-        if (!res.authSetting['scope.userInfo']) {
-          that.getAuth = true;
-        } else {
-          that.getAuth = false;
-        }
-        that.$apply();
-      }
-    });
+    // wx.getSetting({
+    //   success(res) {
+    //     if (!res.authSetting['scope.userInfo']) {
+    //       that.getAuth = true;
+    //     } else {
+    //       that.getAuth = false;
+    //     }
+    //     that.$apply();
+    //   }
+    // });
     //数据请求
     this.getmapdata('');
     this.$apply();
