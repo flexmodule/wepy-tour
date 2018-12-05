@@ -28,7 +28,7 @@ page {
 <template>
   <view class="Orderdetail">
     <view class="name">森林生活馆</view>
-    <view class="money">-9</view>
+    <view class="money">-8.00</view>
     <view class="paytime">
       <view class="paytime-l">交易时间</view>
       <view class="paytime-r">2018-12-1 11：20</view>

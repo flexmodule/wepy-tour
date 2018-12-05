@@ -54,7 +54,7 @@
         <view class="payout">支出</view>
         <view class="getmoney">收入</view>
       </view>
-      <view class="accountimg"><image src="../../img/account.png"/></view>
+      <view class="accountimg"><image src="../../img/zccount.png"/></view>
     </view>
     <view class="main">
       <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
@@ -62,7 +62,7 @@
           <view class="orderbox" @tap="toDetail({{item.id}})">
             <view class="orderbox-t">
               <view class="name">森相生活馆</view>
-              <view class="num">-8</view>
+              <view class="num">-8.00</view>
             </view>
             <view class="orderbox-b">
               <view class="time">2018-12-1</view>

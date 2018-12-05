@@ -2,25 +2,26 @@
 .Shoplist {
   padding: 25rpx 0;
  .title {
-   padding: 20rpx 72rpx;
+   padding: 20rpx 0;
    display: flex;
    border-bottom: 1rpx solid #eee;
-   
    .num,.comp,.dis {
      flex: 1;
+     text-align: center;
      font: 30rpx/56rpx "";
      color: #ababab;
    }
    .comp,.dis {
      font-size: 0;
-     display: flex;
      .comptxt,.distxt {
        font: 30rpx/56rpx "";
+       display: inline-block;
+       vertical-align: middle;
      }
      image {
        width: 56rpx;
        height: 56rpx;
-       margin-left: 12rpx;
+       vertical-align: middle;
      }
    }
  }
@@ -31,7 +32,6 @@
    margin: 24rpx auto 40rpx;
  }
  .main {
-   padding: 0 72rpx;
    .wenxininfo {
       font: 22rpx/64rpx '';
       color: #999;
@@ -43,7 +43,16 @@
      justify-content: space-between;
      .data {
        font: 30rpx/30rpx "";
+       flex: 1;
+       text-align: center;
        margin-bottom: 68rpx;
+        &:nth-last-child(2) {
+        max-height: 60rpx;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+       }
        &:nth-last-child(1) {
          color: #1d97d3;
        }
