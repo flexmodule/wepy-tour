@@ -15,25 +15,33 @@ page {
         height: 100%;
         overflow: hidden;
         image {
-          width: 130%;
+          width: 100%;
           height: 100%;
           position: absolute;
           top: 0;
-          left: -15%;
-          border-bottom-right-radius: 60% 30%;
-          border-bottom-left-radius: 60% 30%;
+          left: 0;
         }
+      }
+    }
+    .shadow {
+      width: 100%;
+      position: absolute;
+      height: 164rpx;
+      left: 0;
+      bottom: -40rpx;
+      z-index: 8;
+      image {
+        width: 100%;
+        height: 100%;
       }
     }
     .share {
       position: absolute;
       right: 38rpx;
+      z-index:9;
       top: 20rpx;
       width: 80rpx;
-      height: 80rpx;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 50%;
-      box-shadow: 0 0 20rpx #999;
+      height: 80rpx;   
       text-align: center;
       &:after {
         content: '';
@@ -50,6 +58,7 @@ page {
     }
     .like {
       position: absolute;
+      z-index:9;
       right: 50rpx;
       border-radius: 50%;
       background: #fff;
@@ -57,9 +66,18 @@ page {
       bottom: 0;
       width: 80rpx;
       height: 80rpx;
-      image {
-        width: 100%;
+      text-align: center;
+       &:after {
+        content: '';
+        width: 0;
         height: 100%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      image {
+        width: 64rpx;
+        height: 64rpx;
+        vertical-align: middle;
       }
     }
   }
@@ -225,6 +243,7 @@ page {
       </swiper>
       <view class="share" @tap="share"><image src="../../img/share.png"/></view>
       <view class="like"><image src="../../img/like.png"/></view>
+      <view class="shadow"><image src="../../img/white.png"/></view>
     </view>
     <view class="body">
       <view class="name">{{foodDetail.deptName?foodDetail.deptName:""}}</view>
