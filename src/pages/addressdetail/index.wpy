@@ -102,14 +102,12 @@ page {
   }
   .desinfo {
     padding: 0 58rpx;
-    .data-t,
-    .data-b {
-      display: flex;
-    }
     .data {
       display: flex;
-      flex: 1;
       margin-bottom: 50rpx;
+      &:nth-child(1) {
+        color: rgb(235,79,71);
+      }
       .data-r {
         flex: 1;
         margin-left: 18rpx;
@@ -251,25 +249,25 @@ page {
       <view class="rod"></view>
     </view>
     <view class="desinfo">
-      <view class="data-t">
-        <view class="data">
-          <image src="../../img/discount.png"/>
-          <view class="data-r">会员{{foodDetail.dicount?foodDetail.dicount:""}}折优惠</view>
-        </view>
-        <view class="data">
-          <image src="../../img/open.png"/>
-          <view class="data-r">{{foodDetail.openHours?foodDetail.openHours:""}}</view>
-        </view>
+      <view class="data">
+        <image src="../../img/discount.png"/>
+        <view class="data-r">会员{{foodDetail.dicount?foodDetail.dicount:""}}折优惠</view>
       </view>
-      <view class="data-b">
-        <view class="data">
-          <image src="../../img/money.png"/>
-          <view class="data-r">人均消费：{{foodDetail.averagePrice?foodDetail.averagePrice:""}}元</view>
-        </view>
-        <view class="data">
-          <image src="../../img/phone.png"/>
-          <view class="data-r">{{foodDetail.phone?foodDetail.phone:""}}</view>
-        </view>
+      <view class="data">
+        <image src="../../img/time.png"/>
+        <view class="data-r">建议浏览时长：{{foodDetail.proposalVisitTime?foodDetail.proposalVisitTime:""}}小时</view>
+      </view>
+      <view class="data">
+        <image src="../../img/open.png"/>
+        <view class="data-r">{{foodDetail.openHours?foodDetail.openHours:""}}</view>
+      </view>
+      <view class="data">
+        <image src="../../img/phone.png"/>
+        <view class="data-r">{{foodDetail.phone?foodDetail.phone:""}}</view>
+      </view>
+      <view class="data">
+        <image src="../../img/add.png"/>
+        <view class="data-r">{{foodDetail.address?foodDetail.address:""}}</view>
       </view>
     </view>
     <view class="buy">优惠买单</view>

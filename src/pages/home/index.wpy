@@ -140,8 +140,8 @@ page {
         overflow: visible !important;
         swiper-item {
           height: 100%;
-          width: 70% !important;
-          margin-left: 15%;
+          width: 80% !important;
+          margin-left: 10%;
           position: relative;
           .kindselect {
             position: absolute;
@@ -157,7 +157,7 @@ page {
             box-shadow: #666 0rpx 0rpx 30rpx;
             .kindselect-t {
               width: 100%;
-              height: 57%;
+              height: 65%;
               overflow: hidden;
               border-radius: 20rpx 20rpx 0 0;
               position: relative;
@@ -204,13 +204,14 @@ page {
             }
             .kindselect-b {
               overflow: hidden;
-              text-align: center;
-              padding: 22rpx 0 15rpx;
-              height: 43%;
+              padding: 34rpx 0 15rpx;
+              height: 35%;
               box-sizing: border-box;
+              position: relative;
+              padding-left: 24rpx;
               .name {
                 font: 28rpx/28rpx '';
-                width: 100%;
+                width: 70%;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -218,14 +219,17 @@ page {
               .des {
                 font: 22rpx/22rpx '';
                 color: #888;
-                width: 100%;
+                width: 70%;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                margin: 15rpx auto;
+                margin: 15rpx 0 15rpx 0;
               }
               .naviga {
-                width: 200rpx;
+                width: 128rpx;
+                position: absolute;
+                right: 24rpx;
+                top: 52rpx;
                 height: 35%;
                 font: 22rpx/54rpx '';
                 text-align: center;
@@ -242,15 +246,25 @@ page {
     }
   }
   .routeline {
-    background: #e8e4dc;
-    padding: 38rpx 0 0;
+    position: relative;
+  min-height: 100%;
+  .backimg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -6;
+  }
+    padding: 26rpx 0;
     .routebox {
-      width: 630rpx;
-      height: 290rpx;
+      width: 680rpx;
+      height: 340rpx;
       border-radius: 20rpx;
       position: relative;
       overflow: hidden;
-      margin: 0 auto 60rpx;
+      margin: 0 auto 22rpx;
+      box-shadow: #a5a5a5 2rpx 14rpx 14rpx;
       &:after {
         content: '';
         width: 0;
@@ -272,7 +286,7 @@ page {
         padding: 12rpx 38rpx;
         box-sizing: border-box;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         .name {
           font: 30rpx/30rpx '';
           color: #fff;
@@ -417,7 +431,7 @@ page {
                 <view class="kindselect-t">
                   <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}" mode="widthFix"/>
                   <view class="shadow">
-                    <view class="price">人均消费：{{item.averagePrice?item.averagePrice:""}}元</view>
+                    <view class="price">建议浏览时间：{{item.proposalVisitTime?item.proposalVisitTime:""}}小时</view>
                     <view class="position">
                       <view class="positiontxt">{{item.distance?item.distance:""}}</view>
                       <image src="../../img/position.png" mode="widthFix"/>
@@ -442,14 +456,14 @@ page {
       </view>
     </view>
     <view class="routeline" wx:if="{{routelineshow}}">
+      <image class="backimg" src="../../img/back.png"/>
       <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
         <repeat for="{{routeData}}" key="index" index="index" item="item">
           <view class="routebox" @tap="torouteDetail({{item.id}})">
             <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}"/>
             <view class="routebox-b">
               <view class="name">{{item.name?item.name:''}}</view>
-              <view class="distance">{{item.distance?item.distance:0}}</view>
-              <view class="look">2000人浏览</view>
+              <view class="look">建议浏览时间：{{item.proposalVisitTime?item.proposalVisitTime:""}}小时</view>
             </view>
           </view>
         </repeat>
