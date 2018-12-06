@@ -427,6 +427,7 @@ page {
               <view
                 class="kindselect"
                 style="bottom:{{currentindex==index?'-20rpx':'-80rpx'}};"
+                @tap="todetail({{item.deptId}})"
               >
                 <view class="kindselect-t">
                   <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}" mode="widthFix"/>
@@ -551,6 +552,14 @@ export default class Home extends wepy.page {
   };
   computed = {};
   methods = {
+    todetail(id) {
+      wx.navigateTo({
+          url: `/pages/addressdetail/index?id=${id}`,
+          success: function() {},
+          fail: function() {},
+          complete: function() {}
+        });
+    },
     tocurrentpos() {
       var that=this
       wx.getLocation({

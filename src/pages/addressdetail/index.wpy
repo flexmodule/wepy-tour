@@ -63,7 +63,7 @@ page {
       border-radius: 50%;
       background: #fff;
       box-shadow: 0 0 20rpx #999;
-      bottom: 0;
+      bottom: 34rpx;
       width: 80rpx;
       height: 80rpx;
       text-align: center;
