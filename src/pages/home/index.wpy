@@ -308,63 +308,61 @@ page {
       text-align: center;
     }
   }
-  .locationshadow {
-    z-index: 100;
-  }
-  .authshadow {
-    background: rgba(0, 0, 0, 0.3);
-    width: 100%;
+  .auth {
     position: fixed;
+    width: 100%;
     top: 0;
     left: 0;
+    background: rgba(0,0,0,.8);
     z-index: 99;
-    .alertbox {
-      width: 590rpx;
-      height: 480rpx;
-      border-radius: 8rpx;
-      background: #fff;
-      padding: 39rpx;
-      box-sizing: border-box;
-      position: fixed;
-      z-index: 100;
+    .authbox {
+      width: 546rpx;
+      height: 410rpx;
+      position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
       right: 0;
       margin: auto;
-      .wechat {
-        font: 36rpx/36rpx '';
+      padding: 178rpx 0 29rpx;
+      box-sizing: border-box;
+      text-align: center;
+      .img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
       }
-      .apply {
-        margin: 53rpx 0 62rpx;
-        display: flex;
-        image {
-          width: 96rpx;
-          height: 96rpx;
-          margin-right: 19rpx;
-        }
-        .applytxt {
-          font: 26rpx/90rpx '';
-        }
-      }
-      .applyList {
-        font: 26rpx/26rpx '';
-        color: #999;
-        margin-bottom: 84rpx;
-      }
-      .authBtn {
-        text-align: right;
-        button {
-          display: inline-block;
-          font: 32rpx/32rpx '';
-          color: #41cf8e;
+      button {
+        border: 0;
+        background: none;
+        line-height: 0;
+        &:after {
+          content: "";
           border: 0;
-          background: 0;
-          &:after {
-            content: '';
-            border: 0;
-          }
         }
+      }
+      .title {
+        font: 34rpx/42rpx "";
+        color: #000;
+      }
+      .des {
+        font: 24rpx/32rpx "";
+        color: #777;
+        margin: 26rpx auto 40rpx;
+      }
+      .authbtn {
+        width: 276rpx;
+        height: 62rpx;
+        color: #fff;
+        font: 34rpx/62rpx "";
+        text-align: center;
+        border-radius: 10rpx;
+        background: #3cace4;
+      }
+      .posauthbtn {
+        width: 320rpx;
       }
     }
   }
@@ -474,32 +472,24 @@ page {
         </view> -->
       </scroll-view>
     </view>
-    <!-- <view class="authshadow" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
-      <view class="alertbox">
-        <view class="wechat">微信授权</view>
-        <view class="apply">
-          <view class="applytxt">宾果旅行申请获取以下权限</view>
-        </view>
-        <view class="applyList">获取你的公开信息(昵称、头像等)</view>
-        <view class="authBtn">
-          <button wx:if="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">允许</button>
-          <view wx:else>请升级微信版本</view>
-        </view>
-      </view>
-    </view>
-    <view class="authshadow locationshadow" wx:if="{{locationAuth}}" style="height:{{oheight}}px">  
-      <view class="alertbox">
-				<view class="wechat">微信授权</view>
-        <view class="apply">
-          <view class="applytxt">汇享沙巴申请获取以下权限</view>
-        </view>
-        <view class="applyList">获取地理位置定位权限</view>
-				<view class="authBtn">
-          <button wx:if="{{locationcanIUse}}" open-type="openSetting" bindopensetting="getOpenSet">允许</button>
-          <view wx:else>请升级微信版本</view>
-        </view>
-      </view>
-    </view> -->
+    <cover-view class="auth" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
+      <cover-view class="authbox">
+        <cover-image class="img" src="../../img/auth.png"/>
+        <button class="title">欢迎来到探索河坊街</button>
+        <button class="des">吃喝玩乐的向导</button>
+        <button class="authbtn" wx:if="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">微信授权</button>
+        <button wx:else>请升级微信版本</button>
+      </cover-view>
+    </cover-view>
+    <cover-view class="auth" wx:if="{{locationAuth}}" style="height:{{oHeight}}px">
+      <cover-view class="authbox">
+        <cover-image class="img" src="../../img/auth.png"/>
+        <button class="title">欢迎来到探索河坊街</button>
+        <button class="des">吃喝玩乐的向导</button>
+        <button class="authbtn posauthbtn" wx:if="{{locationcanIUse}}" open-type="openSetting" bindopensetting="getOpenSet">微信授权地理定位</button>
+        <button wx:else>请升级微信版本</button>
+      </cover-view>
+    </cover-view>
   </view>
 </template>
 <script>
@@ -947,7 +937,7 @@ export default class Home extends wepy.page {
           });
       },
       fail: function(res) {
-        //  
+        that.authlocation();
       }
     });
   }
@@ -1027,38 +1017,38 @@ export default class Home extends wepy.page {
               .auth(`/ztTravel/api/miniAuth`, 'get', value)
               .then(function(res) {
                 console.log(res);
-                if (res.code == 0) {
+                if (res.code == 0) {  
                   wx.setStorageSync('openid', res.msg.openid);
                   wx.setStorageSync('userid', res.msg.userid);
                   wx.setStorageSync('nickName', e.detail.userInfo.nickName);
                   wx.setStorageSync('mobile', res.msg.mobile);
                   that.getAuth = false;
-                  wx.getSetting({
-                    success(res) {
-                      if (!res.authSetting['scope.userLocation']) {
-                        wx.authorize({
-                          scope: 'scope.userLocation',
-                          success() {
-                            console.log('授权成功');
-                          },
-                          fail() {
-                            wx.showModal({
-                              title: '警告',
-                              content: '您点击了拒绝授权，将无法调起定位功能！',
-                              showCancel: false,
-                              confirmText: '返回授权',
-                              success: function(res) {
-                                if (res.confirm) {
-                                  that.locationAuth = true;
-                                  that.$apply();
-                                }
-                              }
-                            });
-                          }
-                        });
-                      }
-                    }
-                  });
+                  // wx.getSetting({
+                  //   success(res) {
+                  //     if (!res.authSetting['scope.userLocation']) {
+                  //       wx.authorize({
+                  //         scope: 'scope.userLocation',
+                  //         success() {
+                  //           console.log('授权成功');
+                  //         },
+                  //         fail() {
+                  //           wx.showModal({
+                  //             title: '警告',
+                  //             content: '您点击了拒绝授权，将无法调起定位功能！',
+                  //             showCancel: false,
+                  //             confirmText: '返回授权',
+                  //             success: function(res) {
+                  //               if (res.confirm) {
+                  //                 that.locationAuth = true;
+                  //                 that.$apply();
+                  //               }
+                  //             }
+                  //           });
+                  //         }
+                  //       });
+                  //     }
+                  //   }
+                  // });
                   that.$apply();
                 }
               });
@@ -1099,6 +1089,14 @@ export default class Home extends wepy.page {
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
     }
+    if (wx.canIUse('cover-view')) {
+    } else {
+      // 如果希望用户在最新版本的客户端上体验您的小程序，可以这样子提示
+      wx.showModal({
+        title: '提示',
+        content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
+      })
+    }
     //数据初始化
     this.routelineshow = false;
     this.mappointshow = true;
@@ -1117,16 +1115,16 @@ export default class Home extends wepy.page {
     this.oHeight = res.windowHeight;
     this.mapheight = res.windowHeight - 281 * that.rpa;
     //授权
-    // wx.getSetting({
-    //   success(res) {
-    //     if (!res.authSetting['scope.userInfo']) {
-    //       that.getAuth = true;
-    //     } else {
-    //       that.getAuth = false;
-    //     }
-    //     that.$apply();
-    //   }
-    // });
+    wx.getSetting({
+      success(res) {
+        if (!res.authSetting['scope.userInfo']) {
+          that.getAuth = true;
+        } else {
+          that.getAuth = false;
+        }
+        that.$apply();
+      }
+    });
     //数据请求
     this.getmapdata('');
     this.$apply();

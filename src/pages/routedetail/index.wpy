@@ -43,6 +43,7 @@
         top: -48rpx;
         right: 49rpx;
         text-align: center;
+        box-shadow: 0 0 20rpx #999;
         width: 96rpx;
         height: 96rpx;
         background: #fff;
