@@ -96,9 +96,18 @@ page {
       .data-r {
         width: 42rpx;
         height: 60rpx;
-        image {
-          width: 100%;
+        text-align: center;
+        &:after {
+          content: "";
+          width: 0;
           height: 100%;
+          display: inline-block;
+          vertical-align: middle;
+        }
+        image {
+          width: 21rpx;
+          height: 30rpx;
+          vertical-align: middle;
         }
       }
     }

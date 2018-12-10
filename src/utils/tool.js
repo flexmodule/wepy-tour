@@ -18,27 +18,41 @@ export const randomString = function (passWord) {
 }
 export const tohtml = function (obj) {
   return obj.replace(/&amp;/g, '&')
-  .replace(/&lt;/g, '<')
-  .replace(/&gt;/g, '>')
-  .replace(/&quot;/g, "'")
-  .replace(/&yen;/g, '￥')
-  .replace(/&nbsp;/g, '')
-  .replace(/&iexcl;/g, '?')
-  .replace(/&laquo;/g, '?')
-  .replace(/&not;/g, '?')
-  .replace(/&middot;/g, '·')
-  .replace(/&cent;/g, '￠')
-  .replace(/&brvbar;/g, '|')
-  .replace(/&sect;/g, '§')
-  .replace(/&reg;/g, '')
-  .replace(/&macr;/g, '-')
-  .replace(/&deg;/g, '°')
-  .replace(/&copy;/g, '')
-  .replace(/&uml;/g, '¨')
-  .replace(/&plusmn;/g, '±')
-  .replace(/&ndash;/g, '-')
-  .replace(/&mdash;/g, '-')
-  .replace(/<>/g, '')
-  .replace(/src="\//g,'src="http://47.110.78.182/')
-  .replace(/&#39;/g, "'");
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, "'")
+    .replace(/&yen;/g, '￥')
+    .replace(/&nbsp;/g, '')
+    .replace(/&iexcl;/g, '?')
+    .replace(/&laquo;/g, '?')
+    .replace(/&not;/g, '?')
+    .replace(/&middot;/g, '·')
+    .replace(/&cent;/g, '￠')
+    .replace(/&brvbar;/g, '|')
+    .replace(/&sect;/g, '§')
+    .replace(/&reg;/g, '')
+    .replace(/&macr;/g, '-')
+    .replace(/&deg;/g, '°')
+    .replace(/&copy;/g, '')
+    .replace(/&uml;/g, '¨')
+    .replace(/&plusmn;/g, '±')
+    .replace(/&ndash;/g, '-')
+    .replace(/&mdash;/g, '-')
+    .replace(/<>/g, '')
+    .replace(/src="\//g, 'src="http://47.110.78.182/')
+    .replace(/&#39;/g, "'");
+}
+export const formatDate = function (date) {
+  var myyear = date.getFullYear();
+  console.log(myyear)
+  var mymonth = date.getMonth() + 1;
+  var myweekday = date.getDate();
+
+  if (mymonth < 10) {
+    mymonth = "0" + mymonth;
+  }
+  if (myweekday < 10) {
+    myweekday = "0" + myweekday;
+  }
+  return (myyear + "-" + mymonth + "-" + myweekday);
 }
