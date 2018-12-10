@@ -171,16 +171,16 @@ page {
           <image src="../../img/qrcode.png"/>
         </view>
       </view>
-      <view class="card-b">{{mycode}}</view>
+      <view class="card-b">{{myinfo.user.weixin.code?myinfo.user.weixin.code:""}}</view>
     </view>
     <view class="total">
       <view class="totalmoney">
         <view class="title">累计优惠金额</view>
-        <view class="num">{{totalmoney}}元</view>
+        <view class="num">{{myinfo.disAmount?myinfo.disAmount:0}}元</view>
       </view>
       <view class="totalshop" @tap="toshoplist">
         <view class="title">已覆盖商户</view>
-        <view class="num">{{totalshop}}家</view>
+        <view class="num">{{myinfo.deptNum?myinfo.deptNum:0}}家</view>
       </view>
     </view>
     <view class="body">
@@ -244,10 +244,10 @@ export default class My extends wepy.page {
   data = {
     overflowtxt: "auto",
     largecodeshow:false,
-    totalmoney:"236",
-    totalshop:1027,
     oHeight:"",
-    mycode:"111684986256"
+    mycode:"111684986256",
+    myinfo:{},
+    userid:""
   };
   computed = {};
 
@@ -296,6 +296,24 @@ export default class My extends wepy.page {
     this.$apply();
     }
   };
+  getperson() {
+    var that = this;
+    apifunc
+      .getperson(`/ztTravel/api/getUserCenter?id=${that.userid}`, 'get', "")
+      .then(function(res) {
+        if (res.code == 0) {
+         that.myinfo=res.msg;
+         that.myinfo.disAmount=that.myinfo.disAmount.toFixed(2);
+          that.$apply();
+        } else {
+          wepy.showToast({
+            title: '系统错误',
+            icon: 'none',
+            duration: 500
+          });
+        }
+      });
+  }
   createQrCode(url, canvasId, cavW, cavH) {
     //调用插件中的draw方法，绘制二维码图片
     var that = this;
@@ -327,6 +345,9 @@ export default class My extends wepy.page {
     var that=this
     var res = wx.getSystemInfoSync();
     this.oHeight = res.windowHeight;
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
   }
 }
 </script>

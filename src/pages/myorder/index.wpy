@@ -82,7 +82,7 @@
     <view class="main" style="height:{{oHeight}}px;">
       <scroll-view scroll-y bindscrolltolower="lower">
         <repeat for="{{orderlist}}" key="index" index="index" item="item">
-          <view class="orderbox" @tap="toDetail({{item.id}})">
+          <view class="orderbox" @tap="toDetail({{item.orderNo}})">
             <view class="orderbox-t">
               <view class="name">{{item.deptName?item.deptName:""}}</view>
               <view class="num">-{{item.payAmount?item.payAmount:""}}</view>
@@ -137,11 +137,12 @@ export default class Myorder extends wepy.page {
       } else if (that.bstop=="end") {
         this.enddate=e.detail.value;
         this.bstop="start";
-      }
+        this.getorderlist();
+      } 
     },
-    toDetail(id) {
+    toDetail(orderNo) {
       wx.navigateTo({
-        url: `/pages/orderdetail/index?id=${id}`,
+        url: `/pages/orderdetail/index?orderNo=${orderNo}`,
         success: function() {},
         fail: function() {},
         complete: function() {}

@@ -9,6 +9,12 @@ page {
     color: #ababab;
     text-align: center;
   }
+  .status {
+    color: #ababab;
+    text-align: center;
+    font: 26rpx/26rpx "";
+    margin-top: 30rpx;
+  }
   .money {
     font: 44rpx/44rpx "";
     margin: 40rpx auto 154rpx;
@@ -27,15 +33,16 @@ page {
 </style>
 <template>
   <view class="Orderdetail">
-    <view class="name">森林生活馆</view>
-    <view class="money">-8.00</view>
+    <view class="name">{{orderdetail.deptName?orderdetail.deptName:""}}</view>
+    <view class="status">{{orderdetail.orderStatus==1?"交易成功":(orderdetail.orderStatus==5?"已退款":"")}}</view>
+    <view class="money">-{{orderdetail.payAmount?orderdetail.payAmount:""}}</view>
     <view class="paytime">
       <view class="paytime-l">交易时间</view>
-      <view class="paytime-r">2018-12-1 11：20</view>
+      <view class="paytime-r">{{orderdetail.orderTime?orderdetail.orderTime:""}}</view>
     </view>
     <view class="orderno">
       <view class="orderno-l">交易单号</view>
-      <view class="orderno-r">20182555</view>
+      <view class="orderno-r">{{orderdetail.orderNo?orderdetail.orderNo:""}}</view>
     </view>
   </view>
 </template>
@@ -49,14 +56,34 @@ export default class Orderdetail extends wepy.page {
    
   };
   data = {
-    id:""
+    orderNo:"",
+    orderdetail:{}
   };
   computed = {};
 
   methods = {
 
   };
- 
+ getorderdetail() {
+   var that = this;
+    var data = {
+      orderNo: that.orderNo,
+    };
+    apifunc
+      .getorderlist('/ztTravel/open/order/get', 'get', data)
+      .then(function(res) {
+        if (res.code == 0) {
+         that.orderdetail=res.msg
+          that.$apply();
+        } else {
+          wepy.showToast({
+            title: '系统错误',
+            icon: 'none',
+            duration: 500
+          });
+        }
+      });
+ }
   onShow() {
     
   }
@@ -64,11 +91,13 @@ export default class Orderdetail extends wepy.page {
     var that=this
     var res = wx.getSystemInfoSync();
     this.oHeight = res.windowHeight;
-    if(options.id) {
-      this.id=options.id;
+    this.orderdetail();
+    if(options.orderNo) {
+      this.orderNo=options.orderNo;
     } else {
-      this.id=""
+      this.orderNo=""
     }
+    this.getorderdetail();
   }
 }
 </script>
