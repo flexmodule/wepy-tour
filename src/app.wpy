@@ -38,7 +38,8 @@ export default class extends wepy.app {
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
-    }
+    },
+     navigateToMiniProgramAppIdList: ["wxeb490c6f9b154ef9"]
   };
 
   globalData = {
@@ -87,6 +88,13 @@ export default class extends wepy.app {
       });
     }
    
+  }
+  onShow(data) {
+    if(data.referrerInfo.appId=="wxeb490c6f9b154ef9") {
+      if(data.referrerInfo.extraData) {
+        console.log(data.referrerInfo.extraData)
+      }
+    }
   }
   getAuthKey() {
     var appid = 'wx7a4c86d3afffdaf3';

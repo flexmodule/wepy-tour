@@ -161,7 +161,7 @@ page {
 <template>
   <view class="My" style="overflow:{{overflowtxt}}">
     <view class="title">会员</view>
-    <view class="card">
+    <view class="card" @tap="getcard">
       <view class="card-t">
         <view class="cardtl">
           <image src=""/>
@@ -173,6 +173,7 @@ page {
       </view>
       <view class="card-b">{{myinfo.user.weixin.code?myinfo.user.weixin.code:""}}</view>
     </view>
+    <navigator target="miniProgram" app-id="wxeb490c6f9b154ef9" extra-data="{{cardtxt}}">会员卡开卡</navigator>
     <view class="total">
       <view class="totalmoney">
         <view class="title">累计优惠金额</view>
@@ -242,6 +243,7 @@ export default class My extends wepy.page {
    
   };
   data = {
+    cardtxt:{},
     overflowtxt: "auto",
     largecodeshow:false,
     oHeight:"",
@@ -252,6 +254,39 @@ export default class My extends wepy.page {
   computed = {};
 
   methods = {
+    getcard() {
+      var that = this;
+    apifunc
+      .getperson(`/ztTravel/api/wxCard/geturl?deptId=${''}`, 'get', "")
+      .then(function(res) {
+        if (res.code == 0) {
+          console.log(res.msg.split("?")[1].split("&"))
+          that.cardtxt.encrypt_card_id=res.msg.split("?")[1].split("&")[2].split("=")[1]
+          that.cardtxt.outer_str=res.msg.split("?")[1].split("&")[3].split("=")[1]
+          that.cardtxt.biz=res.msg.split("?")[1].split("&")[4].split("=")[1]
+          console.log(that.cardtxt)
+          wx.navigateToMiniProgram({
+  appId: 'wxeb490c6f9b154ef9', //固定为此 appid，不可改动
+  extraData: that.cardtxt, // 包括 encrypt_card_id, outer_str, biz三个字段，须从 step3 中获得的链接中获取参数
+  success: function(res) {
+    console.log(res)
+  },
+  fail: function(err) {
+    console.log(err)
+  },
+  complete: function() {
+  }
+})
+          that.$apply();
+        } else {
+          wepy.showToast({
+            title: '系统错误',
+            icon: 'none',
+            duration: 500
+          });
+        }
+      });
+    },
     tomylike() {
       wx.navigateTo({
         url: `/pages/mycollect/index`,
