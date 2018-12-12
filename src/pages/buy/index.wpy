@@ -145,9 +145,9 @@ export default class Buy extends wepy.page {
         this.totalmoney = '';
       } else {
       }
-      this.dismoney = Number(this.totalmoney) - Number(this.nosale);
-      this.salemoney=Number(this.dismoney)*(1-Number(this.discount));
-      this.totalcount=Number(this.dismoney)*Number(this.discount)+Number(this.nosale);
+      this.dismoney = (Number(this.totalmoney) - Number(this.nosale)).toFixed(2);
+      this.salemoney=(Number(this.dismoney)*(1-Number(this.discount))).toFixed(2);
+      this.totalcount=(Number(this.dismoney)*Number(this.discount)+Number(this.nosale)).toFixed(2);
     },
     inputsale(e) {
       this.nosale = e.detail.value;
@@ -161,9 +161,9 @@ export default class Buy extends wepy.page {
         this.nosale = '';
       } else {
       }
-      this.dismoney = Number(this.totalmoney) - Number(this.nosale);
-      this.salemoney=Number(this.dismoney)*(1-Number(this.discount));
-      this.totalcount=Number(this.dismoney)*Number(this.discount)+Number(this.nosale);
+      this.dismoney = (Number(this.totalmoney) - Number(this.nosale)).toFixed(2);
+      this.salemoney=(Number(this.dismoney)*(1-Number(this.discount))).toFixed(2);
+      this.totalcount=(Number(this.dismoney)*Number(this.discount)+Number(this.nosale)).toFixed(2);
     }
   };
   getperson() {
