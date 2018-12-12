@@ -1,0 +1,198 @@
+<style lang="less">
+page {
+  height: 100%;
+}
+.Buy {
+  height: 100%;
+  background: #f7f7f7;
+  padding: 86rpx 56rpx;
+  box-sizing: border-box;
+  .buytotal {
+    display: flex;
+    padding: 22rpx 20rpx;
+    box-sizing: border-box;
+    border-radius: 10rpx;
+    border: 1rpx solid #eee;
+    background: #fff;
+    .buytotal-l {
+      width: 342rpx;
+      font: 30rpx/56rpx '';
+      height: 56rpx;
+    }
+    .buytotal-r {
+      flex: 1;
+      font-size: 0;
+      height: 56rpx;
+      input {
+        width: 100%;
+        line-height: 0;
+        height: 100%;
+        font: 36rpx/56rpx '';
+        text-align: right;
+      }
+    }
+  }
+  .saleinfo {
+    font: 22rpx/22rpx '';
+    color: #f25249;
+    text-align: right;
+    margin: 20rpx 0 48rpx;
+  }
+  .blockline {
+    width: 40rpx;
+    height: 8rpx;
+    background: #75bee2;
+    margin: 60rpx 0 44rpx;
+  }
+  .money {
+    .data {
+      display: flex;
+      justify-content: space-between;
+      font: 30rpx/30rpx '';
+      margin-bottom: 46rpx;
+      .sale {
+        color: #fa5346;
+      }
+    }
+  }
+  .totalcount {
+    padding: 40rpx 0;
+    border-top: 1rpx solid rgba(0, 0, 0, 0.2);
+    font: 36rpx/36rpx '';
+    display: flex;
+    justify-content: space-between;
+    .totalcount-r {
+      color: #ff0000;
+    }
+  }
+  .pay {
+    width: 640rpx;
+    height: 90rpx;
+    background: #ff9904;
+    font: 36rpx/90rpx '';
+    color: #fff;
+    text-align: center;
+    margin: 180rpx auto 0;
+    border-radius: 10rpx;
+  }
+}
+</style>
+<template>
+  <view class="Buy">
+    <view class="buytotal">
+      <view class="buytotal-l">请输入实际消费金额：</view>
+      <view class="buytotal-r"><input @input="inputfact" value="{{totalmoney}}"/></view>
+    </view>
+    <view class="saleinfo">使用会员优惠买单功能 享{{discount}}折优惠</view>
+    <view class="buytotal">
+      <view class="buytotal-l">请输入不参加优惠金额：</view>
+      <view class="buytotal-r"><input @input="inputsale" value="{{nosale}}"/></view>
+    </view>
+    <view class="blockline"></view>
+    <view class="money">
+      <view class="data">
+        <view class="data-l">共消费：</view>
+        <view class="data-r">{{totalmoney}}</view>
+      </view>
+      <view class="data">
+        <view class="data-l">参与优惠金额：</view>
+        <view class="data-r">{{dismoney}}</view>
+      </view>
+      <view class="data">
+        <view class="data-l">优惠：</view>
+        <view class="data-r sale">-{{salemoney}}</view>
+      </view>
+    </view>
+    <view class="totalcount">
+      <view class="totalcount-l">合计：</view>
+      <view class="totalcount-r">{{totalcount}}</view>
+    </view>
+    <view class="pay" @tap="pay">立即支付</view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class Buy extends wepy.page {
+  components = {};
+  data = {
+    discount: '0.75',
+    oHeight: '',
+    userid: '',
+    totalmoney: '',
+    dismoney: '',
+    salemoney: '',
+    totalcount: '',
+    nosale: ''
+  };
+  computed = {};
+
+  methods = {
+    pay() {
+
+    },
+    inputfact(e) {
+      var reg = /^[0-9]+\.?[0-9]*$/;
+      this.totalmoney = e.detail.value;
+      if (!reg.test(e.detail.value)) {
+        wx.showToast({
+          title: '请输入数字',
+          icon: 'none',
+          duration: 500
+        });
+        this.totalmoney = '';
+      } else {
+      }
+      this.dismoney = Number(this.totalmoney) - Number(this.nosale);
+      this.salemoney=Number(this.dismoney)*(1-Number(this.discount));
+      this.totalcount=Number(this.dismoney)*Number(this.discount)+Number(this.nosale);
+    },
+    inputsale(e) {
+      this.nosale = e.detail.value;
+      var reg = /^[0-9]+\.?[0-9]*$/;
+      if (!reg.test(e.detail.value)) {
+        wx.showToast({
+          title: '请输入数字',
+          icon: 'none',
+          duration: 500
+        });
+        this.nosale = '';
+      } else {
+      }
+      this.dismoney = Number(this.totalmoney) - Number(this.nosale);
+      this.salemoney=Number(this.dismoney)*(1-Number(this.discount));
+      this.totalcount=Number(this.dismoney)*Number(this.discount)+Number(this.nosale);
+    }
+  };
+  getperson() {
+    var that = this;
+    apifunc
+      .getperson(`/ztTravel/api/getUserCenter?id=${that.userid}`, 'get', '')
+      .then(function(res) {
+        if (res.code == 0) {
+          that.myinfo = res.msg;
+          that.myinfo.disAmount = that.myinfo.disAmount.toFixed(2);
+          that.$apply();
+        } else {
+          wepy.showToast({
+            title: '系统错误',
+            icon: 'none',
+            duration: 500
+          });
+        }
+      });
+  }
+
+  onShow() {}
+  onLoad(options) {
+    var that = this;
+    var res = wx.getSystemInfoSync();
+    this.oHeight = res.windowHeight;
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+  }
+}
+</script>
