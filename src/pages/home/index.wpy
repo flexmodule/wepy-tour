@@ -236,7 +236,7 @@ page {
                 color: #fff;
                 border-radius: 30rpx;
                 background: #2299dd;
-                box-shadow: #c3e3f4 6rpx 16rpx 30rpx; 
+                box-shadow: #c3e3f4 6rpx 16rpx 30rpx;
                 margin: 0 auto;
               }
             }
@@ -247,15 +247,15 @@ page {
   }
   .routeline {
     position: relative;
-  min-height: 100%;
-  .backimg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -6;
-  }
+    min-height: 100%;
+    .backimg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -6;
+    }
     padding: 26rpx 0;
     .routebox {
       width: 680rpx;
@@ -313,7 +313,7 @@ page {
     width: 100%;
     top: 0;
     left: 0;
-    background: rgba(0,0,0,.8);
+    background: rgba(0, 0, 0, 0.8);
     z-index: 99;
     .authbox {
       width: 546rpx;
@@ -339,16 +339,16 @@ page {
         background: none;
         line-height: 0;
         &:after {
-          content: "";
+          content: '';
           border: 0;
         }
       }
       .title {
-        font: 34rpx/42rpx "";
+        font: 34rpx/42rpx '';
         color: #000;
       }
       .des {
-        font: 24rpx/32rpx "";
+        font: 24rpx/32rpx '';
         color: #777;
         margin: 26rpx auto 40rpx;
       }
@@ -356,7 +356,7 @@ page {
         width: 276rpx;
         height: 62rpx;
         color: #fff;
-        font: 34rpx/62rpx "";
+        font: 34rpx/62rpx '';
         text-align: center;
         border-radius: 10rpx;
         background: #3cace4;
@@ -544,25 +544,25 @@ export default class Home extends wepy.page {
   methods = {
     todetail(id) {
       wx.navigateTo({
-          url: `/pages/addressdetail/index?id=${id}`,
-          success: function() {},
-          fail: function() {},
-          complete: function() {}
-        });
+        url: `/pages/addressdetail/index?id=${id}`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+      });
     },
     tocurrentpos() {
-      var that=this
+      var that = this;
       wx.getLocation({
-      type: 'wgs84',
-      success: function(res) {
-        that.currentlong = res.longitude;
-        that.currentlat = res.latitude;
-        that.$apply();
-      }
-      })
+        type: 'wgs84',
+        success: function(res) {
+          that.currentlong = res.longitude;
+          that.currentlat = res.latitude;
+          that.$apply();
+        }
+      });
     },
     showswiper() {
-      var that=this
+      var that = this;
       this.mapbottom = 0;
       this.mapheight = this.oHeight - 281 * that.rpa;
     },
@@ -745,50 +745,60 @@ export default class Home extends wepy.page {
           userId: that.userid,
           currentLatitude: res.latitude,
           currentLongitude: res.longitude,
-          deptName:that.searchtxt
+          deptName: that.searchtxt
         };
         //搜索数据
         apifunc
           .searchInfo('/ztTravel/open/dept/page', 'get', data)
           .then(function(res) {
-            if (res.meta.success) {
-              that.searchdata = res.list;
-              var initdata = that.maplistData[0];
-              for (var p = 0; p <= that.maplistData.length - 1; p++) {
-                if (that.maplistData[p].id == that.searchdata.id) {
-                  var currentdata = that.maplistData[p];
-                  that.maplistData.splice(p, 1, initdata);
-                  that.maplistData.splice(1, 1, currentdata);
-                  break;
-                } else {
-                  if (p == that.maplistData.length - 1) {
-                    var value = {
-                      iconPath: '../../img/address.png',
-                      id: 0,
-                      latitude: '',
-                      longitude: '',
-                      width: 32,
-                      height: 42.5
-                    };
-                    if (
-                      that.searchdata.latitude &&
-                      that.searchdata.longitude &&
-                      that.searchdata.id
-                    ) {
-                      value.latitude = that.searchdata.latitude;
-                      value.longitude = that.searchdata.longitude;
-                      value.id = that.searchdata.id;
+            if (res.code == 0) {
+              if (res.msg.length == 0) {
+                wx.showToast({
+                  title: '不涵盖此地点，请重新输入哦!',
+                  icon: 'none',
+                  duration: 1000
+                });
+              } else {
+                that.searchdata = res.msg;
+                if (that.searchdata[0]) {
+                  var initdata = that.searchdata[0];
+                  for (var p = 0; p <= that.maplistData.length - 1; p++) {
+                    if (that.maplistData[p].deptId == initdata.deptId) {
+                      var currentdata = that.maplistData[p];
+                      that.maplistData.splice(p, 1, initdata);
+                      that.maplistData.splice(1, 1, currentdata);
+                      break;
+                    } else {
+                      if (p == that.maplistData.length - 1) {
+                        var value = {
+                          iconPath: '../../img/address.png',
+                          id: 0,
+                          latitude: '',
+                          longitude: '',
+                          width: 32,
+                          height: 42.5
+                        };
+                        if (
+                          that.searchdata.latitude &&
+                          that.searchdata.longitude &&
+                          that.searchdata.deptId
+                        ) {
+                          value.latitude = that.searchdata.latitude;
+                          value.longitude = that.searchdata.longitude;
+                          value.id = that.searchdata.deptId;
+                        }
+                        that.markers.splice(1, 0, value);
+                        that.maplistData.splice(1, 0, that.searchdata);
+                        break;
+                      }
                     }
-                    that.markers.splice(1, 0, value);
-                    that.maplistData.splice(1, 0, that.searchdata);
-                    break;
                   }
                 }
-              }
-              if (that.maplistData[1]) {
-                that.currentlat = that.maplistData[1].latitude;
-                that.currentlong = that.maplistData[1].longitude;
-                that.markers[1].iconPath = '../../img/biu.png';
+                if (that.maplistData[1]) {
+                  that.currentlat = that.maplistData[1].latitude;
+                  that.currentlong = that.maplistData[1].longitude;
+                  that.markers[1].iconPath = '../../img/biu.png';
+                }
               }
               that.$apply();
             }
@@ -815,7 +825,7 @@ export default class Home extends wepy.page {
       type: 'wgs84',
       success: function(res) {
         that.longitude = res.longitude;
-        that.latitude = res.latitude ;
+        that.latitude = res.latitude;
         var value = {
           type: type,
           classId: '',
@@ -849,7 +859,7 @@ export default class Home extends wepy.page {
                   latitude: '',
                   longitude: '',
                   width: 32,
-                  height: 42.5,
+                  height: 42.5
                   // label: {
                   //   content: '',
                   //   fontSize: 12,
@@ -874,7 +884,7 @@ export default class Home extends wepy.page {
                 that.currentlong = that.maplistData[1].longitude;
                 that.markers[1].iconPath = '../../img/biu.png';
               }
-              console.log(that.currentlat,that.currentlong,that.markers)
+              console.log(that.currentlat, that.currentlong, that.markers);
               that.$apply();
             }
           });
@@ -909,7 +919,7 @@ export default class Home extends wepy.page {
           pageSize: that.params.pageSize,
           currentLatitude: res.latitude,
           currentLongitude: res.longitude,
-          lineType:""
+          lineType: ''
         };
         apifunc
           .getroutedata('/ztTravel/open/line/page', 'post', value)
@@ -1024,7 +1034,7 @@ export default class Home extends wepy.page {
               .auth(`/ztTravel/api/miniAuth`, 'get', value)
               .then(function(res) {
                 console.log(res);
-                if (res.code == 0) {  
+                if (res.code == 0) {
                   wx.setStorageSync('openid', res.msg.openid);
                   wx.setStorageSync('userid', res.msg.userid);
                   wx.setStorageSync('nickName', e.detail.userInfo.nickName);
@@ -1101,8 +1111,9 @@ export default class Home extends wepy.page {
       // 如果希望用户在最新版本的客户端上体验您的小程序，可以这样子提示
       wx.showModal({
         title: '提示',
-        content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
-      })
+        content:
+          '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
+      });
     }
     //数据初始化
     this.routelineshow = false;
