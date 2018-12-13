@@ -76,7 +76,7 @@
     </view>
     <view class="totalnum">商户总数：{{totalnum}}</view>
     <view class="main">
-      <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
+      <scroll-view scroll-y style="height:{{oHeight}}px;" lower-threshold="100px" bindscrolltolower="lower" enable-back-to-top="true">
         <repeat for="{{shopdatalist}}" key="index" index="index" item="item">
           <view class="shopbox" @tap="toDetail({{item.id}})">
             <view class="data">001</view>

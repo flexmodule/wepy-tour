@@ -80,7 +80,7 @@
       </view>
     </view>
     <view class="main" style="height:{{oHeight}}px;">
-      <scroll-view scroll-y bindscrolltolower="lower">
+      <scroll-view scroll-y lower-threshold="100px" bindscrolltolower="lower" enable-back-to-top="true">
         <repeat for="{{orderlist}}" key="index" index="index" item="item">
           <view class="orderbox" @tap="toDetail({{item.orderNo}})">
             <view class="orderbox-t">

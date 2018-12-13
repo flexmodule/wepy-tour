@@ -22,7 +22,6 @@ setStore(store);
 export default class extends wepy.app {
   config = {
     pages: [
-      "pages/buy/index",
       'pages/home/index',
       'pages/addressdetail/index',
       'pages/routedetail/index',
@@ -33,7 +32,7 @@ export default class extends wepy.app {
       "pages/myorder/index",
       "pages/mycollect/index",
       "pages/orderdetail/index",
-      
+      "pages/buy/index",
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -50,7 +49,8 @@ export default class extends wepy.app {
       key: 'RIEBZ-V6MWI-SLQGO-54AX4-OEUFE-FQFUU'
     }),
     appid: 'wxa42e2a2ef158855a',
-    avatarUrl:""
+    avatarUrl:"",
+    headImg:""
   };
 
   constructor() {

@@ -83,7 +83,7 @@ page {
       <view class="buytotal-l">请输入实际消费金额：</view>
       <view class="buytotal-r"><input @input="inputfact" value="{{totalmoney}}"/></view>
     </view>
-    <view class="saleinfo">使用会员优惠买单功能 享{{discount}}折优惠</view>
+    <view class="saleinfo">使用会员优惠买单功能 享{{discountnum}}折优惠</view>
     <view class="buytotal">
       <view class="buytotal-l">请输入不参加优惠金额：</view>
       <view class="buytotal-r"><input @input="inputsale" value="{{nosale}}"/></view>
@@ -118,6 +118,7 @@ import { imgBaseUrl } from '@/utils/env.js';
 export default class Buy extends wepy.page {
   components = {};
   data = {
+    discountnum:"",
     discount: '0.75',
     oHeight: '',
     userid: '',
@@ -187,12 +188,21 @@ export default class Buy extends wepy.page {
 
   onShow() {}
   onLoad(options) {
+    console.log(options)
     var that = this;
     var res = wx.getSystemInfoSync();
     this.oHeight = res.windowHeight;
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
     }
+    if(options.discount) {
+      this.discountnum=Number(options.discount);
+    } else {
+      this.discountnum="";
+    }
+    this.discount=this.discountnum/10;
+    console.log(this.discountnum,this.discount)
+    this.$apply();
   }
 }
 </script>

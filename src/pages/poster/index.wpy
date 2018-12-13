@@ -185,7 +185,6 @@ export default class Poster extends wepy.page {
     wx.showLoading({
       title: '正在快马加鞭帮您绘制，请稍等...'
     });
-    console.log(that.$parent.globalData.headImg)
     if (that.$parent.globalData.headImg != '') {
       that.handlePoster();
     } else {
@@ -205,13 +204,12 @@ export default class Poster extends wepy.page {
   handlePoster() {
     var that = this;
     var data = {
-      appid: that.$parent.globalData.appid,
-      path: `pages/addressdetail/index`,
-      placeId: that.id,
+      path: `pages/addressdetail/index?id=${that.id}`,
+      deptId: that.id,
       isHyaline: true,
       width: 75
     };
-    apifunc.qrcode(`/tour/api/genWxacode`, 'get', data).then(function(res) {
+    apifunc.qrcode(`/ztTravel/api/genWxacode`, 'get', data).then(function(res) {
       if (res.meta.success) {
         if (typeof res.data === 'string') {
           var qrurl = res.data.replace(
@@ -249,7 +247,7 @@ export default class Poster extends wepy.page {
           .getFoodDetail(`/tour/oversea/getPlaceInfo`, 'get', data)
           .then(function(res) {
             console.log(res);
-            if (res.meta.success) {
+            if (res.code==0) {
               that.foodDetail = res.data;
               var imgurl = that.foodDetail.mainImg.replace(
                 /http:\/\/www.hx-trip.cn/g,

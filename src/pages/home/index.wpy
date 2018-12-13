@@ -729,20 +729,27 @@ export default class Home extends wepy.page {
   //搜索，搜索先初始化当前分类数据
   getsearchdata() {
     var that = this;
-    this.getmapdata(that.isshowNav);
     wx.getLocation({
       type: 'wgs84',
       success: function(res) {
         that.longitude = res.longitude;
         that.latitude = res.latitude;
         var data = {
-          name: '',
-          currentLatitude: that.latitude,
-          currentLongitude: that.longitude
+          type: that.isshowNav,
+          classId: '',
+          isRecommend: 0,
+          pageNum: 1,
+          pageSize: 0,
+          limitCount: '',
+          orderBy: '',
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude,
+          deptName:that.searchtxt
         };
         //搜索数据
         apifunc
-          .searchInfo('/tour/oversea/search', 'get', data)
+          .searchInfo('/ztTravel/open/dept/page', 'get', data)
           .then(function(res) {
             if (res.meta.success) {
               that.searchdata = res.list;
@@ -751,7 +758,7 @@ export default class Home extends wepy.page {
                 if (that.maplistData[p].id == that.searchdata.id) {
                   var currentdata = that.maplistData[p];
                   that.maplistData.splice(p, 1, initdata);
-                  that.maplistData.splice(0, 1, currentdata);
+                  that.maplistData.splice(1, 1, currentdata);
                   break;
                 } else {
                   if (p == that.maplistData.length - 1) {
@@ -772,16 +779,16 @@ export default class Home extends wepy.page {
                       value.longitude = that.searchdata.longitude;
                       value.id = that.searchdata.id;
                     }
-                    that.markers.unshift(value);
-                    that.maplistData.unshift(that.searchdata);
+                    that.markers.splice(1, 0, value);
+                    that.maplistData.splice(1, 0, that.searchdata);
                     break;
                   }
                 }
               }
-              if (that.maplistData[0]) {
-                that.currentlat = that.maplistData[0].latitude;
-                that.currentlong = that.maplistData[0].longitude;
-                that.markers[0].iconPath = '../../img/biu.png';
+              if (that.maplistData[1]) {
+                that.currentlat = that.maplistData[1].latitude;
+                that.currentlong = that.maplistData[1].longitude;
+                that.markers[1].iconPath = '../../img/biu.png';
               }
               that.$apply();
             }

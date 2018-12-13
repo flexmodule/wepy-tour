@@ -1,6 +1,6 @@
 <style lang="less">
 .Mycollect {
-  padding: 68rpx 36rpx 0;
+  padding: 0 36rpx;
   position: relative;
   min-height: 100%;
   .backimg {
@@ -12,6 +12,9 @@
     z-index: -6;
   }
   .main {
+    scroll-view {
+      padding: 68rpx 0;
+    }
     .likebox {
       box-shadow: #afafaf 8rpx 0rpx 14rpx;
       padding: 20rpx;
@@ -114,7 +117,7 @@
   <view class="Mycollect">
     <image class="backimg" src="../../img/back.png"/>
     <view class="main">
-      <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
+      <scroll-view scroll-y style="height:{{oHeight}}px;" lower-threshold="100px" bindscrolltolower="lower" enable-back-to-top="true">
         <repeat for="{{likelist}}" key="index" index="index" item="item">
           <view class="likebox" @tap="toDetail({{item.deptId}})">
             <view class="likebox-l">
@@ -197,7 +200,7 @@ export default class Mycollect extends wepy.page {
     if (!this.params.end) {
       that.loadmore = true;
       if (that.userid) {
-        that.getcollectdata();
+        that.getcollectdata("");
       }
     }
   }
@@ -222,7 +225,7 @@ export default class Mycollect extends wepy.page {
           .then(function(res) {
             console.log(res);
             if (res.code == 0) {
-              var listdata = res.msg.list;
+              var listdata = res.msg;
               for (var i = 0; i <= that.likelist.length - 1; i++) {
                 if (that.likelist[i].distance >= 1000) {
                   that.likelist[i].distance =
@@ -231,7 +234,6 @@ export default class Mycollect extends wepy.page {
                   that.likelist[i].distance = that.likelist[i].distance + 'm';
                 }
               }
-
               listdata.forEach((order, i) => {
                 that.likelist.push(order);
               });
