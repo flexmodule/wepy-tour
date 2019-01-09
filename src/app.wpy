@@ -92,12 +92,7 @@ export default class extends wepy.app {
    
   }
   onShow(data) {
-    console.log(data)
-    if(data.referrerInfo.appId=="wxeb490c6f9b154ef9") {
-      if(data.referrerInfo.extraData) {
-        console.log(data.referrerInfo.extraData)
-      }
-    }
+    
   }
   getAuthKey() {
     var appid = 'wx7a4c86d3afffdaf3';

@@ -114,7 +114,7 @@
               left: -36rpx;
               background: #fcfcfc;
               &:after {
-                content: "";
+                content: '';
                 position: absolute;
                 width: 20rpx;
                 height: 20rpx;
@@ -137,7 +137,7 @@
             }
             .maintxt {
               padding: 26rpx 22rpx;
-              font: 22rpx/34rpx "";
+              font: 22rpx/34rpx '';
             }
           }
         }
@@ -157,11 +157,11 @@
         id="map"
         longitude="{{currentlong?currentlong:''}}"
         latitude="{{currentlat?currentlat:''}}"
-        scale="15"
+        scale="12"
         markers="{{markers}}"
         bindmarkertap="markertap"
-        bindregionchange="regionchange"
         show-location
+        polyline="{{polyline}}"
       ></map>
       <cover-view class="tolarge" catchtap="tolarge">
         <cover-image class="img" src="../../img/route.png"/>
@@ -173,33 +173,24 @@
         <view class="title">行程详情</view>
         <view class="routebody">
           <view class="palcedata">
-            <view class="placetitle"><view class="point"></view>出发：上海</view>
+            <view class="placetitle"><view class="point"></view>出发：{{startpoint}}</view>
           </view>
           <view class="palcedata">
-            <view class="placetitle"><view class="point"></view>到达：京都</view>
+            <view class="placetitle"><view class="point"></view>到达：{{movetopoint}}</view>
           </view>
-          <view class="distance">
-            <view class="img"><image src="../../img/people.png"/></view>
-            <view class="distxt">距离1395km</view>
-          </view>
-          <view class="palcedata">
-            <view class="placetitle"><view class="point"></view>京都站kyoto</view>
-            <view class="main">
-              <image src="{{routedetail.mainImg?imgBaseUrl+routedetail.mainImg:''}}"/>
-              <view class="maintxt">京都火车站是日本建筑师原广司的代表作，是一个综合建筑体，包括酒店、百货、购物中心、电影院、博物馆、展览厅、地区政府办事处、停车场等。它像一个代表国际城市的主题公园，兼收了外国的设计因素：美国购物中心式的中庭、西方城市的传统公共空间以及日本的交通中心。京都火车站已经不是一个纯粹的火车站，它已是城市的大型开敞式露天舞台、大型活动的聚会中心、古城全景的观赏点、购物中心和空中城市。当然这里也是火车站和交通枢纽。</view>
+          <repeat for="{{routeData}}" key="index" index="index" item="item">
+            <view class="distance">
+              <view class="img"><image src="../../img/people.png"/></view>
+              <view class="distxt">距离1395km</view>
             </view>
-          </view>
-          <view class="distance">
-            <view class="img"><image src="../../img/people.png"/></view>
-            <view class="distxt">距离1395km</view>
-          </view>
-          <view class="palcedata">
-            <view class="placetitle"><view class="point"></view>京都站kyoto</view>
-            <view class="main">
-              <image src="{{routedetail.mainImg?imgBaseUrl+routedetail.mainImg:''}}"/>
-              <view class="maintxt">京都火车站是日本建筑师原广司的代表作，是一个综合建筑体，包括酒店、百货、购物中心、电影院、博物馆、展览厅、地区政府办事处、停车场等。它像一个代表国际城市的主题公园，兼收了外国的设计因素：美国购物中心式的中庭、西方城市的传统公共空间以及日本的交通中心。京都火车站已经不是一个纯粹的火车站，它已是城市的大型开敞式露天舞台、大型活动的聚会中心、古城全景的观赏点、购物中心和空中城市。当然这里也是火车站和交通枢纽。</view>
+            <view class="palcedata">
+              <view class="placetitle"><view class="point"></view>{{item.name?item.name:''}}</view>
+              <view class="main">
+                <image src="{{item.placeImg?imgBaseUrl+item.placeImg:''}}"/>
+                <view class="maintxt">{{item.detail?item.detail:''}}</view>
+              </view>
             </view>
-          </view>
+          </repeat>
           <view class="palcedata">
             <view class="placetitle"><view class="point"></view>未完待续</view>
           </view>
@@ -227,7 +218,18 @@ export default class Routedetail extends wepy.page {
     userid: '',
     routedetail: {},
     oHeight: '',
-    imgBaseUrl:""
+    imgBaseUrl: '',
+    routeData: [],
+    startpoint: '',
+    movetopoint: '',
+    polyline: [
+      {
+        points: [],
+        color: '#FF0000DD',
+        width: 4,
+        dottedLine: false
+      }
+    ]
   };
   computed = {};
 
@@ -256,14 +258,60 @@ export default class Routedetail extends wepy.page {
           .getFoodDetail(`/ztTravel/open/line/get`, 'get', data)
           .then(function(res) {
             console.log(res);
+            that.routeData = [];
             if (res.code == 0) {
               that.routedetail = res.msg;
-              // if (that.foodDetail.distance >= 1000) {
-              //   that.foodDetail.distance =
-              //     (that.foodDetail.distance / 1000).toFixed(1) + 'km';
-              // } else {
-              //   that.foodDetail.distance = that.foodDetail.distance + 'm';
-              // }
+              if (that.routedetail.places) {
+                if (
+                  that.routedetail.places[0].name &&
+                  that.routedetail.places[1].name
+                ) {
+                  that.startpoint = that.routedetail.places[0].name;
+                  that.movetopoint = that.routedetail.places[1].name;
+                  that.currentlat = that.routedetail.places[0].latitude;
+                  that.currentlong = that.routedetail.places[0].longitude;
+                }
+                if (that.routedetail.places.length >= 3) {
+                  for (
+                    var i = 0;
+                    i <= that.routedetail.places.length - 1;
+                    i++
+                  ) {
+                    var data = {};
+                    data.latitude = that.routedetail.places[i].latitude;
+                    data.longitude = that.routedetail.places[i].longitude;
+                    that.polyline[0].points.push(data);
+                    if (i >= 1) {
+                      var qqmapsdk=that.$parent.globalData.qqmapsdk;
+                      qqmapsdk.calculateDistance({
+
+                          from: {
+                            "latitude": that.routedetail.places[i-1].latitude,
+                            "longitude": that.routedetail.places[i-1].longitude
+                          },
+                          to: [{
+                            "latitude":that.routedetail.places[i].latitude,
+                            "longitude":that.routedetail.places[i].longitude
+                          }],
+                          success: function(res) {
+                            if (res.status == 0) {
+                              console.log(res)
+                              if (res.result.elements[0].distance >= 1000) {
+                                  that.routedetail.places[i].distance =
+                                    (res.result.elements[0].distance / 1000).toFixed(1) + 'km';
+                                } else {
+                                  that.routedetail.places[i].distance = res.result.elements[0].distance + 'm';
+                                }
+                              that.routeData.push(that.routedetail.places[i]);
+                            }
+                          }
+                      })
+                      
+                    }
+                  }
+                }
+              }
+              
               // if (res.msg.specialImgs) {
               //   that.imgUrls = [];
               //   var specialImgsarr = res.msg.specialImgs.split(',');

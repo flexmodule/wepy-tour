@@ -167,13 +167,12 @@ page {
           <image src=""/>
           <view class="cardname">CAT</view>
         </view>
-        <view class="cardtr" @tap="tocode">
+        <view class="cardtr">
           <image src="../../img/qrcode.png"/>
         </view>
       </view>
       <view class="card-b">{{myinfo.user.weixin.code?myinfo.user.weixin.code:""}}</view>
     </view>
-    <navigator target="miniProgram" app-id="wxeb490c6f9b154ef9" extra-data="{{cardtxt}}">会员卡开卡</navigator>
     <view class="total">
       <view class="totalmoney">
         <view class="title">累计优惠金额</view>
@@ -249,34 +248,63 @@ export default class My extends wepy.page {
     oHeight:"",
     mycode:"111684986256",
     myinfo:{},
-    userid:""
+    userid:"",
+    code:"",
+    storeid:"",
+    cardid:""
   };
   computed = {};
 
   methods = {
     getcard() {
       var that = this;
-    apifunc
-      .getperson(`/ztTravel/api/wxCard/geturl?deptId=${''}`, 'get', "")
+      if(that.code!="") {
+        if(that.code!=null) {
+          wx.openCard({
+            cardList:  [{
+              cardId: that.cardid,
+              code: that.code
+            }],
+            success: function(res) {}
+          });
+        } else {
+          var outerStr=0
+          if(that.storeid!="") {
+            outerStr=that.storeid;
+          } else {
+            outerStr=0;
+          }
+          apifunc
+      .addcard(`/ztTravel/api/wxCardAdd?outerStr=${outerStr}`, 'get', "")
       .then(function(res) {
         if (res.code == 0) {
-          console.log(res.msg.split("?")[1].split("&"))
-          that.cardtxt.encrypt_card_id=res.msg.split("?")[1].split("&")[2].split("=")[1]
-          that.cardtxt.outer_str=res.msg.split("?")[1].split("&")[3].split("=")[1]
-          that.cardtxt.biz=res.msg.split("?")[1].split("&")[4].split("=")[1]
-          console.log(that.cardtxt)
-          wx.navigateToMiniProgram({
-  appId: 'wxeb490c6f9b154ef9', //固定为此 appid，不可改动
-  extraData: that.cardtxt, // 包括 encrypt_card_id, outer_str, biz三个字段，须从 step3 中获得的链接中获取参数
-  success: function(res) {
-    console.log(res)
-  },
-  fail: function(err) {
-    console.log(err)
-  },
-  complete: function() {
-  }
-})
+          console.log(res,res.msg.card_id)
+          wx.addCard({
+            cardList: [
+              {
+                cardId: res.msg.card_id,
+                cardExt:
+                  '{ "nonce_str" : "' +
+                  res.msg.nonce_str +
+                  '","timestamp": "' +
+                  res.msg.timestamp +
+                  '", "signature":"' +
+                  res.msg.signature +
+                  '"}'
+              }
+            ],
+            success: function(result) {
+              console.log(result, result.cardList[0]); // 卡券添加结果
+              if (result.cardList.length > 0) {
+                if (result.cardList[0].isSuccess) {
+                  that.saveCode(result.cardList[0].code,res.msg.card_id);
+                }
+              }
+            },
+            fail: function(res) {
+              console.log(res);
+            }
+          });
           that.$apply();
         } else {
           wepy.showToast({
@@ -286,6 +314,8 @@ export default class My extends wepy.page {
           });
         }
       });
+        }
+      }
     },
     tomylike() {
       wx.navigateTo({
@@ -331,6 +361,34 @@ export default class My extends wepy.page {
     this.$apply();
     }
   };
+  saveCode(code, cardId) {
+    var that = this;
+    request(
+      `/ztTravel/api/wxCard/getCardParam`,
+      'get',
+      {
+        code: code,
+        cardId: cardId
+      },
+      '请求中',
+      function(res) {
+        if (res.code == 0) {
+          wx.showModal({
+            title: '提示',
+            content: '卡券添加成功',
+            success: function() {
+              wx.redirectTo({
+                url: `/pages/my/index` //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+              });
+            }
+          });
+        }
+      },
+      function(err) {
+        console.log(err);
+      }
+    );
+  }
   getperson() {
     var that = this;
     apifunc
@@ -339,7 +397,9 @@ export default class My extends wepy.page {
         if (res.code == 0) {
          that.myinfo=res.msg;
          that.myinfo.disAmount=that.myinfo.disAmount.toFixed(2);
-          that.$apply();
+         that.code=that.myinfo.user.weixin.code;
+         that.cardid=that.myinfo.user.weixin.cardId;
+         that.$apply();
         } else {
           wepy.showToast({
             title: '系统错误',
@@ -375,10 +435,16 @@ export default class My extends wepy.page {
   }
   onShow() {
     this.largecodeshow=false;
+    this.getperson();
   }
   onLoad(options) {
     var that=this
     var res = wx.getSystemInfoSync();
+    if(wx.getStorageSync('storeid')) {
+      this.storeid=wx.getStorageSync('storeid');
+    } else {
+      this.storeid="";
+    }
     this.oHeight = res.windowHeight;
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');

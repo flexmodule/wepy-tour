@@ -5,8 +5,18 @@ page {
 .Buy {
   height: 100%;
   background: #f7f7f7;
-  padding: 86rpx 56rpx;
+  padding: 46rpx 56rpx;
   box-sizing: border-box;
+  .tohome {
+    background: #2299dd;
+    width: 130rpx;
+    height: 50rpx;
+    font: 20rpx/50rpx "";
+    text-align: center;
+    border-radius: 10rpx;
+    color: #fff;
+    margin-bottom: 40rpx;
+  }
   .buytotal {
     display: flex;
     padding: 22rpx 20rpx;
@@ -79,6 +89,7 @@ page {
 </style>
 <template>
   <view class="Buy">
+    <view class="tohome" @tap="tohome">回到首页</view>
     <view class="buytotal">
       <view class="buytotal-l">请输入实际消费金额：</view>
       <view class="buytotal-r"><input @input="inputfact" value="{{totalmoney}}"/></view>
@@ -100,7 +111,7 @@ page {
       </view>
       <view class="data">
         <view class="data-l">优惠：</view>
-        <view class="data-r sale">-{{salemoney}}</view>
+        <view class="data-r sale">{{salemoney}}</view>
       </view>
     </view>
     <view class="totalcount">
@@ -131,6 +142,14 @@ export default class Buy extends wepy.page {
   computed = {};
 
   methods = {
+    tohome() {
+       wx.redirectTo({
+          url:`/pages/home/index`,  //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+          success:function(){},        //成功后的回调；
+          fail:function(){} ,       //失败后的回调；
+          complete:function(){}      //结束后的回调(成功，失败都会执行)
+  })
+    },
     pay() {
 
     },
@@ -194,6 +213,9 @@ export default class Buy extends wepy.page {
     this.oHeight = res.windowHeight;
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
+    }
+    if(options.storeid) {
+      wx.setStorageSync('storeid',options.storeid);
     }
     if(options.discount) {
       this.discountnum=Number(options.discount);
