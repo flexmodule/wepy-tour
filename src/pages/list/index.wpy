@@ -133,7 +133,9 @@ export default class List extends wepy.page {
   data = {
     isshowNav: '',
     imgBaseUrl: '',
-    pointData: []
+    pointData: [],
+    isRecommend:"",
+    classId:""
   };
   computed = {};
 
@@ -162,7 +164,7 @@ export default class List extends wepy.page {
       });
     }
   };
-  getmapdata(type) {
+  getmapdata(type,classId,isRecommend) {
     var that = this;
     wx.getLocation({
       type: 'wgs84',
@@ -171,8 +173,8 @@ export default class List extends wepy.page {
         that.latitude = res.latitude;
         var value = {
           type: type,
-          classId: '',
-          isRecommend: 1,
+          classId: classId,
+          isRecommend: isRecommend,
           pageNum: 1,
           pageSize: 0,
           limitCount: '',
@@ -182,7 +184,7 @@ export default class List extends wepy.page {
           currentLongitude: res.longitude
         };
         apifunc
-          .getindexdata('/ztTravel/open/dept/page', 'post', value)
+          .getindexdata('/ztTravel/open/dept/page', 'get', value)
           .then(function(res) {
             console.log(res);
             if (res.code == 0) {
@@ -213,10 +215,24 @@ export default class List extends wepy.page {
     } else {
       this.isshowNav = '';
     }
-    this.getmapdata(that.isshowNav);
+    if (options.isRecommend) {
+      this.isRecommend = options.isRecommend;
+    } else {
+      if(options.isRecommend===0) {
+        this.isRecommend = 0;
+      } else {
+        this.isRecommend = '';
+      }
+    }
+    if (options.classId) {
+      this.classId = options.classId;
+    } else {
+      this.classId = '';
+    }
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
     }
+    this.getmapdata(that.isshowNav,that.classId,that.isRecommend);
   }
 }
 </script>

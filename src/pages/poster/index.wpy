@@ -92,6 +92,7 @@ page {
 <script>
 import wepy from 'wepy';
 import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
 export default class Poster extends wepy.page {
   components = {};
   data = {
@@ -210,13 +211,9 @@ export default class Poster extends wepy.page {
       width: 75
     };
     apifunc.qrcode(`/ztTravel/api/genWxacode`, 'get', data).then(function(res) {
-      if (res.meta.success) {
-        if (typeof res.data === 'string') {
-          var qrurl = res.data.replace(
-            /http:\/\/www.hx-trip.cn/g,
-            'https://www.sssyin.cn'
-          );
-          console.log(qrurl);
+      if (res.code==0) {
+        if (typeof res.msg.path === 'string') {
+          var qrurl=imgBaseUrl+res.msg.path;
           wx.getImageInfo({
             //  小程序获取图片信息API
             src: qrurl,
@@ -244,16 +241,16 @@ export default class Poster extends wepy.page {
           currentLongitude: res.longitude
         };
         apifunc
-          .getFoodDetail(`/tour/oversea/getPlaceInfo`, 'get', data)
+          .getFoodDetail(
+            `/ztTravel/open/dept/getDept?deptId=${that.id}`,
+            'get',
+            data
+          )
           .then(function(res) {
             console.log(res);
             if (res.code==0) {
-              that.foodDetail = res.data;
-              var imgurl = that.foodDetail.mainImg.replace(
-                /http:\/\/www.hx-trip.cn/g,
-                'https://www.sssyin.cn'
-              );
-              console.log(imgurl);
+              that.foodDetail = res.msg;
+              var imgurl = imgBaseUrl+that.foodDetail.mainImg
               if (typeof that.foodDetail.mainImg === 'string') {
                 wx.getImageInfo({
                   //  小程序获取图片信息API
@@ -352,55 +349,9 @@ export default class Poster extends wepy.page {
                     ctx.shadowOffsetX = 0;
                     ctx.shadowOffsetY = 0;
                     ctx.shadowBlur = 0;
-                    //绘制评价
-                    ctx.save();
-                    for (var j = 0; j <= 4; j++) {
-                      ctx.drawImage(
-                        '../../img/starLine.png',
-                        35 + j * 35 * rpx,
-                        500 * rpx,
-                        25 * rpx,
-                        25 * rpx
-                      );
-                    }
-                    if (
-                      that.foodDetail.score > 0 &&
-                      that.foodDetail.score <= 2
-                    ) {
-                      that.foodDetail.selectscoreData = [1];
-                    } else if (
-                      that.foodDetail.score > 2 &&
-                      that.foodDetail.score <= 4
-                    ) {
-                      that.foodDetail.selectscoreData = [1, 1];
-                    } else if (
-                      that.foodDetail.score > 4 &&
-                      that.foodDetail.score <= 6
-                    ) {
-                      that.foodDetail.selectscoreData = [1, 1, 1];
-                    } else if (
-                      that.foodDetail.score > 6 &&
-                      that.foodDetail.score <= 8
-                    ) {
-                      that.foodDetail.selectscoreData = [1, 1, 1, 1];
-                    } else if (
-                      that.foodDetail.score > 8 &&
-                      that.foodDetail.score <= 10
-                    ) {
-                      that.foodDetail.selectscoreData = [1, 1, 1, 1, 1];
-                    }
-                    for (var j = 0; j <= 4; j++) {
-                      ctx.drawImage(
-                        '../../img/starLight.png',
-                        35 + j * 35 * rpx,
-                        500 * rpx,
-                        25 * rpx,
-                        25 * rpx
-                      );
-                    }
                     ctx.restore();
                     //绘制餐厅名字
-                    var name = that.foodDetail.name;
+                    var name = that.foodDetail.deptName;
                     var nametext = splicetxt(name);
                     ctx.setFillStyle('#000');
                     ctx.setFontSize(30 * rpx);
@@ -408,28 +359,20 @@ export default class Poster extends wepy.page {
                       ctx.fillText(nametext[b], 70 * rpx, 570 * rpx);
                     }
                     //绘制简介
-                    var descriptions = that.foodDetail.descriptions;
+                    var descriptions = that.foodDetail.description;
                     var descriptionstext = splicetxt(descriptions);
                     ctx.setFillStyle('#999');
                     ctx.setFontSize(22 * rpx);
                     for (var b = 0; b < descriptionstext.length; b++) {
                       ctx.fillText(descriptionstext[b], 70 * rpx, 618 * rpx);
                     }
-                    //绘制价格
-                    ctx.setFillStyle('#c2914b');
-                    ctx.setFontSize(30 * rpx);
-                    ctx.fillText(
-                      `人均:¥${that.foodDetail.averagePrice}`,
-                      70 * rpx,
-                      681 * rpx
-                    );
                     //绘制info
-                    var info = '您的好友向您塞了一张来自沙巴的';
+                    var info = '您的好友向您塞了一张来自河坊街的';
                     var infotext = splicetxt(info);
                     ctx.setFillStyle('#000');
                     ctx.setFontSize(26 * rpx);
                     ctx.fillText(info, 235 * rpx, 850 * rpx);
-                    var info1 = '餐厅卡片，长按看看吧';
+                    var info1 = '卡片，长按看看吧';
                     ctx.fillText(info1, 235 * rpx, 890 * rpx);
                     //绘制二维码
                     ctx.save();

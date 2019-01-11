@@ -85,6 +85,64 @@ page {
     margin: 180rpx auto 0;
     border-radius: 10rpx;
   }
+  .auth {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 99;
+    .authbox {
+      width: 546rpx;
+      height: 410rpx;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      padding: 178rpx 0 29rpx;
+      box-sizing: border-box;
+      text-align: center;
+      .img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      button {
+        border: 0;
+        background: none;
+        line-height: 0;
+        &:after {
+          content: '';
+          border: 0;
+        }
+      }
+      .title {
+        font: 34rpx/42rpx '';
+        color: #000;
+      }
+      .des {
+        font: 24rpx/32rpx '';
+        color: #777;
+        margin: 26rpx auto 40rpx;
+      }
+      .authbtn {
+        width: 276rpx;
+        height: 62rpx;
+        color: #fff;
+        font: 34rpx/62rpx '';
+        text-align: center;
+        border-radius: 10rpx;
+        background: #3cace4;
+      }
+      .posauthbtn {
+        width: 320rpx;
+      }
+    }
+  }
 }
 </style>
 <template>
@@ -119,6 +177,24 @@ page {
       <view class="totalcount-r">{{totalcount}}</view>
     </view>
     <view class="pay" @tap="pay">立即支付</view>
+    <cover-view class="auth" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
+      <cover-view class="authbox">
+        <cover-image class="img" src="../../img/auth.png"/>
+        <button class="title">欢迎来到探索河坊街</button>
+        <button class="des">吃喝玩乐的向导</button>
+        <button class="authbtn" wx:if="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="onGotUserInfo">微信授权</button>
+        <button wx:else>请升级微信版本</button>
+      </cover-view>
+    </cover-view>
+    <cover-view class="auth" wx:if="{{locationAuth}}" style="height:{{oHeight}}px">
+      <cover-view class="authbox">
+        <cover-image class="img" src="../../img/auth.png"/>
+        <button class="title">欢迎来到探索河坊街</button>
+        <button class="des">吃喝玩乐的向导</button>
+        <button class="authbtn posauthbtn" wx:if="{{locationcanIUse}}" open-type="openSetting" bindopensetting="getOpenSet">微信授权地理定位</button>
+        <button wx:else>请升级微信版本</button>
+      </cover-view>
+    </cover-view>
   </view>
 </template>
 <script>
@@ -129,6 +205,10 @@ import { imgBaseUrl } from '@/utils/env.js';
 export default class Buy extends wepy.page {
   components = {};
   data = {
+    locationAuth: false,
+    locationcanIUse: wx.canIUse('button.open-type.openSetting'),
+    canIUse: wx.canIUse('button.open-type.getUserInfo'),
+    getAuth: false,
     discountnum:"",
     discount: '0.75',
     oHeight: '',

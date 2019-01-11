@@ -396,7 +396,7 @@ page {
         id="map"
         longitude="{{currentlong?currentlong:''}}"
         latitude="{{currentlat?currentlat:''}}"
-        scale="15"
+        scale="25"
         markers="{{markers}}"
         bindmarkertap="markertap"
         bindregionchange="regionchange"
@@ -535,7 +535,9 @@ export default class Home extends wepy.page {
     move: 0,
     rpa: '',
     imgBaseUrl: '',
-    kindindex: ''
+    kindindex: '',
+    classId:"",
+    isRecommend:""
   };
   config = {
     disableScroll: true
@@ -584,7 +586,7 @@ export default class Home extends wepy.page {
     tolist() {
       var that = this;
       wx.navigateTo({
-        url: `/pages/list/index?isshowNav=${that.kindindex}`,
+        url: `/pages/list/index?isshowNav=${that.kindindex}&classId=${that.classId}&isRecommend=${that.isRecommend}`,
         success: function() {},
         fail: function() {},
         complete: function() {}
@@ -682,39 +684,47 @@ export default class Home extends wepy.page {
       if (data == 1) {
         this.currentindex = 1;
         this.isshowNav = 1;
+        this.classId="";
+        this.isRecommend=1;
         this.kindindex = '';
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
         this.maplistData = [];
-        this.getmapdata();
-      } else if (data == 2) {
+        this.getmapdata("","",1);
+      } else if (data == 2) {//景点
         this.currentindex = 1;
         this.isshowNav = 2;
+        this.isRecommend="";
+        this.classId="";
         this.kindindex = 2;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
         this.maplistData = [];
-        this.getmapdata(2);
-      } else if (data == 3) {
+        this.getmapdata(2,"","");
+      } else if (data == 3) {//美食
         this.currentindex = 1;
         this.isshowNav = 3;
-        this.kindindex = 3;
+        this.isRecommend="";
+        this.classId=200;
+        this.kindindex = 1;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
         this.maplistData = [];
-        this.getmapdata(3);
-      } else if (data == 4) {
+        this.getmapdata(1,200,"");
+      } else if (data == 4) {//购物
         this.currentindex = 1;
         this.isshowNav = 4;
-        this.kindindex = 4;
+        this.isRecommend="";
+        this.classId=100;//type都是1，100是购物，200是美食
+        this.kindindex = 1;
         this.routelineshow = false;
         this.mappointshow = true;
         this.routeData = [];
         this.maplistData = [];
-        this.getmapdata(4);
+        this.getmapdata(1,100,"");
       } else if (data == 5) {
         this.isshowNav = 5;
         this.routelineshow = true;
@@ -735,9 +745,9 @@ export default class Home extends wepy.page {
         that.longitude = res.longitude;
         that.latitude = res.latitude;
         var data = {
-          type: that.isshowNav,
-          classId: '',
-          isRecommend: 0,
+          type: that.kindindex,
+          classId: that.classId,
+          isRecommend: that.isRecommend,
           pageNum: 1,
           pageSize: 0,
           limitCount: '',
@@ -762,11 +772,46 @@ export default class Home extends wepy.page {
                 that.searchdata = res.msg;
                 if (that.searchdata[0]) {
                   var initdata = that.searchdata[0];
-                  for (var p = 0; p <= that.maplistData.length - 1; p++) {
+                  if(that.maplistData.length>1) {
+                    for (var p = 0; p <= that.maplistData.length - 1; p++) {
                     if (that.maplistData[p].deptId == initdata.deptId) {
-                      var currentdata = that.maplistData[p];
-                      that.maplistData.splice(p, 1, initdata);
-                      that.maplistData.splice(1, 1, currentdata);
+                      var currentdata = that.maplistData[1];
+                      that.maplistData.splice(p, 1, currentdata);
+                      that.maplistData.splice(1, 1, initdata);
+                      console.log(that.maplistData)
+                      break;
+                    } else {
+                      if (p == that.maplistData.length - 1) {
+                        var value = {
+                          iconPath: '../../img/address.png',
+                          id: 0,
+                          latitude: '',
+                          longitude: '',
+                          width: 32,
+                          height: 42.5
+                        };
+                        if (
+                          that.searchdata.latitude &&
+                          that.searchdata.longitude &&
+                          that.searchdata.deptId
+                        ) {
+                          value.latitude = that.searchdata.latitude;
+                          value.longitude = that.searchdata.longitude;
+                          value.id = that.searchdata.deptId;
+                        }
+                        that.markers.splice(0, 0, value);
+                        that.maplistData.splice(0, 0, that.searchdata);
+                        console.log(that.maplistData)
+                        break;
+                      }
+                    }
+                  }
+                  } else if (that.maplistData.length==1) {
+                    for (var p = 0; p <= that.maplistData.length - 1; p++) {
+                    if (that.maplistData[p].deptId == initdata.deptId) {
+                      var currentdata = that.maplistData[0];
+                      that.maplistData.splice(p, 1, currentdata);
+                      that.maplistData.splice(0, 1, initdata);
                       break;
                     } else {
                       if (p == that.maplistData.length - 1) {
@@ -789,15 +834,23 @@ export default class Home extends wepy.page {
                         }
                         that.markers.splice(1, 0, value);
                         that.maplistData.splice(1, 0, that.searchdata);
+                        console.log(that.maplistData)
                         break;
                       }
                     }
+                  }
+                  } else {
+
                   }
                 }
                 if (that.maplistData[1]) {
                   that.currentlat = that.maplistData[1].latitude;
                   that.currentlong = that.maplistData[1].longitude;
                   that.markers[1].iconPath = '../../img/biu.png';
+                } else {
+                  that.currentlat = that.maplistData[0].latitude;
+                  that.currentlong = that.maplistData[0].longitude;
+                  that.markers[0].iconPath = '../../img/biu.png';
                 }
               }
               that.$apply();
@@ -819,7 +872,7 @@ export default class Home extends wepy.page {
       }
     }
   }
-  getmapdata(type) {
+  getmapdata(type,classId,isRecommend) {
     var that = this;
     wx.getLocation({
       type: 'wgs84',
@@ -828,8 +881,8 @@ export default class Home extends wepy.page {
         that.latitude = res.latitude;
         var value = {
           type: type,
-          classId: '',
-          isRecommend: 1,
+          classId: classId,
+          isRecommend: isRecommend,
           pageNum: 1,
           pageSize: 0,
           limitCount: '',
@@ -840,11 +893,16 @@ export default class Home extends wepy.page {
         };
         that.markers = [];
         apifunc
-          .getindexdata('/ztTravel/open/dept/page', 'post', value)
+          .getindexdata('/ztTravel/open/dept/page', 'get', value)
           .then(function(res) {
             console.log(res);
             if (res.code == 0) {
               that.maplistData = res.msg;
+              if(that.maplistData.length>1) {
+                that.currentindex=1;
+              } else {
+                that.currentindex=0;
+              }
               for (var i = 0; i <= that.maplistData.length - 1; i++) {
                 if (that.maplistData[i].distance >= 1000) {
                   that.maplistData[i].distance =
@@ -883,8 +941,12 @@ export default class Home extends wepy.page {
                 that.currentlat = that.maplistData[1].latitude;
                 that.currentlong = that.maplistData[1].longitude;
                 that.markers[1].iconPath = '../../img/biu.png';
-              }
-              console.log(that.currentlat, that.currentlong, that.markers);
+              } else if(that.maplistData[0]) {
+                  that.currentlat = that.maplistData[0].latitude;
+                  that.currentlong = that.maplistData[0].longitude;
+                  that.markers[0].iconPath = '../../img/biu.png';
+                }
+              console.log(that.currentlat, that.currentlong, that.markers,that.maplistData);
               that.$apply();
             }
           });
@@ -991,7 +1053,7 @@ export default class Home extends wepy.page {
     var that = this;
     if (e.detail.authSetting['scope.userLocation']) {
       that.locationAuth = false;
-      that.getmapdata('');
+      that.getmapdata('',"",1);
       that.$apply();
       console.log('获取权限成功。');
     } else {
@@ -1120,6 +1182,9 @@ export default class Home extends wepy.page {
     this.mappointshow = true;
     this.currentindex = 1;
     this.isshowNav = 1;
+    this.kindindex="";
+    this.classId="";
+    this.isRecommend=1;
     this.mapbottom = 0;
     this.loadmore = false;
     this.nomore = false;
@@ -1144,7 +1209,7 @@ export default class Home extends wepy.page {
       }
     });
     //数据请求
-    this.getmapdata('');
+    this.getmapdata('',"",1);
     this.$apply();
   }
 }
