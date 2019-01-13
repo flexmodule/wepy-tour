@@ -210,14 +210,16 @@ export default class Buy extends wepy.page {
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     getAuth: false,
     discountnum:"",
-    discount: '0.75',
+    discount: '',
     oHeight: '',
     userid: '',
     totalmoney: '',
     dismoney: '',
     salemoney: '',
     totalcount: '',
-    nosale: ''
+    nosale: '',
+    deptId:"",
+    foodDetail:{}
   };
   computed = {};
 
@@ -266,44 +268,194 @@ export default class Buy extends wepy.page {
       this.totalcount=(Number(this.dismoney)*Number(this.discount)+Number(this.nosale)).toFixed(2);
     }
   };
-  getperson() {
+  onGotUserInfo(e) {
     var that = this;
-    apifunc
-      .getperson(`/ztTravel/api/getUserCenter?id=${that.userid}`, 'get', '')
-      .then(function(res) {
-        if (res.code == 0) {
-          that.myinfo = res.msg;
-          that.myinfo.disAmount = that.myinfo.disAmount.toFixed(2);
-          that.$apply();
-        } else {
-          wepy.showToast({
-            title: '系统错误',
-            icon: 'none',
-            duration: 500
-          });
+    if (e.detail.userInfo) {
+      wx.login({
+        success: function(res) {
+          console.log(res.code);
+          if (res.code) {
+            var value = {
+              appid: that.$parent.globalData.appid,
+              code: res.code,
+              avatarUrl: e.detail.userInfo.avatarUrl,
+              city: e.detail.userInfo.city,
+              country: e.detail.userInfo.country,
+              gender: e.detail.userInfo.gender,
+              language: e.detail.userInfo.language,
+              nickName: e.detail.userInfo.nickName,
+              province: e.detail.userInfo.province,
+              deptId: that.deptId
+            };
+            //发起网络请求
+            apifunc
+              .auth(`/ztTravel/api/miniAuth`, 'get', value)
+              .then(function(res) {
+                console.log(res);
+                if (res.code == 0) {
+                  wx.setStorageSync('openid', res.msg.openid);
+                  wx.setStorageSync('userid', res.msg.userid);
+                  wx.setStorageSync('nickName', e.detail.userInfo.nickName);
+                  wx.setStorageSync('mobile', res.msg.mobile);
+                  that.getDetail(res.msg.userid);
+                  that.getAuth = false;
+                  // wx.getSetting({
+                  //   success(res) {
+                  //     if (!res.authSetting['scope.userLocation']) {
+                  //       wx.authorize({
+                  //         scope: 'scope.userLocation',
+                  //         success() {
+                  //           console.log('授权成功');
+                  //         },
+                  //         fail() {
+                  //           wx.showModal({
+                  //             title: '警告',
+                  //             content: '您点击了拒绝授权，将无法调起定位功能！',
+                  //             showCancel: false,
+                  //             confirmText: '返回授权',
+                  //             success: function(res) {
+                  //               if (res.confirm) {
+                  //                 that.locationAuth = true;
+                  //                 that.$apply();
+                  //               }
+                  //             }
+                  //           });
+                  //         }
+                  //       });
+                  //     }
+                  //   }
+                  // });
+                  that.$apply();
+                }
+              });
+          } else {
+            console.log('登录失败！' + res.errMsg);
+          }
         }
       });
+    } else {
+      wx.showModal({
+        title: '警告',
+        content: '您点击了拒绝授权，将无法进入小程序，请授权之后再进入!!!',
+        showCancel: false,
+        confirmText: '返回授权',
+        success: function(res) {
+          if (res.confirm) {
+            console.log('用户点击了“返回授权”');
+          }
+        }
+      });
+    }
   }
-
+  getOpenSet(e) {
+    var that = this;
+    if (e.detail.authSetting['scope.userLocation']) {
+      that.locationAuth = false;
+      that.getDetail();
+      that.$apply();
+      console.log('获取权限成功。');
+    } else {
+      wx.showModal({
+        title: '警告',
+        content: '您点击了拒绝授权，将无法调起定位功能！',
+        showCancel: false,
+        confirmText: '返回授权',
+        success: function(res) {
+          if (res.confirm) {
+            that.locationAuth = true;
+            that.$apply();
+            console.log('用户点击了“返回授权”');
+          }
+        }
+      });
+    }
+  }
+  getDetail(userid) {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        var data = {
+          deptId: that.deptId,
+          userId: userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getFoodDetail(
+            `/ztTravel/open/dept/getDept?deptId=${that.deptId}`,
+            'get',
+            data
+          )
+          .then(function(res) {
+            console.log(res);
+            if (res.code == 0) {
+              that.foodDetail = res.msg;
+              that.discountnum=Number(that.foodDetail.dicount);
+              that.discount=Number(that.foodDetail.dicount)/10;
+              that.$apply();
+            }
+          });
+      },
+      fail: function(res) {
+        that.authlocation();
+      }
+    });
+  }
+  authlocation() {
+    var that = this;
+    wx.getSetting({
+      success(res) {
+        if (!res.authSetting['scope.userLocation']) {
+          wx.authorize({
+            scope: 'scope.userLocation',
+            success() {
+              console.log('授权成功');
+            },
+            fail() {
+              wx.showModal({
+                title: '警告',
+                content: '您点击了拒绝授权，将无法调起定位功能！',
+                showCancel: false,
+                confirmText: '返回授权',
+                success: function(res) {
+                  if (res.confirm) {
+                    that.locationAuth = true;
+                    that.$apply();
+                  }
+                }
+              });
+            }
+          });
+        }
+      }
+    });
+  }
   onShow() {}
   onLoad(options) {
     console.log(options)
     var that = this;
     var res = wx.getSystemInfoSync();
     this.oHeight = res.windowHeight;
-    if (wx.getStorageSync('userid')) {
-      this.userid = wx.getStorageSync('userid');
-    }
-    if(options.storeid) {
-      wx.setStorageSync('storeid',options.storeid);
-    }
-    if(options.discount) {
-      this.discountnum=Number(options.discount);
+    if (options.deptId) {
+      this.deptId = options.deptId;
+      wx.setStorageSync('deptId',that.deptId);
     } else {
-      this.discountnum="";
+      this.deptId = "";
     }
-    this.discount=this.discountnum/10;
-    console.log(this.discountnum,this.discount)
+    wx.getSetting({
+      success(res) {
+        if (!res.authSetting['scope.userInfo']) {
+          that.getAuth = true;
+        } else {
+          that.getAuth = false;
+        }
+        that.$apply();
+      }
+    });
+    if (wx.getStorageSync('userid')) {
+      that.getDetail(wx.getStorageSync('userid'));
+    }
     this.$apply();
   }
 }

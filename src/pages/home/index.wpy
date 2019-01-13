@@ -604,33 +604,35 @@ export default class Home extends wepy.page {
       console.log(e, this.markers);
       this.currentindex = e.detail.current;
       var that = this;
-      if (e.detail) {
-        var index = e.detail.current;
-        that.currentlat = that.markers[index].latitude;
-        that.currentlong = that.markers[index].longitude;
-        for (var j = 0; j <= that.maplistData.length - 1; j++) {
-          if (that.maplistData[j].type == 1) {
-            that.markers[j].iconPath = '../../img/address.png';
-          } else if (that.maplistData[j].type == 2) {
-            that.markers[j].iconPath = '../../img/address.png';
-          } else if (that.maplistData[j].type == 3) {
-            that.markers[j].iconPath = '../../img/address.png';
-          }
-          if (j == index) {
-            if (that.maplistData[j].type == 1) {
-              that.markers[j].iconPath = '../../img/biu.png';
-            } else if (that.maplistData[j].type == 2) {
-              that.markers[j].iconPath = '../../img/biu.png';
-            } else if (that.maplistData[j].type == 3) {
-              that.markers[j].iconPath = '../../img/biu.png';
-            }
-          }
-        }
-        that.$apply();
-      }
+      // if (e.detail) {
+      //   var index = e.detail.current;
+      //   that.currentlat = that.markers[index].latitude;
+      //   that.currentlong = that.markers[index].longitude;
+      //   for (var j = 0; j <= that.maplistData.length - 1; j++) {
+      //     if (that.maplistData[j].type == 1) {
+      //       that.markers[j].iconPath = '../../img/address.png';
+      //     } else if (that.maplistData[j].type == 2) {
+      //       that.markers[j].iconPath = '../../img/address.png';
+      //     } else if (that.maplistData[j].type == 3) {
+      //       that.markers[j].iconPath = '../../img/address.png';
+      //     }
+      //     if (j == index) {
+      //       if (that.maplistData[j].type == 1) {
+      //         that.markers[j].iconPath = '../../img/biu.png';
+      //       } else if (that.maplistData[j].type == 2) {
+      //         that.markers[j].iconPath = '../../img/biu.png';
+      //       } else if (that.maplistData[j].type == 3) {
+      //         that.markers[j].iconPath = '../../img/biu.png';
+      //       }
+      //     }
+      //   }
+        
+      // }
+      that.$apply();
     },
     touchend() {
       var that = this;
+      if(this.maplistData.length!=0) {
       var id = this.maplistData[that.currentindex].deptId;
       if (this.start - this.move > 50 * this.rpa && this.move != 0) {
         wx.navigateTo({
@@ -644,13 +646,19 @@ export default class Home extends wepy.page {
         that.mapheight = this.oHeight - 71 * this.rpa;
       }
       this.move = 0;
+      }
       this.$apply();
     },
     touchmove(e) {
+      if(this.maplistData.length!=0) {
       this.move = e.touches[0].pageY;
+      }
     },
     touchstart(e) {
-      this.start = e.touches[0].pageY;
+      if(this.maplistData.length!=0) {
+        this.start = e.touches[0].pageY;
+      }
+      
     },
     tosearch() {
       var that = this;

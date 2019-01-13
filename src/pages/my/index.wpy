@@ -3,8 +3,8 @@ page {
   height: 100%;
 }
 .My {
-  padding: 130rpx 56rpx;
-  height: 100%;
+  padding: 80rpx 56rpx;
+  box-sizing: border-box;
   .title {
     font: 36rpx/36rpx "";
     text-align: center;
@@ -250,7 +250,7 @@ export default class My extends wepy.page {
     myinfo:{},
     userid:"",
     code:"",
-    storeid:"",
+    deptId:"",
     cardid:"",
     openid:""
   };
@@ -270,8 +270,8 @@ export default class My extends wepy.page {
           });
         } else {
           var outerStr=0
-          if(that.storeid!="") {
-            outerStr=that.storeid;
+          if(that.deptId!="") {
+            outerStr=that.deptId;
           } else {
             outerStr=0;
           }
@@ -442,10 +442,10 @@ export default class My extends wepy.page {
   onLoad(options) {
     var that=this
     var res = wx.getSystemInfoSync();
-    if(wx.getStorageSync('storeid')) {
-      this.storeid=wx.getStorageSync('storeid');
+    if(wx.getStorageSync('deptId')) {
+      this.deptId=wx.getStorageSync('deptId');
     } else {
-      this.storeid="";
+      this.deptId="";
     }
     if(wx.getStorageSync('openid')) {
       this.openid=wx.getStorageSync('openid');

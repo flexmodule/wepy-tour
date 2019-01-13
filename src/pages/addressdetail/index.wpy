@@ -364,7 +364,7 @@ export default class Addressdetail extends wepy.page {
     buy() {
       var that=this
       wx.navigateTo({
-        url: `/pages/buy/index?discount=${that.foodDetail.dicount}`,
+        url: `/pages/buy/index?discount=${that.foodDetail.dicount}&deptId=${that.foodDetail.deptId}`,
         success: function() {
         }, 
         fail: function() {}, 
