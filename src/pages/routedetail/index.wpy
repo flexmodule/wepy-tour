@@ -261,7 +261,7 @@ export default class Routedetail extends wepy.page {
             that.routeData = [];
             if (res.code == 0) {
               that.routedetail = res.msg;
-              if (that.routedetail.places) {
+              if (that.routedetail.places.length>=2) {
                 if (
                   that.routedetail.places[0].name &&
                   that.routedetail.places[1].name
@@ -271,7 +271,6 @@ export default class Routedetail extends wepy.page {
                   that.currentlat = that.routedetail.places[0].latitude;
                   that.currentlong = that.routedetail.places[0].longitude;
                 }
-                if (that.routedetail.places.length >= 3) {
                   for (
                     var i = 0;
                     i <= that.routedetail.places.length - 1;
@@ -281,37 +280,12 @@ export default class Routedetail extends wepy.page {
                     data.latitude = that.routedetail.places[i].latitude;
                     data.longitude = that.routedetail.places[i].longitude;
                     that.polyline[0].points.push(data);
-                    if (i >= 1) {
-                      var qqmapsdk=that.$parent.globalData.qqmapsdk;
-                      qqmapsdk.calculateDistance({
-
-                          from: {
-                            "latitude": that.routedetail.places[i-1].latitude,
-                            "longitude": that.routedetail.places[i-1].longitude
-                          },
-                          to: [{
-                            "latitude":that.routedetail.places[i].latitude,
-                            "longitude":that.routedetail.places[i].longitude
-                          }],
-                          success: function(res) {
-                            if (res.status == 0) {
-                              console.log(res)
-                              if (res.result.elements[0].distance >= 1000) {
-                                  that.routedetail.places[i].distance =
-                                    (res.result.elements[0].distance / 1000).toFixed(1) + 'km';
-                                } else {
-                                  that.routedetail.places[i].distance = res.result.elements[0].distance + 'm';
-                                }
-                              that.routeData.push(that.routedetail.places[i]);
-                            }
-                          }
-                      })
-                      
+                    if (i >= 2) {
+                    that.routeData.push(that.routedetail.places[i]);
                     }
                   }
-                }
               }
-              
+
               // if (res.msg.specialImgs) {
               //   that.imgUrls = [];
               //   var specialImgsarr = res.msg.specialImgs.split(',');
