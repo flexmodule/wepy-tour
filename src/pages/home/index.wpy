@@ -604,30 +604,30 @@ export default class Home extends wepy.page {
       console.log(e, this.markers);
       this.currentindex = e.detail.current;
       var that = this;
-      // if (e.detail) {
-      //   var index = e.detail.current;
-      //   that.currentlat = that.markers[index].latitude;
-      //   that.currentlong = that.markers[index].longitude;
-      //   for (var j = 0; j <= that.maplistData.length - 1; j++) {
-      //     if (that.maplistData[j].type == 1) {
-      //       that.markers[j].iconPath = '../../img/address.png';
-      //     } else if (that.maplistData[j].type == 2) {
-      //       that.markers[j].iconPath = '../../img/address.png';
-      //     } else if (that.maplistData[j].type == 3) {
-      //       that.markers[j].iconPath = '../../img/address.png';
-      //     }
-      //     if (j == index) {
-      //       if (that.maplistData[j].type == 1) {
-      //         that.markers[j].iconPath = '../../img/biu.png';
-      //       } else if (that.maplistData[j].type == 2) {
-      //         that.markers[j].iconPath = '../../img/biu.png';
-      //       } else if (that.maplistData[j].type == 3) {
-      //         that.markers[j].iconPath = '../../img/biu.png';
-      //       }
-      //     }
-      //   }
+      if (e.detail) {
+        var index = e.detail.current;
+        that.currentlat = that.markers[index].latitude;
+        that.currentlong = that.markers[index].longitude;
+        for (var j = 0; j <= that.maplistData.length - 1; j++) {
+          if (that.maplistData[j].type == 1) {
+            that.markers[j].iconPath = '../../img/address.png';
+          } else if (that.maplistData[j].type == 2) {
+            that.markers[j].iconPath = '../../img/address.png';
+          } else if (that.maplistData[j].type == 3) {
+            that.markers[j].iconPath = '../../img/address.png';
+          }
+          if (j == index) {
+            if (that.maplistData[j].type == 1) {
+              that.markers[j].iconPath = '../../img/biu.png';
+            } else if (that.maplistData[j].type == 2) {
+              that.markers[j].iconPath = '../../img/biu.png';
+            } else if (that.maplistData[j].type == 3) {
+              that.markers[j].iconPath = '../../img/biu.png';
+            }
+          }
+        }
         
-      // }
+      }
       that.$apply();
     },
     touchend() {
@@ -1109,6 +1109,7 @@ export default class Home extends wepy.page {
                   wx.setStorageSync('userid', res.msg.userid);
                   wx.setStorageSync('nickName', e.detail.userInfo.nickName);
                   wx.setStorageSync('mobile', res.msg.mobile);
+                  that.userid=res.msg.userid;
                   that.getAuth = false;
                   // wx.getSetting({
                   //   success(res) {
@@ -1168,14 +1169,6 @@ export default class Home extends wepy.page {
     var res = wx.getSystemInfoSync();
     var that = this;
     this.imgBaseUrl = imgBaseUrl;
-    if (options.deptId) {
-      this.deptId = options.deptId;
-    } else {
-      this.deptId = '';
-    }
-    if (wx.getStorageSync('userid')) {
-      this.userid = wx.getStorageSync('userid');
-    }
     if (wx.canIUse('cover-view')) {
     } else {
       // 如果希望用户在最新版本的客户端上体验您的小程序，可以这样子提示
@@ -1184,6 +1177,16 @@ export default class Home extends wepy.page {
         content:
           '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
       });
+    }
+    if (options.deptId) {
+      this.deptId = options.deptId;
+    } else {
+      this.deptId = "";
+    }
+    if(wx.getStorageSync('userid')) {
+      this.userid=wx.getStorageSync('userid')
+    } else {
+      this.userid=""
     }
     //数据初始化
     this.routelineshow = false;
@@ -1217,7 +1220,7 @@ export default class Home extends wepy.page {
       }
     });
     //数据请求
-    this.getmapdata('',"",1);
+    that.getmapdata('',"",1);
     this.$apply();
   }
 }

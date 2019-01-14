@@ -151,8 +151,7 @@
     <view class="routename">{{routedetail.name?routedetail.name:""}}</view>
     <view
       class="tomap {{islarge?'active':''}}"
-      style="height:{{mapheight}}"
-     @tap="tosmall">
+      style="height:{{mapheight}}">
       <map
         id="map"
         longitude="{{currentlong?currentlong:''}}"
@@ -229,18 +228,22 @@ export default class Routedetail extends wepy.page {
         width: 4,
         dottedLine: false
       }
-    ]
+    ],
+    bstop:0
   };
   computed = {};
 
   methods = {
-    tosmall() {
-      this.islarge = false;
-      this.mapheight = '577rpx';
-    },
     tolarge() {
-      this.islarge = true;
-      this.mapheight = this.oHeight + 'px';
+      if(this.bstop==0) {
+        this.islarge = true;
+        this.mapheight = this.oHeight + 'px';
+        this.bstop=1;
+      } else {
+        this.islarge = false;
+        this.mapheight = '577rpx';
+        this.bstop=0;
+      }
     }
   };
   getDetail() {
@@ -307,6 +310,7 @@ export default class Routedetail extends wepy.page {
     var that = this;
     this.imgBaseUrl = imgBaseUrl;
     this.oHeight = res.windowHeight;
+    this.mapheight="577rpx";
     if (options.id) {
       this.id = options.id;
     } else {

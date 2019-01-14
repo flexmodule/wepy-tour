@@ -8,68 +8,86 @@ page {
   padding: 30rpx;
   background: #f2f2ff;
   min-height: 100%;
-}
-.canvas-box {
-  width: 690rpx;
-  height: 970rpx;
-  margin: 0 auto;
-  background: #fff;
-  canvas {
-    width: 100%;
-    height: 100%;
+  .canvas-box {
+    width: 690rpx;
+    height: 970rpx;
+    margin: 0 auto;
     background: #fff;
+    canvas {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
   }
-}
-.sharebtn {
-  width: 360rpx;
-  height: 64rpx;
-  background-image: linear-gradient(-90deg, #c2914b 0%, #ebbe7d 100%),
-    linear-gradient(#c2914b, #c2914b);
-  background-blend-mode: normal, normal;
-  border-radius: 32rpx;
-  text-align: center;
-  font: 30rpx/64rpx '';
-  color: #fff;
-  margin: 41rpx auto 0;
-}
-.shadow {
-  background: rgba(0, 0, 0, 0.3);
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 99;
-  height: 100%;
-}
-.alertbox {
-  width: 500rpx;
-  height: 270rpx;
-  border-radius: 20rpx;
-  background: #fff;
-  border: 1rpx solid #eee;
-  padding: 20rpx;
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  .apply {
-    font: 40rpx/80rpx '';
-  }
-  .applyList {
-    font: 30rpx/80rpx '';
-    color: #999;
-  }
-  .authBtn {
-    width: 400rpx;
-    background: green;
-    border-radius: 50rpx;
-    color: #fff;
+  .sharebtn {
+    width: 360rpx;
+    height: 64rpx;
+    background-image: linear-gradient(-90deg, #c2914b 0%, #ebbe7d 100%),
+      linear-gradient(#c2914b, #c2914b);
+    background-blend-mode: normal, normal;
+    border-radius: 32rpx;
     text-align: center;
-    margin: 20rpx auto;
-    font: 30rpx/60rpx '';
+    font: 30rpx/64rpx '';
+    color: #fff;
+    margin: 41rpx auto 0;
+  }
+  .auth {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 99;
+    .authbox {
+      width: 546rpx;
+      height: 410rpx;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      padding: 178rpx 0 29rpx;
+      box-sizing: border-box;
+      text-align: center;
+      .img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      button {
+        border: 0;
+        background: none;
+        line-height: 0;
+        &:after {
+          content: '';
+          border: 0;
+        }
+      }
+      .title {
+        font: 34rpx/42rpx '';
+        color: #000;
+      }
+      .des {
+        font: 24rpx/32rpx '';
+        color: #777;
+        margin: 26rpx auto 40rpx;
+      }
+      .authbtn {
+        width: 276rpx;
+        height: 62rpx;
+        color: #fff;
+        font: 34rpx/62rpx '';
+        text-align: center;
+        border-radius: 10rpx;
+        background: #3cace4;
+      }
+      .posauthbtn {
+        width: 320rpx;
+      }
+    }
   }
 }
 </style>
@@ -79,14 +97,15 @@ page {
       <canvas canvas-id="shareCanvas"></canvas>
     </view>
     <view class="sharebtn" @tap="saveimg">保存图片分享到朋友圈</view>
-    <view class="shadow" wx:if="{{getAuth}}">  
-      <view class="alertbox">
-        <view class="apply">申请获取以下权限</view>
-        <view class="applyList">保存到您本地相册权限</view>
-        <button wx:if="{{canIUse}}" class="authBtn" open-type="openSetting" bindopensetting="getOpenSet">获取授权</button>
-        <view wx:else>请升级微信版本</view>
-      </view>
-    </view>
+    <cover-view class="auth" wx:if="{{getAuth}}" style="height:{{oHeight}}px">
+      <cover-view class="authbox">
+        <cover-image class="img" src="../../img/auth.png"/>
+        <button class="title">欢迎来到探索河坊街</button>
+        <button class="des">吃喝玩乐的向导</button>
+        <button wx:if="{{canIUse}}" class="authbtn" open-type="openSetting" bindopensetting="getOpenSet">获取授权</button>
+        <button wx:else>请升级微信版本</button>
+      </cover-view>
+    </cover-view>
   </view>
 </template>
 <script>
@@ -145,7 +164,33 @@ export default class Poster extends wepy.page {
                   });
                 },
                 fail(err) {
-                  console.log(err);
+                  wx.getSetting({
+                    success(res) {
+                      if (!res.authSetting['scope.writePhotosAlbum']) {
+                        wx.authorize({
+                          scope: 'scope.writePhotosAlbum',
+                          success() {
+                            console.log('授权成功');
+                          },
+                          fail() {
+                            wx.showModal({
+                              title: '警告',
+                              content:
+                                '您点击了拒绝授权，将无法调起保存到本地相册功能！',
+                              showCancel: false,
+                              confirmText: '返回授权',
+                              success: function(res) {
+                                if (res.confirm) {
+                                  that.getAuth = true;
+                                  that.$apply();
+                                }
+                              }
+                            });
+                          }
+                        });
+                      }
+                    }
+                  });
                 }
               });
             }
@@ -211,9 +256,9 @@ export default class Poster extends wepy.page {
       width: 75
     };
     apifunc.qrcode(`/ztTravel/api/genWxacode`, 'get', data).then(function(res) {
-      if (res.code==0) {
+      if (res.code == 0) {
         if (typeof res.msg.path === 'string') {
-          var qrurl=imgBaseUrl+res.msg.path;
+          var qrurl = imgBaseUrl + res.msg.path;
           wx.getImageInfo({
             //  小程序获取图片信息API
             src: qrurl,
@@ -248,9 +293,9 @@ export default class Poster extends wepy.page {
           )
           .then(function(res) {
             console.log(res);
-            if (res.code==0) {
+            if (res.code == 0) {
               that.foodDetail = res.msg;
-              var imgurl = imgBaseUrl+that.foodDetail.mainImg
+              var imgurl = imgBaseUrl + that.foodDetail.mainImg;
               if (typeof that.foodDetail.mainImg === 'string') {
                 wx.getImageInfo({
                   //  小程序获取图片信息API
@@ -428,32 +473,7 @@ export default class Poster extends wepy.page {
       this.openid = wx.getStorageSync('openid');
       this.userid = wx.getStorageSync('userid');
     }
-    wx.getSetting({
-      success(res) {
-        if (!res.authSetting['scope.writePhotosAlbum']) {
-          wx.authorize({
-            scope: 'scope.writePhotosAlbum',
-            success() {
-              console.log('授权成功');
-            },
-            fail() {
-              wx.showModal({
-                title: '警告',
-                content: '您点击了拒绝授权，将无法调起保存到本地相册功能！',
-                showCancel: false,
-                confirmText: '返回授权',
-                success: function(res) {
-                  if (res.confirm) {
-                    that.getAuth = true;
-                    that.$apply();
-                  }
-                }
-              });
-            }
-          });
-        }
-      }
-    });
+
     try {
       var res = wx.getSystemInfoSync();
       this.oHeight = res.windowHeight;
