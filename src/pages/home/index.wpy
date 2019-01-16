@@ -396,7 +396,7 @@ page {
         id="map"
         longitude="{{currentlong?currentlong:''}}"
         latitude="{{currentlat?currentlat:''}}"
-        scale="25"
+        scale="20"
         markers="{{markers}}"
         bindmarkertap="markertap"
         bindregionchange="regionchange"
