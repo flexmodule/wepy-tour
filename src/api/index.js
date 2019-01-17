@@ -1,5 +1,5 @@
 import request from '@/utils/request.js';
-var funcArr=["auth","getindexdata","getperson","addcard","getroutedata","savecode","searchInfo","getFoodDetail","getshoplist","collectFood","uncollectFood","getroutedetail","getorderlist","getorderdetail","getcollectlist","qrcode"];
+var funcArr=["auth","getindexdata","getperson","addcard","getroutedata","savecode","searchInfo","payorder","getFoodDetail","getshoplist","collectFood","uncollectFood","getroutedetail","getorderlist","getorderdetail","getcollectlist","qrcode"];
 var apifunc={}
 funcArr.forEach(function(item,index){
   apifunc[item] =function item(url, oType, data) {

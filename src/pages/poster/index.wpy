@@ -250,7 +250,7 @@ export default class Poster extends wepy.page {
   handlePoster() {
     var that = this;
     var data = {
-      path: `pages/addressdetail/index?id=${that.id}`,
+      path: `pages/buy/index?deptId=${that.id}`,
       deptId: that.id,
       isHyaline: true,
       width: 75
@@ -423,10 +423,10 @@ export default class Poster extends wepy.page {
                     ctx.save();
                     ctx.drawImage(
                       that.qrcodeurl,
-                      41 * rpx,
-                      772 * rpx,
-                      160 * rpx,
-                      160 * rpx
+                      20 * rpx,
+                      750 * rpx,
+                      200 * rpx,
+                      200 * rpx
                     );
                     ctx.setFillStyle('#ffffff');
                     ctx.restore();
