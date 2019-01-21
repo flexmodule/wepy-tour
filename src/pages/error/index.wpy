@@ -1,11 +1,54 @@
 <style lang="less">
 .error {
-  
+	padding: 221rpx 0 0;
+	.header {
+		width: 400rpx;
+		height: 400rpx;
+		margin: 0 auto;
+		image {
+			width: 100%;
+			height: 100%;
+		}
+	}
+	.info {
+		font: 34rpx/34rpx "";
+		text-align: center;
+	}
+	.returnindex {
+		margin: 212rpx auto 0;
+		width: 196rpx;
+		height: 56rpx;
+		box-sizing: border-box;
+		border-radius: 8rpx;
+		padding: 9rpx 19rpx 10rpx 12rpx;
+		display: flex;
+		justify-content: space-between;
+		background: rgb(71,149,208);
+		.returnindex-l {
+			width: 37rpx;
+			height: 37rpx;
+			image {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		.returnindex-r {
+			font: 28rpx/42rpx "";
+			color: #fff;
+		}
+	}
 }
 </style>
 <template>
   <view class="error">
-    你的页面配丢了
+    <view class="header">
+			<image src="../../img/errorlogo.png"/>
+		</view>
+		<view class="info">你的页面跑丢了</view>
+		<view class="returnindex" @tap="tohome">
+			<view class="returnindex-l"><image src="../../img/return.png"/></view>
+			<view class="returnindex-r">返回首页</view>
+		</view>
   </view>
 </template>
 <script>
@@ -21,7 +64,14 @@ export default class error extends wepy.page {
   computed = {};
 
   methods = {
-    
+    tohome() {
+			wx.redirectTo({
+          url:`/pages/home/index`,  //跳转页面的路径，可带参数 ？隔开，不同参数用 & 分隔；相对路径，不需要.wxml后缀
+          success:function(){},        //成功后的回调；
+          fail:function(){} ,       //失败后的回调；
+          complete:function(){}      //结束后的回调(成功，失败都会执行)
+  })
+		}
   };
   onShow() {}
   onLoad(options) {

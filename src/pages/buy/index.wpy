@@ -369,7 +369,8 @@ export default class Buy extends wepy.page {
                   wx.setStorageSync('openid', res.msg.openid);
                   wx.setStorageSync('userid', res.msg.userid);
                   wx.setStorageSync('nickName', e.detail.userInfo.nickName);
-                  wx.setStorageSync('mobile', res.msg.mobile);
+									wx.setStorageSync('mobile', res.msg.mobile);
+									that.userid=res.msg.userid;
                   that.getDetail(res.msg.userid);
                   that.getAuth = false;
                   // wx.getSetting({
@@ -424,7 +425,7 @@ export default class Buy extends wepy.page {
     var that = this;
     if (e.detail.authSetting['scope.userLocation']) {
       that.locationAuth = false;
-      that.getDetail();
+      that.getDetail(that.userid);
       that.$apply();
       console.log('获取权限成功。');
     } else {

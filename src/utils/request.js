@@ -5,7 +5,15 @@
 // success:成功的回调函数
 // fail：失败的回调
 import wx from 'wepy';
-import {baseUrl,appid,appidGuide,authUrl,regOpen,baseUrl2} from './env';
+import {
+  baseUrl,
+  appid,
+  appidGuide,
+  authUrl,
+  regOpen,
+  baseUrl2
+} from './env';
+
 function requestLoading(url, method, params, message, success, fail) {
   console.log(params)
   wx.showNavigationBarLoading()
@@ -15,7 +23,7 @@ function requestLoading(url, method, params, message, success, fail) {
     // })
   }
   wx.request({
-    url: baseUrl+url,
+    url: baseUrl + url,
     data: params,
     header: {
       'Content-Type': 'application/json'
@@ -36,12 +44,18 @@ function requestLoading(url, method, params, message, success, fail) {
     },
     fail: function (res) {
       wx.hideNavigationBarLoading()
+      wx.redirectTo({
+        url: `/pages/error/index`,
+        success: function () {},
+        fail: function () {},
+        complete: function () {}
+      })
       if (message != "") {
         // wx.hideLoading()
       }
       fail()
     },
-    complete: function(res) {
+    complete: function (res) {
 
     }
   })

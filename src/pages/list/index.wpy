@@ -15,33 +15,24 @@ page {
   }
   .listbox {
     padding: 48rpx 30rpx;
-    .pointbox {
-      width: 320rpx;
-      height: 330rpx;
-      border-radius: 20rpx;
-      margin-right: 46rpx;
-      margin-bottom: 60rpx;
-      background: #fff;
-      display: inline-block;
+    .likebox {
       box-shadow: #afafaf 8rpx 0rpx 14rpx;
-      &:nth-child(even) {
-        margin-right: 0;
-      }
-      .pointbox-t {
-        border-radius: 20rpx 20rpx 0 0;
-        height: 230rpx;
-        overflow: hidden;
+      padding: 20rpx;
+      background: #fff;
+      border-radius: 20rpx;
+      margin-bottom: 50rpx;
+      display: flex;
+      .likebox-l {
+        width: 300rpx;
+        height: 240rpx;
         position: relative;
-        &:after {
-          content: '';
-          width: 0;
-          height: 100%;
-          display: inline-block;
-          vertical-align: middle;
-        }
-        image {
+        .img {
           width: 100%;
-          vertical-align: middle;
+          height: 100%;
+          image {
+            width: 100%;
+            height: 100%;
+          }
         }
         .shadow {
           overflow: hidden;
@@ -67,18 +58,16 @@ page {
             image {
               width: 40rpx;
               height: 40rpx;
-              margin-left: 13rpx;
             }
           }
         }
       }
-      .pointbox-b {
+      .likebox-b {
         overflow: hidden;
-        text-align: center;
-        padding: 16rpx 0 20rpx;
-        box-sizing: border-box;
+        flex: 1;
+        margin-left: 40rpx;
         .name {
-          font: 28rpx/28rpx '';
+          font: 30rpx/30rpx '';
           width: 100%;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -86,12 +75,32 @@ page {
         }
         .des {
           font: 22rpx/22rpx '';
-          color: #888;
+          color: #878787;
           width: 100%;
           overflow: hidden;
-          margin-top: 15rpx;
           text-overflow: ellipsis;
           white-space: nowrap;
+          margin: 18rpx auto 42rpx;
+        }
+        .time {
+          font: 28rpx/28rpx '';
+          margin-bottom: 40rpx;
+          color: #2299dd;
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .naviga {
+          width: 200rpx;
+          height: 54rpx;
+          font: 22rpx/54rpx '';
+          text-align: center;
+          color: #fff;
+          border-radius: 30rpx;
+          background: #2299dd;
+          box-shadow: #c3e3f4 6rpx 16rpx 30rpx;
+          margin: 0 auto;
         }
       }
     }
@@ -103,23 +112,27 @@ page {
     <image class="backimg" src="../../img/back.png"/>
     <view class="listbox">
       <repeat for="{{pointData}}" key="index" index="index" item="item">
-        <view class="pointbox" @tap="toDetail({{item.deptId}})">
-          <view class="pointbox-t">
-            <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}" mode="widthFix"/>
-            <view class="shadow">
-              <view class="price"></view>
-              <view class="position">
-                <view class="positiontxt">{{item.distance?item.distance:""}}</view>
-                <image src="../../img/position.png" mode="widthFix"/>
-              </view>
-            </view>
-          </view>
-          <view class="pointbox-b">
-            <view class="name">{{item.deptName?item.deptName:""}}</view>
-            <view class="des">{{item.description?item.description:""}}</view>
-          </view>
-        </view>
-      </repeat>
+				<view class="likebox" @tap="toDetail({{item.deptId}})">
+					<view class="likebox-l">
+						<view class="img">
+							<image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}"/>
+						</view>
+						<view class="shadow">
+							<view class="price"></view>
+							<view class="position">
+								<view class="positiontxt">{{item.distance?item.distance:""}}</view>
+								<image src="../../img/position.png" mode="widthFix"/>
+							</view>
+						</view>
+					</view>
+					<view class="likebox-b">
+						<view class="name">{{item.deptName?item.deptName:""}}</view>
+						<view class="des">{{item.description?item.description:""}}</view>
+						<view class="time">建议浏览{{item.proposalVisitTime?item.proposalVisitTime:""}}</view>
+						<view class="naviga" catchtap="getmap({{item.latitude}},{{item.longitude}})">导航</view>
+					</view>
+				</view>
+			</repeat>
     </view>
   </view>
 </template>
@@ -209,7 +222,8 @@ export default class List extends wepy.page {
   onShow() {}
   onLoad(options) {
     var that = this;
-    this.imgBaseUrl = imgBaseUrl;
+		this.imgBaseUrl = imgBaseUrl;
+		this.pointData=[];
     if (options.isshowNav) {
       this.isshowNav = options.isshowNav;
     } else {

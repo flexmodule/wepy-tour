@@ -102,6 +102,30 @@ page {
         width: 100%;
         height: 100%;
       }
+		}
+		.tolist {
+      position: absolute;
+      width: 116rpx;
+      height: 116rpx;
+      right: 10rpx;
+      top: 140rpx;
+      .img {
+        width: 100%;
+        height: 100%;
+      }
+		}
+		.up {
+      position: absolute;
+      width: 100rpx;
+      height: 100rpx;
+      right: 0;
+			left: 0;
+			bottom: 0;
+			margin: auto;
+      .img {
+        width: 100%;
+        height: 100%;
+      }
     }
     .tomy {
       position: absolute;
@@ -132,7 +156,7 @@ page {
           position: relative;
           .kindselect {
             position: absolute;
-            width: 90%;
+            width: 95%;
             height: 100%;
             top: 0;
             bottom: -80rpx;
@@ -141,7 +165,6 @@ page {
             margin: auto;
             overflow: hidden;
             border-radius: 20rpx;
-            box-shadow: #666 0rpx 0rpx 30rpx;
             .kindselect-t {
               width: 100%;
               height: 65%;
@@ -371,7 +394,7 @@ page {
       <view class="scene {{isshowNav==2?'active':''}}" @tap="switchNav(2)">景点</view>
       <view class="food {{isshowNav==3?'active':''}}" @tap="switchNav(3)">美食</view>
       <view class="shopping {{isshowNav==4?'active':''}}" @tap="switchNav(4)">购物</view>
-      <view class="route {{isshowNav==5?'active':''}}" @tap="switchNav(5)">路线</view>
+      <view class="route {{isshowNav==5?'active':''}}" @tap="switchNav(5)">新体验</view>
     </view>
     <view
       class="tomap"
@@ -383,7 +406,7 @@ page {
         id="map"
         longitude="{{currentlong?currentlong:''}}"
         latitude="{{currentlat?currentlat:''}}"
-        scale="20"
+        scale="15"
         markers="{{markers}}"
         bindmarkertap="markertap"
         bindregionchange="regionchange"
@@ -396,7 +419,10 @@ page {
         <cover-image class="img" src="../../img/currentpos.png"/>
       </cover-view>
       <cover-view class="tolist" @tap="tolist">
-        <cover-image class="img" src="../../img/currentpos.png"/>
+        <cover-image class="img" src="../../img/tolist.png"/>
+      </cover-view>
+			<cover-view class="up" @tap="up" style="display: {{upstyle}};">
+        <cover-image class="img" src="../../img/up.png"/>
       </cover-view>
     </view>
     <view class="tabkind" style="bottom:{{mapbottom}}px" wx:if="{{mappointshow}}">
@@ -414,7 +440,7 @@ page {
             <swiper-item>
               <view
                 class="kindselect"
-                style="bottom:{{currentindex==index?'-20rpx':'-80rpx'}};"
+                style="bottom:{{currentindex==index?'-8rpx':'-80rpx'}};"
                 @tap="todetail({{item.deptId}})"
               >
                 <view class="kindselect-t">
@@ -483,6 +509,7 @@ import { imgBaseUrl } from '@/utils/env.js';
 export default class Home extends wepy.page {
   components = {};
   data = {
+		upstyle:"none",
     deptId: '',
     locationAuth: false,
     locationcanIUse: wx.canIUse('button.open-type.openSetting'),
@@ -528,6 +555,12 @@ export default class Home extends wepy.page {
   };
   computed = {};
   methods = {
+		up() {
+			var that=this;
+			this.mapbottom = 0;
+      this.mapheight = this.oHeight - 281 * that.rpa;
+			this.upstyle="none";
+		},
     todetail(id) {
       wx.navigateTo({
         url: `/pages/addressdetail/index?id=${id}`,
@@ -628,6 +661,7 @@ export default class Home extends wepy.page {
       } else if (this.move - this.start > 50 * this.rpa && this.move != 0) {
         that.mapbottom = -210 * this.rpa;
         that.mapheight = this.oHeight - 71 * this.rpa;
+				that.upstyle="block";
       }
       this.move = 0;
       }

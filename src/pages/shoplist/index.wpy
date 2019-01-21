@@ -260,6 +260,7 @@ export default class Shoplist extends wepy.page {
     } else {
 			this.userid =""
 		}
+		this.shopdatalist=[];
 		this.getshoplist();
 		this.getshoplistnum();
   }

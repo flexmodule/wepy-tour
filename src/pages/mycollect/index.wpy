@@ -1,6 +1,5 @@
 <style lang="less">
 .Mycollect {
-  padding: 0 36rpx;
   position: relative;
   min-height: 100%;
   .backimg {
@@ -12,27 +11,38 @@
     z-index: -6;
   }
   .main {
+		padding: 68rpx 0;
     scroll-view {
-      padding: 68rpx 0;
-    }
-    .likebox {
-      box-shadow: #afafaf 8rpx 0rpx 14rpx;
-      padding: 20rpx;
-      background: #fff;
+			padding: 0 30rpx;
+			box-sizing: border-box;
+		}
+		.pointbox {
+      width: 320rpx;
+      height: 330rpx;
       border-radius: 20rpx;
-      margin-bottom: 50rpx;
-      display: flex;
-      .likebox-l {
-        width: 300rpx;
-        height: 240rpx;
+      margin-right: 46rpx;
+      margin-bottom: 60rpx;
+      background: #fff;
+      display: inline-block;
+      box-shadow: #afafaf 8rpx 0rpx 14rpx;
+      &:nth-child(even) {
+        margin-right: 0;
+      }
+      .pointbox-t {
+        border-radius: 20rpx 20rpx 0 0;
+        height: 230rpx;
+        overflow: hidden;
         position: relative;
-        .img {
-          width: 100%;
+        &:after {
+          content: '';
+          width: 0;
           height: 100%;
-          image {
-            width: 100%;
-            height: 100%;
-          }
+          display: inline-block;
+          vertical-align: middle;
+        }
+        image {
+          width: 100%;
+          vertical-align: middle;
         }
         .shadow {
           overflow: hidden;
@@ -58,16 +68,18 @@
             image {
               width: 40rpx;
               height: 40rpx;
+              margin-left: 13rpx;
             }
           }
         }
       }
-      .likebox-b {
+      .pointbox-b {
         overflow: hidden;
-        flex: 1;
-        margin-left: 40rpx;
+        text-align: center;
+        padding: 16rpx 0 20rpx;
+        box-sizing: border-box;
         .name {
-          font: 30rpx/30rpx '';
+          font: 28rpx/28rpx '';
           width: 100%;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -75,32 +87,12 @@
         }
         .des {
           font: 22rpx/22rpx '';
-          color: #878787;
+          color: #888;
           width: 100%;
           overflow: hidden;
+          margin-top: 15rpx;
           text-overflow: ellipsis;
           white-space: nowrap;
-          margin: 18rpx auto 42rpx;
-        }
-        .time {
-          font: 28rpx/28rpx '';
-          margin-bottom: 40rpx;
-          color: #2299dd;
-          width: 100%;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .naviga {
-          width: 200rpx;
-          height: 54rpx;
-          font: 22rpx/54rpx '';
-          text-align: center;
-          color: #fff;
-          border-radius: 30rpx;
-          background: #2299dd;
-          box-shadow: #c3e3f4 6rpx 16rpx 30rpx;
-          margin: 0 auto;
         }
       }
     }
@@ -118,28 +110,24 @@
     <image class="backimg" src="../../img/back.png"/>
     <view class="main">
       <scroll-view scroll-y style="height:{{oHeight}}px;" lower-threshold="100px" bindscrolltolower="lower" enable-back-to-top="true">
-        <repeat for="{{likelist}}" key="index" index="index" item="item">
-          <view class="likebox" @tap="toDetail({{item.deptId}})">
-            <view class="likebox-l">
-              <view class="img">
-                <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}"/>
-              </view>
-              <view class="shadow">
-                <view class="price"></view>
-                <view class="position">
-                  <view class="positiontxt">{{item.distance?item.distance:""}}</view>
-                  <image src="../../img/position.png" mode="widthFix"/>
-                </view>
-              </view>
-            </view>
-            <view class="likebox-b">
-              <view class="name">{{item.deptName?item.deptName:""}}</view>
-              <view class="des">{{item.description?item.description:""}}</view>
-              <view class="time">建议浏览{{item.proposalVisitTime?item.proposalVisitTime:""}}</view>
-              <view class="naviga" catchtap="getmap({{item.latitude}},{{item.longitude}})">导航</view>
-            </view>
-          </view>
-        </repeat>
+				<repeat for="{{likelist}}" key="index" index="index" item="item">
+					<view class="pointbox" @tap="toDetail({{item.deptId}})">
+						<view class="pointbox-t">
+							<image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}" mode="widthFix"/>
+							<view class="shadow">
+								<view class="price"></view>
+								<view class="position">
+									<view class="positiontxt">{{item.distance?item.distance:""}}</view>
+									<image src="../../img/position.png" mode="widthFix"/>
+								</view>
+							</view>
+						</view>
+						<view class="pointbox-b">
+							<view class="name">{{item.deptName?item.deptName:""}}</view>
+							<view class="des">{{item.description?item.description:""}}</view>
+						</view>
+					</view>
+				</repeat>
         <!-- <view class="wenxininfo">
           <text wx:if="{{loadmore}}">加载中...</text>
           <text wx:if="{{nomore}}">客官，俺也是有底线的。</text>

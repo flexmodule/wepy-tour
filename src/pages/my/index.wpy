@@ -14,7 +14,7 @@ page {
     width: 640rpx;
     height: 350rpx;
     border-radius: 36rpx;
-    background: #000;
+    background: #63b359;
     margin: 0 auto 50rpx;
     padding: 42rpx;
     box-sizing: border-box;
@@ -22,21 +22,50 @@ page {
     display: flex;
     justify-content: space-between;
     .cardtl {
-      display: flex;
+			display: flex;
+			align-items: center;
       .cardname {
-        font: 30rpx/70rpx "";
-        color: #fff;
+        font: 30rpx/30rpx "";
+				color: #fff;
+				.cardname-t {
+					margin-bottom: 10rpx;
+				}
+			}
+			.cardtllogo {
+				width: 90rpx;
+				height: 90rpx;
+				border-radius: 50%;
+				margin-right: 26rpx;
+				text-align: center;
+				background: #fff;
+				&:after {
+          content: '';
+          width: 0;
+          height: 100%;
+          display: inline-block;
+          vertical-align: middle;
+        }
+				image {
+				border-radius: 50%;
+        width: 90rpx;
+				height: 90rpx;
+				vertical-align: middle;
       }
-      image {
-        width: 70rpx;
-        height: 70rpx;
-        margin-right: 26rpx;
-      }
+			}
+      
     }
     .cardtr {
-      width: 70rpx;
-      height: 70rpx;
-      text-align: center;
+      width: 50rpx;
+			height: 50rpx;
+			font-size: 0;
+			text-align: center;
+			background: #fff;
+			border-radius: 10rpx;
+			image {
+        width: 35rpx;
+        height: 35rpx;
+        vertical-align: middle;
+      }
       &:after {
           content: '';
           width: 0;
@@ -44,11 +73,6 @@ page {
           display: inline-block;
           vertical-align: middle;
         }
-      image {
-        width: 35rpx;
-        height: 35rpx;
-        vertical-align: middle;
-      }
     }
   }
   .card-b {
@@ -164,8 +188,11 @@ page {
     <view class="card" @tap="getcard">
       <view class="card-t">
         <view class="cardtl">
-          <image src=""/>
-          <view class="cardname">CAT</view>
+					<view class="cardtllogo"><image src="../../img/errorlogo.png"/></view>
+          <view class="cardname">
+						<view class="cardname-t">宾客网络</view>
+						<view class="cardname-b">Bingo缤享卡</view>
+					</view>
         </view>
         <view class="cardtr">
           <image src="../../img/qrcode.png"/>

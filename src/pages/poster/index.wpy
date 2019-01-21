@@ -458,7 +458,9 @@ export default class Poster extends wepy.page {
     }
   }
   onLoad(options) {
-    var that = this;
+		var that = this;
+		//数据初始化
+		this.foodDetail={};
     if (options.id) {
       this.id = options.id;
     } else {
