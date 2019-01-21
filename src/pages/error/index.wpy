@@ -1,0 +1,31 @@
+<style lang="less">
+.error {
+  
+}
+</style>
+<template>
+  <view class="error">
+    你的页面配丢了
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+
+export default class error extends wepy.page {
+  components = {};
+  data = {
+    
+  };
+  computed = {};
+
+  methods = {
+    
+  };
+  onShow() {}
+  onLoad(options) {
+   
+  }
+}
+</script>

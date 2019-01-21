@@ -3,7 +3,15 @@
   padding: 25rpx 0;
  .title {
    padding: 20rpx 0;
-   display: flex;
+	 display: flex;
+	 position: fixed;
+	 width: 100%;
+	 box-sizing: border-box;
+	 height: 96rpx;
+	 left: 0;
+	 top: 0;
+	 background: #fff;
+	 z-index:8;
    border-bottom: 1rpx solid #eee;
    .num,.comp,.dis {
      flex: 1;
@@ -19,19 +27,29 @@
        vertical-align: middle;
      }
      image {
-       width: 56rpx;
-       height: 56rpx;
+       width: 46rpx;
+       height: 46rpx;
        vertical-align: middle;
      }
    }
  }
  .totalnum {
-   font: 22rpx/22rpx "";
+   font: 22rpx/46rpx "";
    color: #ababab;
    text-align: center;
-   margin: 24rpx auto 40rpx;
+	 position: fixed;
+	 height: 46rpx;
+	 z-index:8;
+	 background: #fff;
+	 left: 0;
+	 top: 96rpx;
+	 width: 100%;
  }
  .main {
+	 scroll-view {
+		padding-top: 142rpx;
+		box-sizing: border-box;
+	 }
    .wenxininfo {
       font: 22rpx/64rpx '';
       color: #999;
@@ -40,7 +58,8 @@
     }
    .shopbox {
      display: flex;
-     justify-content: space-between;
+		 justify-content: space-between;
+		 align-items: center;
      .data {
        font: 30rpx/30rpx "";
        flex: 1;
@@ -74,20 +93,20 @@
         <image src="../../img/updown.png"/>
       </view>
     </view>
-    <view class="totalnum">商户总数：{{totalnum}}</view>
+    <view class="totalnum">商户总数:{{totalnum}}</view>
     <view class="main">
       <scroll-view scroll-y style="height:{{oHeight}}px;" lower-threshold="100px" bindscrolltolower="lower" enable-back-to-top="true">
         <repeat for="{{shopdatalist}}" key="index" index="index" item="item">
-          <view class="shopbox" @tap="toDetail({{item.id}})">
-            <view class="data">001</view>
-            <view class="data">保和堂</view>
-            <view class="data">9.5折</view>
+          <view class="shopbox" @tap="toDetail({{item.deptId}})">
+            <view class="data">{{index+1 }}</view>
+            <view class="data">{{item.deptName?item.deptName:""}}</view>
+            <view class="data">{{item.dicount?item.dicount:""}}</view>
           </view>
         </repeat>
-        <view class="wenxininfo">
+        <!-- <view class="wenxininfo">
           <text wx:if="{{loadmore}}">加载中...</text>
           <text wx:if="{{nomore}}">客官，俺也是有底线的。</text>
-        </view>
+        </view> -->
       </scroll-view>
     </view>
   </view>
@@ -102,8 +121,8 @@ export default class Shoplist extends wepy.page {
   data = {
     imgBaseUrl:"",
     userid:"",
-    totalnum:203,
-    shopdatalist:[1,1],
+    totalnum:"",
+    shopdatalist:[],
     params: {
       pageNo: 1,
       pageSize: 10,
@@ -111,12 +130,21 @@ export default class Shoplist extends wepy.page {
     },
     loadmore: false,
     nomore: false,
-    oHeight:""
+    oHeight:"",
+		longitude:"",
+		latitude:""
   };
   computed = {};
 
   methods = {
-    
+    toDetail(id) {
+			wx.navigateTo({
+          url: `/pages/addressdetail/index?id=${id}`,
+          success: function() {},
+          fail: function() {},
+          complete: function() {}
+        });
+		}
   };
   lower(e) {
     var that = this;
@@ -127,15 +155,33 @@ export default class Shoplist extends wepy.page {
       }
     }
   }
-  getshoplist() {
+	getshoplist() {
     var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        that.longitude = res.longitude;
+        that.latitude = res.latitude;
+        var value = {
+          type: 1,
+          classId: "",
+          isRecommend: "",
+          pageNum: that.params.pageNo,
+          pageSize: that.params.pageSize,
+          limitCount: '',
+          orderBy: '',
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
         apifunc
-          .getshoplist('/ztTravel/open/line/page', 'post', "")
+          .getindexdata('/ztTravel/open/dept/page', 'get', value)
           .then(function(res) {
+            console.log(res);
             if (res.code == 0) {
-              var listdata = res.msg;
+							var listdata = res.msg;
               listdata.forEach((order, i) => {
-                that.routeData.push(order);
+                that.shopdatalist.push(order);
               });
               that.loadmore = false;
               if (listdata.length < that.params.pageSize) {
@@ -146,21 +192,63 @@ export default class Shoplist extends wepy.page {
                 that.params.pageNo++;
               }
               if (
-                (that.routeData && that.routeData.length === 0) ||
-                !that.routeData
+                (that.shopdatalist && that.shopdatalist.length === 0) ||
+                !that.shopdatalist
               ) {
                 that.nomore = false;
               }
               that.$apply();
             } else {
-              wepy.showToast({
+							wepy.showToast({
                 title: '系统错误',
                 icon: 'none',
                 duration: 500
               });
-            }
+						}
           });
-    }
+      },
+      fail: function(res) {
+      }
+    });
+  }
+	getshoplistnum() {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        that.longitude = res.longitude;
+        that.latitude = res.latitude;
+        var value = {
+          type: 1,
+          classId: "",
+          isRecommend: "",
+          pageNum: that.params.pageNo,
+          pageSize: 0,
+          limitCount: '',
+          orderBy: '',
+          userId: that.userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getindexdata('/ztTravel/open/dept/page', 'get', value)
+          .then(function(res) {
+            if (res.code == 0) {
+							that.totalnum = res.msg.length;
+              that.$apply();
+            } else {
+							wepy.showToast({
+                title: '系统错误',
+                icon: 'none',
+                duration: 500
+              });
+						}
+          });
+      },
+      fail: function(res) {
+      }
+    });
+  }
   onShow() {}
   onLoad(options) {
     var that = this;
@@ -169,7 +257,11 @@ export default class Shoplist extends wepy.page {
     this.oHeight = res.windowHeight;
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
-    }
+    } else {
+			this.userid =""
+		}
+		this.getshoplist();
+		this.getshoplistnum();
   }
 }
 </script>

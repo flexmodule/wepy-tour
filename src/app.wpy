@@ -33,6 +33,7 @@ export default class extends wepy.app {
       "pages/mycollect/index",
       "pages/orderdetail/index",
       "pages/buy/index",
+			"pages/error/index"
     ],
     permission: {
     "scope.userLocation": {
