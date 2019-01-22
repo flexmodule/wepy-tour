@@ -255,6 +255,17 @@ export default class Shoplist extends wepy.page {
     this.imgBaseUrl = imgBaseUrl;
     var res = wx.getSystemInfoSync();
     this.oHeight = res.windowHeight;
+    this.totalnum="";
+    this.shopdatalist=[];
+    this.params={
+      pageNo: 1,
+      pageSize: 10,
+      end: false
+    };
+    this.loadmore=false;
+    this.nomore=false;
+		this.longitude="";
+		this.latitude="";
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
     } else {
@@ -263,6 +274,7 @@ export default class Shoplist extends wepy.page {
 		this.shopdatalist=[];
 		this.getshoplist();
 		this.getshoplistnum();
+    this.$apply();
   }
 }
 </script>

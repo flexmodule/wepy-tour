@@ -766,8 +766,13 @@ export default class Addressdetail extends wepy.page {
 		var that = this;
 		this.locationAuth=false;
 		this.getAuth=false;
+    this.shareboxshow=false;
     this.oHeight = res.windowHeight;
     this.imgBaseUrl = imgBaseUrl;
+    this.imgUrls=[];
+    this.foodDetail={};
+    this.isFavorite='';
+    this.type='';
     if (options.id) {
       this.deptId = options.id;
     } else {

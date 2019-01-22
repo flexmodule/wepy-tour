@@ -252,10 +252,21 @@ export default class Mycollect extends wepy.page {
     this.imgBaseUrl = imgBaseUrl;
     var res = wx.getSystemInfoSync();
     this.oHeight = res.windowHeight;
+    this.likelist=[];
+    this.params={
+      pageNo: 1,
+      pageSize: 10,
+      end: false
+    };
+    this.loadmore=false;
+    this.nomore=false;
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
+    } else {
+      this.userid="";
     }
     this.getcollectdata('');
+    this.$apply();
   }
 }
 </script>

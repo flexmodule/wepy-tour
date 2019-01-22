@@ -231,6 +231,17 @@ export default class Myorder extends wepy.page {
 		this.oHeight = res.windowHeight;
 		this.orderlist=[];
 		this.bstop="start";
+    this.params: {
+      pageNo: 1,
+      pageSize: 10,
+      end: false
+    };
+    this.loadmore=false;
+    this.nomore=false;
+    this.sumAmount='';
+    this.date='';
+    this.startdate="";
+    this.enddate="";
     if (wx.getStorageSync('userid')) {
       this.userid = wx.getStorageSync('userid');
     }

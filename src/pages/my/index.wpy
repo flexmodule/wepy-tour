@@ -273,7 +273,7 @@ export default class My extends wepy.page {
     overflowtxt: "auto",
     largecodeshow:false,
     oHeight:"",
-    mycode:"111684986256",
+    mycode:"",
     myinfo:{},
     userid:"",
     code:"",
@@ -469,6 +469,13 @@ export default class My extends wepy.page {
   onLoad(options) {
     var that=this
     var res = wx.getSystemInfoSync();
+    this.cardtxt={};
+    this.overflowtxt="auto";
+    this.largecodeshow=false;
+    this.mycode="";
+    this.myinfo={};
+    this.code="";
+    this.cardid="";
     if(wx.getStorageSync('deptId')) {
       this.deptId=wx.getStorageSync('deptId');
     } else {
