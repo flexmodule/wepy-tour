@@ -1227,6 +1227,8 @@ export default class Home extends wepy.page {
     this.rpa = res.windowWidth / 375;
     this.oHeight = res.windowHeight;
     this.mapheight = res.windowHeight - 281 * that.rpa;
+		//分享
+		wx.showShareMenu();
     //授权
     wx.getSetting({
       success(res) {
