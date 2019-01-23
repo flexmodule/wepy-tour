@@ -148,7 +148,8 @@ export default class List extends wepy.page {
     imgBaseUrl: '',
     pointData: [],
     isRecommend:"",
-    classId:""
+    classId:"",
+    backheight:""
   };
   computed = {};
 
@@ -224,6 +225,8 @@ export default class List extends wepy.page {
     var that = this;
 		this.imgBaseUrl = imgBaseUrl;
 		this.pointData=[];
+    var res = wx.getSystemInfoSync();
+    this.backheight = res.windowHeight;
     if (options.isshowNav) {
       this.isshowNav = options.isshowNav;
     } else {
@@ -247,6 +250,7 @@ export default class List extends wepy.page {
       this.userid = wx.getStorageSync('userid');
     }
     this.getmapdata(that.isshowNav,that.classId,that.isRecommend);
+    this.$apply;
   }
 }
 </script>

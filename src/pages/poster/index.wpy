@@ -461,6 +461,16 @@ export default class Poster extends wepy.page {
 		var that = this;
 		//数据初始化
 		this.foodDetail={};
+    this.getAuth=false;
+    this.nickName='';
+    this.avatarUrl='';
+    this.id="";
+    this.userid='';
+    this.foodDetail={};
+    this.headImg='';
+    this.bstop=0;
+    this.qrcodeurl='';
+    this.mainImg='';
     if (options.id) {
       this.id = options.id;
     } else {
