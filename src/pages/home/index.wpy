@@ -151,12 +151,13 @@ page {
         overflow: visible !important;
         swiper-item {
           height: 100%;
-          width: 80% !important;
-          margin-left: 10%;
+          width: 66% !important;
+          margin-left: 17%;
           position: relative;
           .kindselect {
             position: absolute;
-            width: 95%;
+						width: 95%;
+						border: 1rpx solid #eee;
             height: 100%;
             top: 0;
             bottom: -80rpx;

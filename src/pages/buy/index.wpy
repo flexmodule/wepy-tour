@@ -304,7 +304,10 @@ export default class Buy extends wepy.page {
             },
             complete: function(res) {}
           });
-        }
+        } else {
+					that.bstop = 0;
+				}
+				that.$apply();
 			});
 			}
     },
@@ -510,7 +513,20 @@ export default class Buy extends wepy.page {
     console.log(options)
     var that = this;
     var res = wx.getSystemInfoSync();
-    this.oHeight = res.windowHeight;
+		this.oHeight = res.windowHeight;
+		//数据初始化
+		this.bstop=0;
+		this.getAuth=false;
+    this.discountnum="";
+    this.discount='';
+    this.oHeight="";
+    this.totalmoney='';
+    this.dismoney="";
+    this.salemoney='';
+    this.totalcount='';
+    this.nosale='';
+		this.foodDetail={};
+		this.openid="";
     if (options.deptId) {
       this.deptId = options.deptId;
       wx.setStorageSync('deptId',that.deptId);
