@@ -231,7 +231,7 @@ export default class Myorder extends wepy.page {
 		this.oHeight = res.windowHeight;
 		this.orderlist=[];
 		this.bstop="start";
-    this.params: {
+    this.params={
       pageNo: 1,
       pageSize: 10,
       end: false
