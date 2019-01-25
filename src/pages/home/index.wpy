@@ -1,17 +1,16 @@
 <style lang="less">
 page {
   height: 100%;
-  overflow: hidden;
 }
 .Home {
   height: 100%;
-  overflow: hidden;
   .menu {
     font: 30rpx/88rpx '';
     flex: 1;
     display: flex;
     height: 88rpx;
-    justify-content: space-around;
+		justify-content: space-around;
+		box-shadow: 0 2px 3px -1px #eee;
     .food,
     .rec,
     .scene,
@@ -258,16 +257,10 @@ page {
   }
   .routeline {
     position: relative;
-    min-height: 100%;
-    .backimg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -6;
-    }
-    padding: 26rpx 0;
+		scroll-view {
+			padding: 26rpx 0;
+			box-sizing: border-box;
+		}
     .routebox {
       width: 680rpx;
       height: 340rpx;
@@ -380,7 +373,7 @@ page {
 }
 </style>
 <template>
-  <view class="Home">
+  <view class="Home" style="overflow: {{homestyle}};">
     <view class="search" wx:if="{{mappointshow}}">
       <view class="search-l">
         <image src="../../img/search.png"/>
@@ -466,8 +459,7 @@ page {
       </view>
     </view>
     <view class="routeline" wx:if="{{routelineshow}}">
-      <image class="backimg" src="../../img/back.png"/>
-      <scroll-view scroll-y style="height:{{oHeight}}px;" bindscrolltolower="lower">
+      <scroll-view scroll-y style="height:{{routeheight}}px;" bindscrolltolower="lower">
         <repeat for="{{routeData}}" key="index" index="index" item="item">
           <view class="routebox" @tap="torouteDetail({{item.id}})">
             <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}"/>
@@ -510,6 +502,7 @@ import { imgBaseUrl } from '@/utils/env.js';
 export default class Home extends wepy.page {
   components = {};
   data = {
+		homestyle:"hidden",
 		upstyle:"none",
     deptId: '',
     locationAuth: false,
@@ -549,7 +542,8 @@ export default class Home extends wepy.page {
     imgBaseUrl: '',
     kindindex: '',
     classId:"",
-    isRecommend:""
+    isRecommend:"",
+		routeheight:""
   };
   config = {
     disableScroll: true
@@ -716,6 +710,7 @@ export default class Home extends wepy.page {
         this.kindindex = '';
         this.routelineshow = false;
         this.mappointshow = true;
+				this.homestyle="hidden";
         this.routeData = [];
         this.maplistData = [];
         this.getmapdata("","",1);
@@ -727,6 +722,7 @@ export default class Home extends wepy.page {
         this.kindindex = 2;
         this.routelineshow = false;
         this.mappointshow = true;
+				this.homestyle="hidden";
         this.routeData = [];
         this.maplistData = [];
         this.getmapdata(2,"","");
@@ -735,6 +731,7 @@ export default class Home extends wepy.page {
         this.isshowNav = 3;
         this.isRecommend="";
         this.classId=200;
+				this.homestyle="hidden";
         this.kindindex = 1;
         this.routelineshow = false;
         this.mappointshow = true;
@@ -745,6 +742,7 @@ export default class Home extends wepy.page {
         this.currentindex = 1;
         this.isshowNav = 4;
         this.isRecommend="";
+				this.homestyle="hidden";
         this.classId=100;//type都是1，100是购物，200是美食
         this.kindindex = 1;
         this.routelineshow = false;
@@ -754,6 +752,7 @@ export default class Home extends wepy.page {
         this.getmapdata(1,100,"");
       } else if (data == 5) {
         this.isshowNav = 5;
+				this.homestyle="hidden";
         this.routelineshow = true;
         this.mappointshow = false;
         this.routeData = [];
@@ -1208,6 +1207,7 @@ export default class Home extends wepy.page {
       this.userid=""
     }
     //数据初始化
+		this.homestyle="hidden";
     this.routelineshow = false;
     this.mappointshow = true;
     this.currentindex = 1;
@@ -1227,6 +1227,7 @@ export default class Home extends wepy.page {
     this.rpa = res.windowWidth / 375;
     this.oHeight = res.windowHeight;
     this.mapheight = res.windowHeight - 281 * that.rpa;
+		this.routeheight=res.windowHeight - 44 * that.rpa;
 		//分享
 		wx.showShareMenu();
     //授权

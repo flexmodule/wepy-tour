@@ -1,7 +1,8 @@
 <style lang="less">
 .Mycollect {
   position: relative;
-  min-height: 100%;
+	min-height: 100%;
+	border-top: 1rpx solid #eee;
   .backimg {
     position: absolute;
     top: 0;
@@ -107,7 +108,6 @@
 </style>
 <template>
   <view class="Mycollect">
-    <image class="backimg" src="../../img/back.png"/>
     <view class="main">
       <scroll-view scroll-y style="height:{{oHeight}}px;" lower-threshold="100px" bindscrolltolower="lower" enable-back-to-top="true">
 				<repeat for="{{likelist}}" key="index" index="index" item="item">

@@ -3,7 +3,8 @@ page {
   height: 100%;
 }
 .List {
-  position: relative;
+	position: relative;
+	border-top: 1rpx solid #eee;
   min-height: 100%;
   .backimg {
     position: absolute;
@@ -109,7 +110,6 @@ page {
 </style>
 <template>
   <view class="List">
-    <image class="backimg" src="../../img/back.png"/>
     <view class="listbox">
       <repeat for="{{pointData}}" key="index" index="index" item="item">
 				<view class="likebox" @tap="toDetail({{item.deptId}})">
