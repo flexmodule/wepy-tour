@@ -70,7 +70,7 @@ export default class Orderdetail extends wepy.page {
       orderNo: that.orderNo,
     };
     apifunc
-      .getorderlist('/ztTravel/open/order/get', 'get', data)
+      .getorderdetail('/ztTravel/open/order/get', 'get', data)
       .then(function(res) {
         if (res.code == 0) {
          that.orderdetail=res.msg
@@ -91,7 +91,7 @@ export default class Orderdetail extends wepy.page {
     var that=this
     var res = wx.getSystemInfoSync();
     this.oHeight = res.windowHeight;
-    this.orderdetail();
+    this.orderdetail={};
     if(options.orderNo) {
       this.orderNo=options.orderNo;
     } else {

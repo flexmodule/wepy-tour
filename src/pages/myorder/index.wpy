@@ -137,6 +137,7 @@ export default class Myorder extends wepy.page {
       } else if (that.bstop=="end") {
         this.enddate=e.detail.value;
         this.bstop="start";
+        this.orderlist=[];
         this.getorderlist();
       } 
     },
@@ -169,7 +170,7 @@ export default class Myorder extends wepy.page {
       endTime: that.enddate
     };
     apifunc
-      .getorderlist('/ztTravel/open/order/page', 'post', data)
+      .getorderlist('/ztTravel/open/order/page', 'get', data)
       .then(function(res) {
         if (res.code == 0) {
           that.sumAmount = res.msg.sumAmount;
@@ -231,7 +232,7 @@ export default class Myorder extends wepy.page {
 		this.oHeight = res.windowHeight;
 		this.orderlist=[];
 		this.bstop="start";
-    this.params: {
+    this.params={
       pageNo: 1,
       pageSize: 10,
       end: false
