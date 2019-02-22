@@ -34,6 +34,7 @@ export default class extends wepy.app {
       "pages/orderdetail/index",
       "pages/buy/index",
 			"pages/error/index",
+			"pages/routerecdea/index",
     ],
     permission: {
     "scope.userLocation": {

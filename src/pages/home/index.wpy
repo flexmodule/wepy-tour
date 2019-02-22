@@ -461,7 +461,7 @@ page {
     <view class="routeline" wx:if="{{routelineshow}}">
       <scroll-view scroll-y style="height:{{routeheight}}px;" bindscrolltolower="lower">
         <repeat for="{{routeData}}" key="index" index="index" item="item">
-          <view class="routebox" @tap="torouteDetail({{item.id}})">
+          <view class="routebox" @tap="torouteDetail({{item.id}},{{item.lineType}})">
             <image src="{{item.mainImg?imgBaseUrl+item.mainImg:''}}"/>
             <view class="routebox-b">
               <view class="name">{{item.name?item.name:''}}</view>
@@ -692,13 +692,22 @@ export default class Home extends wepy.page {
       console.log(e);
       this.searchtxt = e.detail.value;
     },
-    torouteDetail(id) {
-      wx.navigateTo({
+    torouteDetail(id,type) {
+			if(type==1) {
+				wx.navigateTo({
         url: `/pages/routedetail/index?id=${id}`,
         success: function() {},
         fail: function() {},
         complete: function() {}
-      });
+       });
+			} else if (type==2) {
+				wx.navigateTo({
+        url: `/pages/routerecdea/index?id=${id}`,
+        success: function() {},
+        fail: function() {},
+        complete: function() {}
+       });
+			}
     },
     showtab() {},
     switchNav(data) {

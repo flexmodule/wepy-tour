@@ -72,7 +72,7 @@ page {
 					}
 				}
 				.startroute-l,.startroute-r {
-						width: 60rpx;
+						width: 100rpx;
 						height: 60rpx;
 						image {
 							width: 100%;
@@ -81,6 +81,7 @@ page {
 					}
 				.startroute-c {
 					display: flex;
+					flex: 1;
 					align-items: center;
 					.startroute-cl,.startroute-cr {
 						width: 200rpx;
@@ -89,7 +90,13 @@ page {
 						text-align: center;
 					}
 					.startroute-cc {
+						width: 80rpx;
+						text-align: center;
 						margin: 0 10rpx;
+						.startroute-ccb {
+							font: 20rpx/30rpx "";
+							color: #2299dd;
+						}
 					}
 				}
 			}
@@ -192,7 +199,10 @@ page {
 					<view class="startroute-l"><image src="../../img/rightarrow.png"/></view>
 					<view class="startroute-c">
 						<view class="startroute-cl">{{startpoint}}</view>
-						<view class="startroute-cc">——</view>
+						<view class="startroute-cc">
+							<view class="startroute-cct">——</view>
+							<view class="startroute-ccb">{{routedistance}}</view>
+						</view>
 						<view class="startroute-cr">{{movetopoint}}</view>
 					</view>
 					<view class="startroute-r"><image src="../../img/rightarrow.png"/></view>
@@ -208,7 +218,7 @@ page {
 							</view>
 							<view class="distance-r">
 								<view class="distance-rl"><image src="../../img/addresspoint.png"/></view>
-								<view class="distance-rr">{{item.distance?item.distance:''}}</view>
+								<view class="distance-rr">{{item.estimatedTime?item.estimatedTime:''}}</view>
 							</view>
 						</view>
 						<view class="detail">
@@ -243,7 +253,8 @@ export default class Routedetail extends wepy.page {
     imgBaseUrl: '',
     routeData: [],
     startpoint: '',
-    movetopoint: '',
+		movetopoint: '',
+		routedistance:"",
     polyline: [
       {
         points: [],
@@ -281,46 +292,60 @@ export default class Routedetail extends wepy.page {
           currentLongitude: res.longitude
         };
         apifunc
-          .getFoodDetail(`/ztTravel/open/line/get`, 'get', data)
+          .getroutedetail(`/ztTravel/open/line/get`, 'get', data)
           .then(function(res) {
             console.log(res);
             that.routeData = [];
             if (res.code == 0) {
-              that.routedetail = res.msg;
-              if (that.routedetail.places.length>=2) {
+							that.routedetail = res.msg;
+							var oLength=that.routedetail.places.length
+              if (oLength>=2) {
                 if (
                   that.routedetail.places[0].name &&
-                  that.routedetail.places[1].name
+                  that.routedetail.places[oLength-1].name
                 ) {
                   that.startpoint = that.routedetail.places[0].name;
-                  that.movetopoint = that.routedetail.places[1].name;
+                  that.movetopoint = that.routedetail.places[oLength-1].name;
                   that.currentlat = that.routedetail.places[0].latitude;
-                  that.currentlong = that.routedetail.places[0].longitude;
+									that.currentlong = that.routedetail.places[0].longitude;
+									var address=[];
+									var data={};
+									data.latitude=that.routedetail.places[oLength-1].latitude;
+									data.longitude=that.routedetail.places[oLength-1].longitude;
+									address.push(data);
+									var qqmapsdk=that.$parent.globalData.qqmapsdk;
+									qqmapsdk.calculateDistance({
+            from: {
+              "latitude": that.currentlat,
+              "longitude": that.currentlong
+            },
+            to: address,
+            success: function(res) {
+							console.log(res)
+              if (res.status == 0) {
+								if(res.result.elements[0].distance>=1000) {
+									that.routedistance=(res.result.elements[0].distance/1000).toFixed(1) + 'km';
+								} else {
+									that.routedistance=res.result.elements[0].distance+ 'm';
+								}
+								that.$apply();
+							}
+						}
+							})
                 }
                   for (
                     var i = 0;
-                    i <= that.routedetail.places.length - 1;
+                    i <= oLength - 1;
                     i++
                   ) {
                     var data = {};
                     data.latitude = that.routedetail.places[i].latitude;
                     data.longitude = that.routedetail.places[i].longitude;
                     that.polyline[0].points.push(data);
-                    if (i >= 2) {
                     that.routeData.push(that.routedetail.places[i]);
-                    }
-                  }
-              }
-
-              // if (res.msg.specialImgs) {
-              //   that.imgUrls = [];
-              //   var specialImgsarr = res.msg.specialImgs.split(',');
-              //   for (var j = 0; j <= specialImgsarr.length - 1; j++) {
-              //     if (specialImgsarr[j] !== '') {
-              //       that.imgUrls.push(specialImgsarr[j]);
-              //     }
-              //   }
-              // }
+									}
+									
+							}
               that.$apply();
             }
           });

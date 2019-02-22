@@ -1,0 +1,290 @@
+<style lang="less">
+page {
+  height: 100%;
+}
+.Addressdetail {
+  padding-bottom: 120rpx;
+  .imgs {
+    height: 522rpx;
+    position: relative;
+    swiper {
+      width: 100%;
+      height: 100%;
+      swiper-item {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        image {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+    }
+    .shadow {
+      width: 100%;
+      position: absolute;
+      height: 164rpx;
+      left: 0;
+      bottom: -40rpx;
+      z-index: 8;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .like {
+      position: absolute;
+      z-index: 9;
+      right: 50rpx;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 20rpx #999;
+      bottom: 34rpx;
+      width: 80rpx;
+      height: 80rpx;
+      text-align: center;
+      &:after {
+        content: '';
+        width: 0;
+        height: 100%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      image {
+        width: 64rpx;
+        height: 64rpx;
+        vertical-align: middle;
+      }
+    }
+  }
+  .body {
+		padding: 0 58rpx 34rpx;
+		.bodybox {
+			border-bottom: 1rpx solid #eee;
+		}
+    .name {
+      font: 42rpx/42rpx '';
+      margin: 72rpx auto 24rpx;
+    }
+    .des {
+      font: 22rpx/22rpx '';
+			color: #ababab;
+			margin: 34rpx auto;
+    }
+		.assure {
+			font: 22rpx/22rpx '';
+			color: #ababab;
+			padding-bottom: 34rpx;
+		}
+  }
+  .bodydetail {
+    padding: 0 44rpx 66rpx;
+    .detailtitle {
+      font: 30rpx/30rpx '';
+      margin-bottom: 34rpx;
+    }
+    .detail {
+      font: 30rpx/48rpx '';
+      color: #9f9f9f;
+    }
+  }
+  .kefu {
+    position: fixed;
+    width: 160rpx;
+    height: 160rpx;
+    bottom: 150rpx;
+    right: 5rpx;
+    button {
+      background: none;
+      padding:0;
+      font-size: 0;
+      border: 0;
+      height: 100%;
+      width: 100%;
+      &:after {
+        content: '';
+        outline: none;
+        border: 0;
+      }
+      image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+	}
+}
+</style>
+<template>
+  <view class="Addressdetail">
+    <view class="imgs">
+      <swiper indicator-color="rgba(0,0,0,.5)" circular="true" indicator-dots="true"
+        autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" bindchange="switchpage">
+        <block wx:for="{{imgUrls}}" wx:key="{{item}}">
+          <swiper-item>
+            <image src="{{imgBaseUrl+item?imgBaseUrl+item:''}}" class="slide-image"/>
+          </swiper-item>
+        </block>
+      </swiper>
+      <view class="like" @tap="collect"><image src="../../img/like.png" wx:if="{{isFavorite==1?true:false}}"/><image wx:if="{{isFavorite==1?false:true}}" src="../../img/uncollect.png"/></view>
+      <view class="shadow"><image src="../../img/white.png"/></view>
+    </view>
+    <view class="body">
+			<view class="bodybox">
+				<view class="name">{{routedetail.name?routedetail.name:""}}</view>
+				<view class="des">{{routedetail.description?routedetail.description:''}}</view>
+				<view class="assure">Bingo宾果品质保证！</view>
+			</view>
+    </view>
+    <view class="bodydetail">
+      <view class="detailtitle">简介</view>
+      <view class="detail"><rich-text nodes="{{routedetail.content?routedetail.content:''}}"></rich-text></view>
+    </view>
+    <view class="kefu">
+      <button open-type="contact" bindcontact="handleContact" plain="true">
+        <image src="../../img/kefu.png"/>
+      </button>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import apifunc from '@/api/index.js';
+import { imgBaseUrl } from '@/utils/env.js';
+import { tohtml } from '@/utils/tool.js';
+
+export default class Addressdetail extends wepy.page {
+  components = {};
+  data = {
+    oHeight: '',
+    imgUrls: [],
+    autoplay: false,
+    interval: 2000,
+    duration: 1000,
+    userid: '',
+    routedetail: {},
+    deptId: '',
+    imgBaseUrl: '',
+    isFavorite: '',
+    type: ''
+  };
+  computed = {};
+
+  methods = {
+    handleContact(e) {
+      console.log(e.path);
+      console.log(e.query);
+    },
+    collect() {
+      var that = this;
+      if (this.userid) {
+        var data = {
+          userId: that.userid,
+          deptId: that.deptId,
+          type: that.type
+        };
+        if (that.isFavorite == 0) {
+          apifunc
+            .collectFood(`/ztTravel/open/favorite/save`, 'post', data)
+            .then(function(res) {
+              if (res.code == 0) {
+                that.isFavorite = 1;
+                wx.showToast({
+                  title: '收藏成功',
+                  icon: 'none',
+                  duration: 1000
+                });
+                that.$apply();
+              } else {
+                wx.showToast({
+                  title: '收藏失败',
+                  icon: 'none',
+                  duration: 1000
+                });
+              }
+            });
+        } else if (that.isFavorite == 1) {
+          apifunc
+            .uncollectFood(
+              `/ztTravel/open/favorite/del?userId=${that.userid}&deptId=${
+                that.deptId
+              }`,
+              'get',
+              ''
+            )
+            .then(function(res) {
+              if (res.code == 0) {
+                that.isFavorite = 0;
+                wx.showToast({
+                  title: '取消收藏成功',
+                  icon: 'none',
+                  duration: 1000
+                });
+                that.$apply();
+              } else {
+                wx.showToast({
+                  title: '取消收藏失败',
+                  icon: 'none',
+                  duration: 1000
+                });
+              }
+            });
+        }
+      }
+    }
+	};
+	getDetail(userid) {
+    var that = this;
+    wx.getLocation({
+      type: 'wgs84',
+      success: function(res) {
+        var data = {
+          id: that.deptId,
+          userId: userid,
+          currentLatitude: res.latitude,
+          currentLongitude: res.longitude
+        };
+        apifunc
+          .getroutedetail(`/ztTravel/open/line/get`, 'get', data)
+          .then(function(res) {
+            if (res.code == 0) {
+							that.routedetail = res.msg;
+							that.isFavorite=res.msg.favorite;
+							if (res.msg.mainImg) {
+                    that.imgUrls.push(res.msg.mainImg);
+              }
+              that.$apply();
+            }
+          });
+      }
+    });
+  }
+  onShow() {}
+  onLoad(options) {
+    console.log(options);
+    var res = wx.getSystemInfoSync();
+		var that = this;
+    this.oHeight = res.windowHeight;
+    this.imgBaseUrl = imgBaseUrl;
+    this.imgUrls=[];
+    this.foodDetail={};
+    this.isFavorite='';
+    this.type='';
+    if (options.id) {
+      this.deptId = options.id;
+    } else {
+      this.deptId = '';
+		}
+    if (wx.getStorageSync('userid')) {
+      this.userid = wx.getStorageSync('userid');
+    }
+		this.getDetail(that.userid);
+		this.$apply();
+  }
+}
+</script>
+
+
+

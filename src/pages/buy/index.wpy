@@ -6,17 +6,27 @@ page {
   height: 100%;
   background: #f7f7f7;
   padding: 46rpx 56rpx;
-  box-sizing: border-box;
-  .tohome {
-    background: #2299dd;
-    width: 130rpx;
-    height: 50rpx;
-    font: 20rpx/50rpx "";
-    text-align: center;
-    border-radius: 10rpx;
-    color: #fff;
-    margin-bottom: 40rpx;
-  }
+	box-sizing: border-box;
+	.header {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 40rpx;
+		align-items: center;
+		.tohome {
+			background: #2299dd;
+			width: 130rpx;
+			height: 50rpx;
+			font: 20rpx/50rpx "";
+			text-align: center;
+			border-radius: 10rpx;
+			color: #fff;
+		} 
+		.shopname {
+			font: 28rpx/30rpx "";
+			flex: 1;
+			text-align: right;
+		}
+	}
   .buytotal {
     display: flex;
     padding: 22rpx 20rpx;
@@ -147,7 +157,10 @@ page {
 </style>
 <template>
   <view class="Buy">
-    <view class="tohome" @tap="tohome">回到首页</view>
+		<view class="header">
+			<view class="tohome" @tap="tohome">回到首页</view>
+			<view class="shopname">{{shopname}}</view>
+		</view>
     <view class="buytotal">
       <view class="buytotal-l">请输入实际消费金额：</view>
       <view class="buytotal-r"><input @input="inputfact" value="{{totalmoney}}"/></view>
@@ -221,7 +234,8 @@ export default class Buy extends wepy.page {
     deptId:"",
 		foodDetail:{},
 		bstop:0,
-		openid:""
+		openid:"",
+		shopname:""
   };
   computed = {};
 
@@ -350,7 +364,7 @@ export default class Buy extends wepy.page {
       wx.login({
         success: function(res) {
           console.log(res.code);
-          if (res.code==0) {
+          if (res.code) {
             var value = {
               appid: that.$parent.globalData.appid,
               code: res.code,
@@ -374,6 +388,7 @@ export default class Buy extends wepy.page {
                   wx.setStorageSync('nickName', e.detail.userInfo.nickName);
 									wx.setStorageSync('mobile', res.msg.mobile);
 									that.userid=res.msg.userid;
+									that.openid=res.msg.openid;
                   that.getDetail(res.msg.userid);
                   that.getAuth = false;
                   // wx.getSetting({
@@ -467,11 +482,18 @@ export default class Buy extends wepy.page {
           .then(function(res) {
             console.log(res);
             if (res.code == 0) {
-              that.foodDetail = res.msg;
+							that.foodDetail = res.msg;
+							that.shopname=that.foodDetail.deptName;
               that.discountnum=Number(that.foodDetail.dicount);
               that.discount=Number(that.foodDetail.dicount)/10;
               that.$apply();
-            }
+            } else {
+							wx.showToast({
+                  title: '请求接口失败',
+                  icon: 'none',
+                  duration: 1000
+                });
+						}
           });
       },
       fail: function(res) {

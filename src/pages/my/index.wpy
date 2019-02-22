@@ -286,8 +286,7 @@ export default class My extends wepy.page {
   methods = {
     getcard() {
       var that = this;
-      if(that.code!="") {
-        if(that.code!=null) {
+        if(that.code!=""&&that.code!=null) {
           wx.openCard({
             cardList:  [{
               cardId: that.cardid,
@@ -343,7 +342,6 @@ export default class My extends wepy.page {
         }
       });
         }
-      }
     },
     tomylike() {
       wx.navigateTo({
