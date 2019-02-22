@@ -195,7 +195,6 @@ page {
       <view class="title">行程详情</view>
 			<view class="startroute">
 				<view class="startroutebox">
-					<view class="like"><image src="../../img/like.png"/></view>
 					<view class="startroute-l"><image src="../../img/rightarrow.png"/></view>
 					<view class="startroute-c">
 						<view class="startroute-cl">{{startpoint}}</view>

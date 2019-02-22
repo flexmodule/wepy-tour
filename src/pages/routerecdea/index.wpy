@@ -128,7 +128,6 @@ page {
           </swiper-item>
         </block>
       </swiper>
-      <view class="like" @tap="collect"><image src="../../img/like.png" wx:if="{{isFavorite==1?true:false}}"/><image wx:if="{{isFavorite==1?false:true}}" src="../../img/uncollect.png"/></view>
       <view class="shadow"><image src="../../img/white.png"/></view>
     </view>
     <view class="body">
