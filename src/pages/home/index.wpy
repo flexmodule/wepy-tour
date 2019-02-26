@@ -932,7 +932,11 @@ export default class Home extends wepy.page {
           .then(function(res) {
             console.log(res);
             if (res.code == 0) {
-              that.maplistData = res.msg;
+							for (var j = 0; j <= res.msg.length - 1; j++) {
+								if(res.msg[j].distance<=10000) {
+									that.maplistData.push(res.msg[j]);
+								}
+							}
               if(that.maplistData.length>1) {
                 that.currentindex=1;
               } else {
