@@ -179,7 +179,8 @@ export default class List extends wepy.page {
     }
   };
   getmapdata(type,classId,isRecommend) {
-    var that = this;
+		var that = this;
+		that.pointData=[];
     wx.getLocation({
       type: 'wgs84',
       success: function(res) {
@@ -202,7 +203,11 @@ export default class List extends wepy.page {
           .then(function(res) {
             console.log(res);
             if (res.code == 0) {
-              that.pointData = res.msg;
+							for (var j = 0; j <= res.msg.length - 1; j++) {
+								if(res.msg[j].distance<=80000) {
+									that.pointData.push(res.msg[j]);
+								}
+							}
               for (var i = 0; i <= that.pointData.length - 1; i++) {
                 if (that.pointData[i].distance >= 1000) {
                   that.pointData[i].distance =

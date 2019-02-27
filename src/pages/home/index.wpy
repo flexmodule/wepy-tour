@@ -933,7 +933,7 @@ export default class Home extends wepy.page {
             console.log(res);
             if (res.code == 0) {
 							for (var j = 0; j <= res.msg.length - 1; j++) {
-								if(res.msg[j].distance<=10000) {
+								if(res.msg[j].distance<=80000) {
 									that.maplistData.push(res.msg[j]);
 								}
 							}
@@ -1241,7 +1241,6 @@ export default class Home extends wepy.page {
     this.oHeight = res.windowHeight;
     this.mapheight = res.windowHeight - 281 * that.rpa;
 		this.routeheight=res.windowHeight - 44 * that.rpa;
-		//分享
 		wx.showShareMenu();
     //授权
     wx.getSetting({

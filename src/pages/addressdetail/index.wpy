@@ -796,6 +796,3 @@ export default class Addressdetail extends wepy.page {
   }
 }
 </script>
-
-
-
